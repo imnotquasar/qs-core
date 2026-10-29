@@ -79,6 +79,7 @@ local function setupScene()
     if found then sz = gz end
     introPed = CreatePed(4, model, s.x, s.y, sz, s.w or 0.0, false, true)
     SetModelAsNoLongerNeeded(model)
+    if Config.Ped.pose then RequestAnimDict(Config.Ped.pose.dict) end
     SetEntityInvincible(introPed, true)
     SetBlockingOfNonTemporaryEvents(introPed, true)
 
@@ -94,6 +95,16 @@ local function setupScene()
     end
 end
 
+local function crossArms()
+    local pose = Config.Ped.pose
+    if not pose then return end
+    local dl = GetGameTimer() + 3000
+    while not HasAnimDictLoaded(pose.dict) and GetGameTimer() < dl do Wait(10) end
+    if not HasAnimDictLoaded(pose.dict) then return end
+    TaskPlayAnim(introPed, pose.dict, pose.anim, 2.0, 2.0, -1, 1, 0.0, false, false, false)
+    Wait(700)
+end
+
 local function walkAndTurn(done)
     local f = Config.Ped.finish
     TaskGoStraightToCoord(introPed, f.x, f.y, f.z, Config.Ped.speed or 1.0, -1, 0.0, 0.1)
@@ -107,6 +118,8 @@ local function walkAndTurn(done)
         ClearPedTasks(introPed)
         TaskTurnPedToFaceCoord(introPed, Config.Cam.pos.x, Config.Cam.pos.y, Config.Cam.pos.z, 1300)
         Wait(1400)
+        if not active then return end
+        crossArms()
         if active and done then done() end
     end)
 end
@@ -131,6 +144,7 @@ local function cleanup()
     end
     if introPed and DoesEntityExist(introPed) then DeleteEntity(introPed) end
     introPed = nil
+    if Config.Ped.pose then RemoveAnimDict(Config.Ped.pose.dict) end
     SetNuiFocus(false, false)
     local ped = PlayerPedId()
     SetEntityVisible(ped, true, false)
