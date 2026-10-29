@@ -1,0 +1,28 @@
+Locales = Locales or {}
+
+Locales.pl = {
+    sug_me = 'Pokazuje akcję twojej postaci',
+    arg_action = 'akcja',
+    sug_do = 'Opisuje scenę lub obiekt/stan',
+    arg_scene = 'opis',
+    sug_ooc = 'Wiadomość poza postacią (globalna)',
+    arg_message = 'wiadomość',
+    ooc_prefix = '(OOC) %s: %s',
+    sug_b = 'Wiadomość poza postacią (lokalna)',
+    b_format = '(( %s: %s ))',
+    sug_try = 'Próbuje akcji z losowym sukcesem/porażką',
+    try_success = 'i udaje się',
+    try_fail = 'i nie udaje się',
+    try_format = '* %s %s — %s',
+    sug_pm = 'Wysyła prywatną wiadomość do gracza',
+    arg_id = 'id',
+    pm_to = '(PW do %s): %s',
+    pm_from = '(PW od %s): %s',
+    pm_no_target = 'Ten gracz nie jest online',
+    pm_self = 'Nie możesz wysłać wiadomości do siebie',
+    sug_ame = 'Pokazuje unoszącą się akcję nad głową',
+    me_format = '* %s %s',
+    do_format = '* %s (( %s ))',
+    empty = 'Musisz coś napisać',
+    no_one = 'Nikogo nie ma w pobliżu, by to zobaczyć',
+}

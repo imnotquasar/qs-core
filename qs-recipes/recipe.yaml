@@ -1,0 +1,91 @@
+$engine: 3
+$onesync: on
+name: qs-core
+version: 1.0.0
+author: Quasar Store
+description: >
+  Open-source FiveM roleplay framework with multicharacter, inventory, jobs,
+  police, EMS, banking and vehicles, that also runs ESX and QBCore scripts
+  through built-in compatibility bridges.
+
+tasks:
+  # Database
+  - action: connect_database
+
+  # Framework
+  - action: download_github
+    src: https://github.com/imnotquasar/qs-core
+    ref: main
+    dest: ./tmp/qs-core
+
+  - action: query_database
+    file: ./tmp/qs-core/[core]/qs-core/sql/qscore.sql
+
+  - action: move_path
+    src: ./tmp/qs-core/qs-recipes/server.cfg
+    dest: ./server.cfg
+
+  - action: move_path
+    src: ./tmp/qs-core/[core]
+    dest: ./resources/[core]
+
+  - action: move_path
+    src: ./tmp/qs-core/[addons]
+    dest: ./resources/[addons]
+
+  - action: move_path
+    src: ./tmp/qs-core/[bridge]
+    dest: ./resources/[bridge]
+
+  # cfx-server-data
+  - action: download_github
+    src: https://github.com/citizenfx/cfx-server-data
+    ref: c6afa3909c763e3327ed76825e78453286c99f05
+    subpath: resources/[managers]
+    dest: ./resources/[cfx-default]/[managers]
+
+  - action: download_github
+    src: https://github.com/citizenfx/cfx-server-data
+    ref: c6afa3909c763e3327ed76825e78453286c99f05
+    subpath: resources/[system]
+    dest: ./resources/[cfx-default]/[system]
+
+  # bob74_ipl 2.7.1
+  - action: download_github
+    src: https://github.com/Bob74/bob74_ipl
+    ref: 037dd6c71f6894be771e9343008223d7a3305d79
+    dest: ./resources/[maps]/bob74_ipl
+
+  # hospital_map
+  - action: download_github
+    src: https://github.com/qbcore-fivem/hospital_map
+    ref: 6f4aa1a841b953812d71b59cafd56757a132f23d
+    dest: ./resources/[maps]/hospital_map
+
+  # oxmysql 2.14.3
+  - action: download_file
+    path: ./tmp/files/oxmysql.zip
+    url: https://github.com/overextended/oxmysql/releases/download/v2.14.3/oxmysql.zip
+
+  - action: unzip
+    src: ./tmp/files/oxmysql.zip
+    dest: ./resources/[standalone]
+
+  # ox_lib 3.39.0
+  - action: download_file
+    path: ./tmp/files/ox_lib.zip
+    url: https://github.com/overextended/ox_lib/releases/download/v3.39.0/ox_lib.zip
+
+  - action: unzip
+    src: ./tmp/files/ox_lib.zip
+    dest: ./resources/[standalone]
+
+  # pma-voice 6.6.2
+  - action: download_github
+    src: https://github.com/AvarianKnight/pma-voice
+    ref: cb3a7710c4ec26b05bd424200619ee873154861b
+    dest: ./resources/[standalone]/pma-voice
+
+  # Cleanup
+  - action: remove_path
+    path: ./tmp

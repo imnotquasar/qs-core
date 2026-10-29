@@ -1,0 +1,27 @@
+Locales = Locales or {}
+
+Locales.ru = {
+    outfit_saved = 'Наряд сохранён.',
+    ui_appearance = 'Внешность',
+    ui_create = 'Создать персонажа',
+    ui_save = 'Сохранить',
+    ui_confirm = 'Подтвердить',
+    ui_tex = 'Текс.',
+    ui_rotate_l = 'Повернуть влево',
+    ui_rotate_r = 'Повернуть вправо',
+    tab_face = 'Лицо и волосы',
+    tab_upper = 'Верх',
+    tab_lower = 'Низ',
+    tab_accessories = 'Аксессуары',
+    tab_tattoos = 'Татуировки',
+    store_open = 'Нажмите ~INPUT_CONTEXT~ чтобы изменить внешность',
+    store_clothing = 'Нажмите ~INPUT_CONTEXT~ чтобы сменить одежду',
+    store_barber = 'Нажмите ~INPUT_CONTEXT~ чтобы изменить причёску и бороду',
+    store_tattoo = 'Нажмите ~INPUT_CONTEXT~ чтобы сделать татуировку',
+    cat_hair = 'Волосы',
+    cat_top = 'Верх',
+    cat_legs = 'Ноги',
+    cat_hat = 'Головной убор',
+    ui_cancel = 'Отмена',
+    cat_beard = 'Борода',
+}

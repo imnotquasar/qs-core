@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>loading</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;800;900&display=swap');
+
+
+@property --primary { syntax: '<color>'; inherits: true; initial-value: #3b82f6; }
+@property --accent  { syntax: '<color>'; inherits: true; initial-value: #5cbaf0; }
+@property --glow    { syntax: '<color>'; inherits: true; initial-value: rgba(59, 130, 246, 0.55); }
+@property --aura1   { syntax: '<color>'; inherits: true; initial-value: rgba(59, 130, 246, 0.16); }
+@property --aura2   { syntax: '<color>'; inherits: true; initial-value: rgba(92, 186, 240, 0.14); }
+
+:root {
+  --accent: #5cbaf0;
+  --primary: #3b82f6;
+  --glow: rgba(59, 130, 246, 0.55);
+  --aura1: rgba(59, 130, 246, 0.16);
+  --aura2: rgba(92, 186, 240, 0.14);
+  --text: #eef4ff;
+  --muted: #7c879b;
+  transition:
+    --primary 0.8s ease, --accent 0.8s ease, --glow 0.8s ease,
+    --aura1 0.8s ease, --aura2 0.8s ease;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', system-ui, sans-serif; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #05070c; color: var(--text); }
+
+
+#bg {
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(60% 55% at 20% 25%, var(--aura1), transparent 60%),
+    radial-gradient(55% 55% at 82% 78%, var(--aura2), transparent 60%),
+    #05070c;
+  animation: drift 18s ease-in-out infinite alternate;
+  will-change: transform, filter;
+}
+#bg::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(0,0,0,0.75));
+}
+@keyframes drift {
+  from { transform: scale(1.02) translate(-1%, -1%); }
+  to   { transform: scale(1.08) translate(1.5%, 1.5%); }
+}
+
+
+#stage {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px;
+  will-change: transform, opacity, filter;
+}
+
+.brand {
+  font-size: 62px; font-weight: 900; letter-spacing: 14px; text-transform: uppercase;
+  padding-left: 14px; 
+  background: linear-gradient(180deg, #ffffff 30%, #9fb6d6);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 6px 30px var(--glow));
+  animation: rise 1s cubic-bezier(.2,.7,.2,1) both;
+}
+.tagline {
+  margin-top: 2px;
+  font-size: 11px; font-weight: 500; letter-spacing: 6px; text-transform: uppercase;
+  color: var(--muted);
+  animation: rise 1s cubic-bezier(.2,.7,.2,1) 0.08s both;
+}
+
+.barwrap {
+  margin-top: 40px;
+  width: 300px;
+  animation: rise 1s cubic-bezier(.2,.7,.2,1) 0.16s both;
+}
+.meta {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 10px;
+}
+.meta .lbl { font-size: 10px; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
+.meta .pct { font-size: 12px; font-weight: 700; letter-spacing: 1px; color: var(--text); font-variant-numeric: tabular-nums; }
+
+.track {
+  position: relative;
+  height: 2px; width: 100%;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px; overflow: hidden;
+}
+.fill {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  box-shadow: 0 0 12px var(--glow);
+  border-radius: 2px;
+  transition: width 0.12s linear;
+}
+
+.fill::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer { from { transform: translateX(-120%); } to { transform: translateX(320%); } }
+
+.about {
+  margin-top: 14px;
+  font-size: 12px; font-weight: 300; letter-spacing: 0.6px;
+  color: var(--muted);
+  animation: rise 1s cubic-bezier(.2,.7,.2,1) 0.12s both;
+}
+
+.keys {
+  margin-top: 34px;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 18px;
+  max-width: 620px;
+  animation: rise 1s cubic-bezier(.2,.7,.2,1) 0.24s both;
+}
+.keys .k { display: flex; align-items: center; gap: 8px; }
+.keys kbd {
+  min-width: 26px; padding: 3px 7px;
+  font-family: inherit; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-align: center;
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.14); border-bottom-color: var(--accent);
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  box-shadow: 0 0 10px -4px var(--glow);
+}
+.keys span { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+
+.tip {
+  position: fixed; left: 0; right: 0; bottom: 34px;
+  text-align: center;
+  font-size: 12px; font-weight: 300; letter-spacing: 0.4px; color: var(--muted);
+  opacity: 0; transition: opacity 0.6s ease;
+}
+.tip.show { opacity: 0.8; }
+
+
+#flash {
+  position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none;
+}
+#black {
+  position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none;
+}
+
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+
+.leaving #stage {
+  animation: zoomOut 1.15s cubic-bezier(.6,.02,.2,1) forwards;
+}
+.leaving #bg {
+  animation: bgPush 1.15s cubic-bezier(.6,.02,.2,1) forwards;
+}
+@keyframes zoomOut {
+  0%   { opacity: 1; transform: scale(1); filter: blur(0); }
+  40%  { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 0; transform: scale(1.5); filter: blur(14px); }
+}
+@keyframes bgPush {
+  from { transform: scale(1.06); filter: brightness(1); }
+  to   { transform: scale(1.35); filter: brightness(1.4); }
+}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+<div id="bg"></div>
+
+<div id="stage">
+  <div class="brand">QSCORE</div>
+  <div class="tagline">Roleplay Framework</div>
+  <div class="about" id="about"></div>
+
+  <div class="barwrap">
+    <div class="meta">
+      <span class="lbl">Loading</span>
+      <span class="pct" id="pct">0%</span>
+    </div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+  </div>
+
+  <div class="keys" id="keys"></div>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<div id="flash"></div>
+<div id="black"></div>
+
+<script>
+const RES = (window.GetParentResourceName && GetParentResourceName()) || 'loadingscreen';
+const CFG = window.LOADING_CONFIG || {};
+
+function applyColors(p) {
+  if (!p) return;
+  const r = document.documentElement.style;
+  if (p.primary) r.setProperty('--primary', p.primary);
+  if (p.accent) r.setProperty('--accent', p.accent);
+  if (p.glow) { r.setProperty('--glow', p.glow); r.setProperty('--aura1', p.glow); }
+  if (p.border) r.setProperty('--aura2', p.border);
+}
+
+const fillEl = document.getElementById('fill');
+const pctEl = document.getElementById('pct');
+const tipEl = document.getElementById('tip');
+
+
+document.querySelector('.brand').textContent = CFG.name || 'QSCORE';
+document.querySelector('.tagline').textContent = CFG.subtitle || 'Roleplay Framework';
+document.getElementById('about').textContent = CFG.about || '';
+
+const keysEl = document.getElementById('keys');
+for (const k of (Array.isArray(CFG.keys) ? CFG.keys : [])) {
+  const item = document.createElement('div');
+  item.className = 'k';
+  const kbd = document.createElement('kbd');
+  kbd.textContent = k.key;
+  const label = document.createElement('span');
+  label.textContent = k.label;
+  item.append(kbd, label);
+  keysEl.appendChild(item);
+}
+
+let target = 0, shown = 0, leaving = false;
+
+function setTarget(v) { if (v > target) target = Math.min(100, v); }
+
+function frame() {
+  shown += (target - shown) * 0.09;
+  if (target - shown < 0.2) shown = target;
+  fillEl.style.width = shown.toFixed(2) + '%';
+  pctEl.textContent = Math.round(shown) + '%';
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+
+const creep = setInterval(() => { if (!leaving) setTarget(Math.min(92, target + 1.2)); }, 550);
+
+
+const TIPS = (Array.isArray(CFG.tips) && CFG.tips.length) ? CFG.tips : [
+  'Every character is a story waiting to be lived.',
+];
+let ti = 0;
+function rotateTip() {
+  tipEl.classList.remove('show');
+  setTimeout(() => {
+    tipEl.textContent = TIPS[ti % TIPS.length];
+    ti++;
+    tipEl.classList.add('show');
+  }, 400);
+}
+rotateTip();
+if (TIPS.length > 1) setInterval(rotateTip, (CFG.tipInterval || 5.2) * 1000);
+
+function post(name) {
+  fetch(`https://${RES}/${name}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json; charset=UTF-8' }, body: '{}',
+  }).catch(() => {});
+}
+
+function outro() {
+  if (leaving) return;
+  leaving = true;
+  clearInterval(creep);
+  target = 100; shown = Math.max(shown, 96);
+
+  
+  setTimeout(() => {
+    const flash = document.getElementById('flash');
+    const black = document.getElementById('black');
+
+    
+    flash.animate(
+      [{ opacity: 0 }, { opacity: 0.5, offset: 0.2 }, { opacity: 0 }],
+      { duration: 500, easing: 'ease-out' }
+    );
+    
+    document.body.classList.add('leaving');
+    
+    black.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, delay: 500, fill: 'forwards' });
+
+    setTimeout(() => post('done'), 1200);
+  }, 450);
+}
+
+window.addEventListener('message', (e) => {
+  const d = e.data || {};
+  if (d.eventName === 'loadProgress') {
+    setTarget((d.loadFraction || 0) * 100);
+  } else if (d.eventName === 'startInitFunctionOrder') {
+    setTarget(15);
+  } else if (d.eventName === 'startDataFileEntries') {
+    setTarget(35);
+  } else if (d.eventName === 'performMapLoadFunction' || d.eventName === 'initFunctionInvoked') {
+    setTarget(Math.min(90, target + 2));
+  } else if (d.action === 'theme' && d.data) {
+    applyColors(d.data);
+  } else if (d.action === 'outro') {
+    outro();
+  }
+});
+</script>
+</body>
+</html>

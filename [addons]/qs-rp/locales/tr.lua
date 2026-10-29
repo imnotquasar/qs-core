@@ -1,0 +1,28 @@
+Locales = Locales or {}
+
+Locales.tr = {
+    sug_me = 'Karakterinizin bir eylemini gösterir',
+    arg_action = 'eylem',
+    sug_do = 'Sahneyi veya bir nesneyi/durumu tanımlar',
+    arg_scene = 'açıklama',
+    sug_ooc = 'Rol dışı mesaj (global)',
+    arg_message = 'mesaj',
+    ooc_prefix = '(OOC) %s: %s',
+    sug_b = 'Rol dışı mesaj (yerel)',
+    b_format = '(( %s: %s ))',
+    sug_try = 'Rastgele başarı/başarısızlıkla bir eylem dener',
+    try_success = 've başarır',
+    try_fail = 've başarısız olur',
+    try_format = '* %s %s — %s',
+    sug_pm = 'Bir oyuncuya özel mesaj gönderir',
+    arg_id = 'id',
+    pm_to = '(ÖM %s kişisine): %s',
+    pm_from = '(ÖM %s kişisinden): %s',
+    pm_no_target = 'O oyuncu çevrimiçi değil',
+    pm_self = 'Kendinize mesaj gönderemezsiniz',
+    sug_ame = 'Başınızın üstünde yüzen bir eylem gösterir',
+    me_format = '* %s %s',
+    do_format = '* %s (( %s ))',
+    empty = 'Bir şeyler yazmalısınız',
+    no_one = 'Bunu görecek kimse yok',
+}

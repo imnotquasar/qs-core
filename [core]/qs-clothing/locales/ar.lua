@@ -1,0 +1,27 @@
+Locales = Locales or {}
+
+Locales.ar = {
+    outfit_saved = 'تم حفظ الزي.',
+    ui_appearance = 'المظهر',
+    ui_create = 'إنشاء شخصية',
+    ui_save = 'حفظ',
+    ui_confirm = 'تأكيد',
+    ui_tex = 'نسيج',
+    ui_rotate_l = 'تدوير لليسار',
+    ui_rotate_r = 'تدوير لليمين',
+    tab_face = 'الوجه والشعر',
+    tab_upper = 'الجزء العلوي',
+    tab_lower = 'الجزء السفلي',
+    tab_accessories = 'الإكسسوارات',
+    tab_tattoos = 'الوشوم',
+    store_open = 'اضغط ~INPUT_CONTEXT~ لتغيير مظهرك',
+    store_clothing = 'اضغط ~INPUT_CONTEXT~ لتغيير ملابسك',
+    store_barber = 'اضغط ~INPUT_CONTEXT~ لتغيير شعرك ولحيتك',
+    store_tattoo = 'اضغط ~INPUT_CONTEXT~ لعمل وشوم',
+    cat_hair = 'الشعر',
+    cat_top = 'قميص',
+    cat_legs = 'الساقين',
+    cat_hat = 'قبعة',
+    ui_cancel = 'إلغاء',
+    cat_beard = 'اللحية',
+}

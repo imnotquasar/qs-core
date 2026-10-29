@@ -1,0 +1,27 @@
+Locales = Locales or {}
+
+Locales.tr = {
+    outfit_saved = 'Kıyafet kaydedildi.',
+    ui_appearance = 'Görünüm',
+    ui_create = 'Karakter oluştur',
+    ui_save = 'Kaydet',
+    ui_confirm = 'Onayla',
+    ui_tex = 'Tex',
+    ui_rotate_l = 'Sola döndür',
+    ui_rotate_r = 'Sağa döndür',
+    tab_face = 'Yüz ve saç',
+    tab_upper = 'Üst beden',
+    tab_lower = 'Alt beden',
+    tab_accessories = 'Aksesuarlar',
+    tab_tattoos = 'Dövmeler',
+    store_open = 'Görünümünüzü değiştirmek için ~INPUT_CONTEXT~ tuşuna basın',
+    store_clothing = 'Kıyafetlerinizi değiştirmek için ~INPUT_CONTEXT~ tuşuna basın',
+    store_barber = 'Saç ve sakalınızı değiştirmek için ~INPUT_CONTEXT~ tuşuna basın',
+    store_tattoo = 'Dövme yaptırmak için ~INPUT_CONTEXT~ tuşuna basın',
+    cat_hair = 'Saç',
+    cat_top = 'Üst',
+    cat_legs = 'Bacaklar',
+    cat_hat = 'Şapka',
+    ui_cancel = 'İptal',
+    cat_beard = 'Sakal',
+}

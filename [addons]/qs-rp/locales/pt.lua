@@ -1,0 +1,28 @@
+Locales = Locales or {}
+
+Locales.pt = {
+    sug_me = 'Mostra uma ação do seu personagem',
+    arg_action = 'ação',
+    sug_do = 'Descreve a cena ou um objeto/estado',
+    arg_scene = 'descrição',
+    sug_ooc = 'Mensagem fora do personagem (global)',
+    arg_message = 'mensagem',
+    ooc_prefix = '(OOC) %s: %s',
+    sug_b = 'Mensagem fora do personagem (local)',
+    b_format = '(( %s: %s ))',
+    sug_try = 'Tenta uma ação com sucesso/falha aleatório',
+    try_success = 'e consegue',
+    try_fail = 'e falha',
+    try_format = '* %s %s — %s',
+    sug_pm = 'Envia uma mensagem privada a um jogador',
+    arg_id = 'id',
+    pm_to = '(MP para %s): %s',
+    pm_from = '(MP de %s): %s',
+    pm_no_target = 'Esse jogador não está online',
+    pm_self = 'Você não pode mandar mensagem para si mesmo',
+    sug_ame = 'Mostra uma ação flutuante acima da cabeça',
+    me_format = '* %s %s',
+    do_format = '* %s (( %s ))',
+    empty = 'Você precisa escrever algo',
+    no_one = 'Não há ninguém por perto para ver isso',
+}

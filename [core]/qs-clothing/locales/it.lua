@@ -1,0 +1,27 @@
+Locales = Locales or {}
+
+Locales.it = {
+    outfit_saved = 'Outfit salvato.',
+    ui_appearance = 'Aspetto',
+    ui_create = 'Crea personaggio',
+    ui_save = 'Salva',
+    ui_confirm = 'Conferma',
+    ui_tex = 'Tex',
+    ui_rotate_l = 'Ruota a sinistra',
+    ui_rotate_r = 'Ruota a destra',
+    tab_face = 'Viso e capelli',
+    tab_upper = 'Parte superiore',
+    tab_lower = 'Parte inferiore',
+    tab_accessories = 'Accessori',
+    tab_tattoos = 'Tatuaggi',
+    store_open = 'Premi ~INPUT_CONTEXT~ per cambiare il tuo aspetto',
+    store_clothing = 'Premi ~INPUT_CONTEXT~ per cambiare i vestiti',
+    store_barber = 'Premi ~INPUT_CONTEXT~ per cambiare capelli e barba',
+    store_tattoo = 'Premi ~INPUT_CONTEXT~ per farti dei tatuaggi',
+    cat_hair = 'Capelli',
+    cat_top = 'Top',
+    cat_legs = 'Gambe',
+    cat_hat = 'Cappello',
+    ui_cancel = 'Annulla',
+    cat_beard = 'Barba',
+}

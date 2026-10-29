@@ -1,0 +1,15 @@
+Locales = Locales or {}
+
+Locales.ru = {
+    outfit_dumped = 'Одежда выведена в консоль F8',
+    colours_cleared = 'Цвета сброшены. Переподключитесь, чтобы снова увидеть интро.',
+    cp_welcome = 'Добро пожаловать',
+    cp_title = 'Выберите свои цвета',
+    cp_desc = 'Выберите палитру для всего HUD, меню и уведомлений.',
+    cp_presets = 'Пресеты',
+    cp_custom = 'Свой',
+    cp_primary = 'Основной',
+    cp_accent = 'Акцент',
+    cp_confirm = 'Подтвердить',
+    cp_server = 'Ваш сервер',
+}

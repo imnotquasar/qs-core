@@ -1,0 +1,28 @@
+Locales = Locales or {}
+
+Locales.ar = {
+    sug_me = 'يعرض حركة يقوم بها شخصيتك',
+    arg_action = 'حركة',
+    sug_do = 'يصف المشهد أو شيئًا/حالة',
+    arg_scene = 'وصف',
+    sug_ooc = 'رسالة خارج الشخصية (عام)',
+    arg_message = 'رسالة',
+    ooc_prefix = '(OOC) %s: %s',
+    sug_b = 'رسالة خارج الشخصية (محلي)',
+    b_format = '(( %s: %s ))',
+    sug_try = 'يحاول حركة بنجاح/فشل عشوائي',
+    try_success = 'وينجح',
+    try_fail = 'ويفشل',
+    try_format = '* %s %s — %s',
+    sug_pm = 'يرسل رسالة خاصة إلى لاعب',
+    arg_id = 'المعرف',
+    pm_to = '(رسالة خاصة إلى %s): %s',
+    pm_from = '(رسالة خاصة من %s): %s',
+    pm_no_target = 'هذا اللاعب غير متصل',
+    pm_self = 'لا يمكنك مراسلة نفسك',
+    sug_ame = 'يعرض حركة عائمة فوق رأسك',
+    me_format = '* %s %s',
+    do_format = '* %s (( %s ))',
+    empty = 'يجب أن تكتب شيئًا',
+    no_one = 'لا يوجد أحد قريب ليرى ذلك',
+}

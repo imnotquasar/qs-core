@@ -1,0 +1,27 @@
+Locales = Locales or {}
+
+Locales.fr = {
+    outfit_saved = 'Tenue enregistrée.',
+    ui_appearance = 'Apparence',
+    ui_create = 'Créer un personnage',
+    ui_save = 'Enregistrer',
+    ui_confirm = 'Confirmer',
+    ui_tex = 'Tex',
+    ui_rotate_l = 'Tourner à gauche',
+    ui_rotate_r = 'Tourner à droite',
+    tab_face = 'Visage et cheveux',
+    tab_upper = 'Haut du corps',
+    tab_lower = 'Bas du corps',
+    tab_accessories = 'Accessoires',
+    tab_tattoos = 'Tatouages',
+    store_open = 'Appuyez sur ~INPUT_CONTEXT~ pour changer votre apparence',
+    store_clothing = 'Appuyez sur ~INPUT_CONTEXT~ pour changer de vêtements',
+    store_barber = 'Appuyez sur ~INPUT_CONTEXT~ pour changer cheveux et barbe',
+    store_tattoo = 'Appuyez sur ~INPUT_CONTEXT~ pour vous faire tatouer',
+    cat_hair = 'Cheveux',
+    cat_top = 'Haut',
+    cat_legs = 'Jambes',
+    cat_hat = 'Chapeau',
+    ui_cancel = 'Annuler',
+    cat_beard = 'Barbe',
+}

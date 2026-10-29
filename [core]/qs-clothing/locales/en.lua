@@ -1,0 +1,27 @@
+Locales = Locales or {}
+
+Locales.en = {
+    outfit_saved = 'Outfit saved.',
+    ui_appearance = 'Appearance',
+    ui_create = 'Create character',
+    ui_save = 'Save',
+    ui_confirm = 'Confirm',
+    ui_tex = 'Tex',
+    ui_rotate_l = 'Rotate left',
+    ui_rotate_r = 'Rotate right',
+    tab_face = 'Face & Hair',
+    tab_upper = 'Upper Body',
+    tab_lower = 'Lower Body',
+    tab_accessories = 'Accessories',
+    tab_tattoos = 'Tattoos',
+    store_open = 'Press ~INPUT_CONTEXT~ to change your appearance',
+    store_clothing = 'Press ~INPUT_CONTEXT~ to change your clothes',
+    store_barber = 'Press ~INPUT_CONTEXT~ to change your hair & beard',
+    store_tattoo = 'Press ~INPUT_CONTEXT~ to get tattoos',
+    cat_hair = 'Hair',
+    cat_top = 'Top',
+    cat_legs = 'Legs',
+    cat_hat = 'Hat',
+    ui_cancel = 'Cancel',
+    cat_beard = 'Beard',
+}

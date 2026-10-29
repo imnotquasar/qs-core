@@ -1,0 +1,68 @@
+qs-core
+Copyright (C) 2026 Quasar Store and qs-core contributors
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, version 3 (GPL-3.0-only). See the LICENSE file for the full text.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+
+Derived works
+=============
+
+The compatibility bridges below contain code taken from, and modified from, the
+following GPL-3.0 projects. They are NOT the official frameworks: they emulate
+their APIs on top of qs-core so third-party scripts keep working.
+
+[bridge]/es_extended
+    Based on ESX Legacy - https://github.com/esx-framework/esx_core
+    Copyright (C) 2022-2026 ESX Framework
+    License: GPL-3.0-only
+    Modified for qs-core in 2026 (adapted to run on top of qs-core).
+    Files containing ESX Legacy code (each carries a notice in its header):
+        client/main.lua                              (ESX.UI.Menu)
+        client/game.lua                              (also QBCore, see below)
+        imports.lua
+        server/main.lua                              (xPlayer accounts)
+        server/bridge/inventory/oxinventory.lua
+        server/bridge/inventory/qsinventory.lua
+        server/classes/overrides/oxinventory.lua
+        server/classes/overrides/qsinventory.lua
+
+[bridge]/qb-core
+    Based on QBCore - https://github.com/qbcore-framework/qb-core
+    Copyright (C) QBCore Framework and contributors
+    License: GPL-3.0
+    Modified for qs-core in 2026 (adapted to run on top of qs-core).
+    Files containing QBCore code (each carries a notice in its header):
+        fxmanifest.lua
+        client/functions.lua
+        server/exports.lua
+        server/main.lua
+        shared/functions.lua
+        shared/locale.lua
+        shared/main.lua
+    Also [bridge]/es_extended/client/game.lua (vehicle properties).
+
+The other bridges ([bridge]/esx_society, [bridge]/qb-management,
+[bridge]/qb-vehiclekeys, [bridge]/progressbar, [bridge]/LegacyFuel) are original
+qs-core code that only reproduces the public API names of those resources.
+
+
+Third-party resources (not included in this repository)
+=======================================================
+
+The txAdmin recipe (qs-recipes/recipe.yaml) downloads these from their own
+repositories at a pinned version. They are not part of qs-core and keep their
+own licenses and terms:
+
+    oxmysql        https://github.com/overextended/oxmysql      LGPL-3.0-or-later
+    ox_lib         https://github.com/overextended/ox_lib       LGPL-3.0
+    pma-voice      https://github.com/AvarianKnight/pma-voice   MIT
+    bob74_ipl      https://github.com/Bob74/bob74_ipl           MIT
+    hospital_map   https://github.com/qbcore-fivem/hospital_map NoFreeRide License (NFRL),
+                   Copyright (c) 2025 Lorenc95 - see license.md in that repository
+    mapmanager, spawnmanager   https://github.com/citizenfx/cfx-server-data

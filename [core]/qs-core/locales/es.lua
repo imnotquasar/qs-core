@@ -1,0 +1,51 @@
+Locales = Locales or {}
+
+Locales.es = {
+
+    no_permission    = 'Sin permiso.',
+    player_not_found = 'Jugador no encontrado.',
+    invalid_amount   = 'Cantidad inválida.',
+
+    paycheck         = 'Nómina recibida: $%d',
+    balance          = 'Efectivo: $%d | Banco: $%d',
+    gave_money       = 'Le diste $%d a %s.',
+    received_money   = 'Recibiste $%d de %s.',
+    no_cash          = 'No tienes tanto efectivo.',
+    nobody_nearby    = 'No hay nadie cerca.',
+
+    revived          = 'Te han revivido.',
+    player_revived   = 'Has revivido al jugador %s.',
+    group_set        = 'Se te ha asignado el grupo: %s',
+    group_removed    = 'Se te ha retirado el grupo de admin.',
+    frozen           = 'Has sido congelado.',
+    unfrozen         = 'Has sido descongelado.',
+    god_on           = 'Modo dios activado.',
+    god_off          = 'Modo dios desactivado.',
+
+    you_died         = 'Estás herido. Reaparece en %d s...',
+    respawn_now      = 'Pulsa ~INPUT_JUMP~ para reaparecer en el hospital.',
+    ems_called       = 'Has llamado a los paramédicos.',
+    death_title      = 'ESTÁS HERIDO',
+    death_sub        = 'Te estás desangrando. Aguanta hasta que lleguen los médicos.',
+    death_wait       = 'Podrás rendirte en %ds',
+    death_respawn    = 'Reaparecer en el hospital',
+    death_ems        = 'Llamar a los paramédicos',
+    death_hold       = 'MANTÉN',
+
+    banned           = 'Estás baneado.\nRazón: %s\nExpira: %s',
+    ban_permanent    = 'nunca',
+    nt_success       = 'Éxito',
+    nt_error         = 'Error',
+    nt_info          = 'Información',
+    nt_notice        = 'Aviso',
+    cp_kicker        = 'Personaliza',
+    cp_title         = 'Elige tus colores',
+    cp_desc          = 'Elige la paleta de tu HUD, menús y notificaciones.',
+    cp_presets       = 'Preajustes',
+    cp_custom        = 'Personalizado',
+    cp_primary       = 'Primario',
+    cp_accent        = 'Acento',
+    cp_confirm       = 'Confirmar',
+    cp_cancel        = 'Cancelar',
+    cp_server        = 'Tu Servidor',
+}

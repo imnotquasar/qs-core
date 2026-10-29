@@ -1,0 +1,51 @@
+Locales = Locales or {}
+
+Locales.en = {
+
+    no_permission    = 'No permission.',
+    player_not_found = 'Player not found.',
+    invalid_amount   = 'Invalid amount.',
+
+    paycheck         = 'Paycheck received: $%d',
+    balance          = 'Cash: $%d | Bank: $%d',
+    gave_money       = 'You gave $%d to %s.',
+    received_money   = 'You received $%d from %s.',
+    no_cash          = 'You don\'t have that much cash.',
+    nobody_nearby    = 'Nobody is nearby.',
+
+    revived          = 'You were revived.',
+    player_revived   = 'Revived player %s.',
+    group_set        = 'You have been set to group: %s',
+    group_removed    = 'Your admin group has been removed.',
+    frozen           = 'You have been frozen.',
+    unfrozen         = 'You have been unfrozen.',
+    god_on           = 'God mode enabled.',
+    god_off          = 'God mode disabled.',
+
+    you_died         = 'You are down. Respawn in %d s...',
+    respawn_now      = 'Press ~INPUT_JUMP~ to respawn at the hospital.',
+    ems_called       = 'You called for paramedics.',
+    death_title      = 'YOU ARE DOWN',
+    death_sub        = 'You are bleeding out. Hold on for the paramedics.',
+    death_wait       = 'You can give up in %ds',
+    death_respawn    = 'Respawn at hospital',
+    death_ems        = 'Call paramedics',
+    death_hold       = 'HOLD',
+
+    banned           = 'You are banned.\nReason: %s\nExpires: %s',
+    ban_permanent    = 'never',
+    nt_success       = 'Success',
+    nt_error         = 'Error',
+    nt_info          = 'Information',
+    nt_notice        = 'Notice',
+    cp_kicker        = 'Personalize',
+    cp_title         = 'Choose Your Colors',
+    cp_desc          = 'Pick the palette your HUD, menus and notifications will use.',
+    cp_presets       = 'Presets',
+    cp_custom        = 'Custom',
+    cp_primary       = 'Primary',
+    cp_accent        = 'Accent',
+    cp_confirm       = 'Confirm',
+    cp_cancel        = 'Cancel',
+    cp_server        = 'Your Server',
+}
