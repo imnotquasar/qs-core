@@ -187,6 +187,8 @@ function PlayerMethods:save(awaitSave)
         local c = self:getCoords()
         self.PlayerData.position = { x = c.x, y = c.y, z = c.z, w = c.w }
     end
+    local items = Inventory.Snapshot(self.source)
+    if items then self.PlayerData.inventory = items end
     Database.SaveCharacter(self.PlayerData, awaitSave)
     TriggerEvent('qs:server:playerSaved', self.source, self.PlayerData)
 end

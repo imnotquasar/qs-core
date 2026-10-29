@@ -169,6 +169,28 @@ function Inventory.SetBusy(src, ms)
     end
 end
 
+function Inventory.Snapshot(src)
+    local _, exp = Inventory.GetBackend()
+    if not exp or not backendCache or backendCache.name ~= 'qs-inventory' then return nil end
+    local ok, items = pcall(function() return exp:GetInventory(src) end)
+    if not ok or type(items) ~= 'table' then return nil end
+    local out = {}
+    for slot, item in pairs(items) do
+        if type(item) == 'table' and item.name then
+            out[#out + 1] = {
+                name = item.name,
+                amount = item.amount,
+                count = item.amount,
+                info = item.info,
+                type = item.type,
+                slot = tonumber(slot) or item.slot,
+                created = item.created,
+            }
+        end
+    end
+    return out
+end
+
 function Inventory.RegisterUsableItem(item, cb)
     local _, exp = Inventory.GetBackend()
     if not exp then
