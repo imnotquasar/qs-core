@@ -32,7 +32,7 @@ never breaks a new install.
 ## After deploying
 
 - Join the server: txAdmin already made you an admin (admin menu on **F6**).
-- Change the language in `server.cfg` with `set qs:locale "en"`.
+- Change the language in `server.cfg` with `setr qs:locale "en"`.
 - Add ESX or QBCore scripts after the `ensure [bridge]` line.
 
 ## Manual install

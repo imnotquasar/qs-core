@@ -255,6 +255,7 @@ local function CreateExtendedPlayer(src)
     end
 
     function self.getAccount(account)
+        if not useCustomInventory then self.accounts = buildAccountsArray(src) end
         account = string.lower(account)
         for i = 1, #self.accounts do
             if string.lower(self.accounts[i].name) == account then
@@ -265,6 +266,7 @@ local function CreateExtendedPlayer(src)
     end
 
     function self.getAccounts(minimal)
+        if not useCustomInventory then self.accounts = buildAccountsArray(src) end
         if minimal then
             local minimalAccounts = {}
             for i = 1, #self.accounts do
@@ -770,6 +772,13 @@ AddEventHandler('playerDropped', function(reason)
             ESX.SavePlayer(xPlayers[src])
         end
         TriggerEvent('esx:playerDropped', src, reason)
+        xPlayers[src] = nil
+        lastJobs[src] = nil
+    end
+end)
+
+AddEventHandler('qs:server:playerUnloaded', function(src)
+    if xPlayers[src] then
         xPlayers[src] = nil
         lastJobs[src] = nil
     end

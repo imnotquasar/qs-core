@@ -243,7 +243,7 @@ local function takeOut(plate)
     local g = Config.Garages[garageIndex or 1]
     core:TriggerCallback('qs-garage:takeout', function(res)
         if not (res and res.ok) then
-            core:Notify(T('not_yours'), 'error')
+            core:Notify(T(res and res.msg or 'not_yours'), 'error')
             return
         end
         closeGarage()

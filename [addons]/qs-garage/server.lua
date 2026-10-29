@@ -11,12 +11,22 @@ end
 
 local function trim(s) return s and (s:gsub('%s+$', '')) or s end
 
+local function plateInWorld(plate)
+    for _, v in ipairs(GetAllVehicles()) do
+        if DoesEntityExist(v) and trim(GetVehicleNumberPlateText(v)) == plate then return true end
+    end
+    return false
+end
+
 core:RegisterCallback('qs-garage:list', function(src, garage)
     if not garageIds[garage] then return {} end
     local cid = citizenOf(src)
     if not cid then return {} end
 
     local rows = core:GetGarageVehicles(cid, garage) or {}
+    for _, r in ipairs(core:GetCitizenVehicles(cid) or {}) do
+        if not garageIds[r.garage] then rows[#rows + 1] = r end
+    end
     local out = {}
     for _, r in ipairs(rows) do
         out[#out + 1] = {
@@ -40,7 +50,9 @@ core:RegisterCallback('qs-garage:takeout', function(src, garage, plate)
     if not cid then return { ok = false } end
 
     local veh = core:GetVehicleByPlate(plate)
-    if not veh or veh.citizenid ~= cid or veh.garage ~= garage then return { ok = false, msg = 'not_yours' } end
+    if not veh or veh.citizenid ~= cid then return { ok = false, msg = 'not_yours' } end
+    if veh.garage ~= garage and garageIds[veh.garage] then return { ok = false, msg = 'not_yours' } end
+    if veh.state ~= 1 and plateInWorld(plate) then return { ok = false, msg = 'already_out' } end
 
     core:SetVehicleState(plate, 0)
     return {

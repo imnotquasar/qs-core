@@ -105,6 +105,7 @@ end
 
 exports('GetOwnedVehicles', Vehicles.GetByCitizen)
 exports('GetGarageVehicles', Vehicles.GetByGarage)
+exports('GetCitizenVehicles', Vehicles.GetByCitizen)
 exports('GetVehicleByPlate', Vehicles.GetByPlate)
 exports('PlateExists', Vehicles.PlateExists)
 exports('CreateOwnedVehicle', Vehicles.Create)

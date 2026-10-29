@@ -30,6 +30,11 @@ RegisterCommand('setgroup', function(source, args)
         return
     end
 
+    local prev = MySQL.scalar.await('SELECT `group` FROM `player_groups` WHERE `license` = ?', { lic })
+    if prev and prev ~= group and prev ~= DEFAULT_GROUP then
+        ExecuteCommand(('remove_principal identifier.%s group.%s'):format(lic, prev))
+    end
+
     MySQL.update(
         'INSERT INTO `player_groups` (`license`, `group`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `group` = VALUES(`group`)',
         { lic, group }
