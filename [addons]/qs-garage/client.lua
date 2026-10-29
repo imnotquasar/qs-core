@@ -21,7 +21,7 @@ end
 
 AddEventHandler('qs:client:colorsChanged', function() if isOpen then sendTheme() end end)
 
-local function trim(s) return s and (s:gsub('%s+$', '')) or s end
+local function trim(s) return s and s:match('^%s*(.-)%s*$') or s end
 
 local function loadModel(model)
     local hash = joaat(model)
@@ -255,8 +255,11 @@ local function takeOut(plate)
         SetVehicleNumberPlateText(v, res.plate)
         if GetResourceState('qs-corevehiclekeys') == 'started' then exports['qs-corevehiclekeys']:GiveKeys(res.plate) end
         setProps(v, res.props)
-        SetVehicleEngineHealth(v, res.engine or 1000.0)
-        SetVehicleBodyHealth(v, res.body or 1000.0)
+        SetVehicleFixed(v)
+        SetVehicleDeformationFixed(v)
+        SetVehicleEngineHealth(v, 1000.0)
+        SetVehicleBodyHealth(v, 1000.0)
+        SetVehiclePetrolTankHealth(v, 1000.0)
         SetVehicleFuelLevel(v, (res.fuel or 100) + 0.0)
         SetVehicleDirtLevel(v, 0.0)
         SetEntityAsMissionEntity(v, true, true)
@@ -276,8 +279,6 @@ local function storeVehicle(g, veh)
     local plate = trim(GetVehicleNumberPlateText(veh))
     local props = getProps(veh)
     local fuel = math.floor(GetVehicleFuelLevel(veh))
-    local engine = GetVehicleEngineHealth(veh)
-    local body = GetVehicleBodyHealth(veh)
     core:TriggerCallback('qs-garage:store', function(res)
         if res and res.ok then
             SetEntityAsMissionEntity(veh, true, true)
@@ -286,7 +287,7 @@ local function storeVehicle(g, veh)
         else
             core:Notify(T('not_yours'), 'error')
         end
-    end, g.id, plate, fuel, engine, body, props)
+    end, g.id, plate, fuel, props)
 end
 
 RegisterNUICallback('select', function(data, cb)
@@ -332,19 +333,48 @@ CreateThread(function()
     end
 end)
 
+local markerColor = { 59, 130, 246 }
+local groundZ = {}
+
+local function updateMarkerColor()
+    local colors = core:GetColors()
+    local hex = colors and colors.primary
+    if type(hex) == 'string' and hex:match('^#%x%x%x%x%x%x') then
+        markerColor = { tonumber(hex:sub(2, 3), 16), tonumber(hex:sub(4, 5), 16), tonumber(hex:sub(6, 7), 16) }
+    end
+end
+
+AddEventHandler('qs:client:colorsChanged', updateMarkerColor)
+CreateThread(function() Wait(1000) updateMarkerColor() end)
+
+local function drawStoreMarker(i, g, inside)
+    if not groundZ[i] then
+        local found, z = GetGroundZFor_3dCoord(g.coords.x, g.coords.y, g.coords.z + 1.0, false)
+        groundZ[i] = found and z or g.coords.z - 0.98
+    end
+    local size = Config.InteractDistance * 2.0
+    DrawMarker(1, g.coords.x, g.coords.y, groundZ[i] - 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        size, size, 0.6, markerColor[1], markerColor[2], markerColor[3], inside and 140 or 70,
+        false, false, 2, false, nil, nil, false)
+end
+
 CreateThread(function()
     while true do
         local sleep = 1000
         if not isOpen then
             local ped = PlayerPedId()
             local coords = GetEntityCoords(ped)
+            local veh = GetVehiclePedIsIn(ped, false)
             local nearest = 9999.0
             for i, g in ipairs(Config.Garages) do
                 local d = #(coords - vector3(g.coords.x, g.coords.y, g.coords.z))
                 if d < nearest then nearest = d end
+                if veh ~= 0 and d < Config.MarkerDistance then
+                    sleep = 0
+                    drawStoreMarker(i, g, d < Config.InteractDistance)
+                end
                 if d < Config.InteractDistance then
                     sleep = 0
-                    local veh = GetVehiclePedIsIn(ped, false)
                     if veh ~= 0 then
                         helpText(T('help_store'))
                         if IsControlJustPressed(0, Config.OpenKey) then storeVehicle(g, veh) end

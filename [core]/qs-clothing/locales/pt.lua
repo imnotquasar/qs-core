@@ -24,4 +24,5 @@ Locales.pt = {
     cat_hat = 'Chapéu',
     ui_cancel = 'Cancelar',
     cat_beard = 'Barba',
+    sug_clothing = 'Admin: abrir o editor de aparência completo',
 }

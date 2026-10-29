@@ -72,5 +72,6 @@ Locales.it = {
     ui_weather = 'Meteo',
     ui_time = 'Ora',
     ui_settime = 'Imposta Ora',
+    ui_freezetime = 'Blocca ora e meteo',
     ui_online = 'Online',
 }

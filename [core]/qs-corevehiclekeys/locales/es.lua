@@ -14,4 +14,7 @@ Locales.es = {
     hotwire_ok    = 'El motor arranca',
     hotwire_fail  = 'La ganzúa se rompió',
     alert_carjack = 'Robo de vehículo reportado',
+    sug_givekeys = 'Da las llaves de tu vehículo a un jugador',
+    sug_adminkeys = 'Admin: consigue las llaves del vehículo en el que estás o dáselas a un jugador',
+    arg_id = 'id del jugador',
 }

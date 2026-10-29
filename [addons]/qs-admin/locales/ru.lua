@@ -72,5 +72,6 @@ Locales.ru = {
     ui_weather = 'Погода',
     ui_time = 'Время',
     ui_settime = 'Задать время',
+    ui_freezetime = 'Заморозить время и погоду',
     ui_online = 'Онлайн',
 }

@@ -4,6 +4,7 @@ Config = {}
 Config.Control = 38
 Config.InteractDistance = 2.2
 Config.TreatDistance = 4.5 -- treat reach (m)
+Config.MenuKey = 'F6'
 
 -- hospital self-heal
 Config.Hospital = {

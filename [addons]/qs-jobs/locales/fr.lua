@@ -8,6 +8,7 @@ Locales.fr = {
     help_shift_start = 'Appuyez sur ~INPUT_CONTEXT~ pour commencer un service de livraison',
     help_shift_end = 'Appuyez sur ~INPUT_CONTEXT~ pour terminer votre service',
     help_deliver = 'Appuyez sur ~INPUT_CONTEXT~ pour livrer le colis',
+    help_leave_van = 'Descendez du van pour livrer le colis',
     need_job = 'Vous n\'avez pas le bon emploi pour ça',
     working = 'Travail en cours...',
     processing = 'Traitement...',

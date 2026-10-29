@@ -35,4 +35,5 @@ Locales.pl = {
     err_no_license = 'Nie udało się odczytać twojej licencji.',
     err_not_found = 'Nie znaleziono postaci.',
     err_not_owner = 'Ta postać nie należy do ciebie.',
+    sug_logout = 'Zapisz postać i wróć do wyboru postaci',
 }

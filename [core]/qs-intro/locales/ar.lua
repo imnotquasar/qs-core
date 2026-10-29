@@ -12,4 +12,5 @@ Locales.ar = {
     cp_accent = 'لون مميز',
     cp_confirm = 'تأكيد',
     cp_server = 'خادمك',
+    sug_introreset = 'امسح ألوان الواجهة لتظهر المقدمة مجددًا عند دخولك القادم',
 }

@@ -24,4 +24,5 @@ Locales.it = {
     cat_hat = 'Cappello',
     ui_cancel = 'Annulla',
     cat_beard = 'Barba',
+    sug_clothing = 'Admin: apri il menu completo del personaggio',
 }

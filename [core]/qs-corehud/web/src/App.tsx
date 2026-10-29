@@ -123,6 +123,7 @@ export default function App() {
   const [online, setOnline] = useState(1);
   const [max, setMax] = useState(10);
   const [veh, setVeh] = useState<VehData | null>(null);
+  const [minimap, setMinimap] = useState(false);
   const [s, setS] = useState<StatusData>({
     health: 85,
     armor: 40,
@@ -153,6 +154,7 @@ export default function App() {
     setMax(d.max);
   });
   useNuiEvent<StatusData>('status', (d) => setS(d));
+  useNuiEvent<{ visible: boolean }>('minimap', (d) => setMinimap(!!d?.visible));
   useNuiEvent<VehData>('vehicle', (d) => setVeh(d));
   useNuiEvent('vehicle:hide', () => setVeh(null));
   useNuiEvent('hide', () => setVisible(false));
@@ -175,7 +177,7 @@ export default function App() {
       </div>
 
       {}
-      <div className="hrow top">
+      <div className={`hrow top${minimap ? '' : ' nomap'}`}>
         <HBar value={s.hunger} color="var(--v-hunger)" Icon={FaDrumstickBite} low />
         <HBar value={s.thirst} color="var(--v-thirst)" Icon={FaTint} low />
       </div>

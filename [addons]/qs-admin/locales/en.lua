@@ -77,5 +77,6 @@ Locales.en = {
     ui_weather   = 'Weather',
     ui_time      = 'Time',
     ui_settime   = 'Set Time',
+    ui_freezetime = 'Freeze time & weather',
     ui_online    = 'Online',
 }

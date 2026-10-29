@@ -72,5 +72,6 @@ Locales.pt = {
     ui_weather = 'Clima',
     ui_time = 'Hora',
     ui_settime = 'Definir Hora',
+    ui_freezetime = 'Congelar hora e clima',
     ui_online = 'Online',
 }

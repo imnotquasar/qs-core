@@ -48,4 +48,5 @@ Locales.en = {
     cp_confirm       = 'Confirm',
     cp_cancel        = 'Cancel',
     cp_server        = 'Your Server',
+    your_id = 'Your ID: %d',
 }

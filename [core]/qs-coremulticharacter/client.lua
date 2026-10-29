@@ -275,6 +275,12 @@ if Config.EnableLogout then
         Wait(350)
         TriggerServerEvent('qs-coremultichar:server:logout')
     end, false)
+
+    CreateThread(function()
+        Wait(800)
+        local t = Locales[GetConvar('qs:locale', Config.Locale or 'en')] or Locales.en
+        TriggerEvent('chat:addSuggestion', '/' .. (Config.LogoutCommand or 'logout'), t.sug_logout or '')
+    end)
 end
 
 RegisterNUICallback('highlight', function(data, cb)

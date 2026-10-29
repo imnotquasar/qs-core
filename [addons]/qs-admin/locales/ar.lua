@@ -72,5 +72,6 @@ Locales.ar = {
     ui_weather = 'الطقس',
     ui_time = 'الوقت',
     ui_settime = 'تعيين الوقت',
+    ui_freezetime = 'تجميد الوقت والطقس',
     ui_online = 'متصل',
 }

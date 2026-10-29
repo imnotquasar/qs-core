@@ -14,4 +14,7 @@ Locales.it = {
     hotwire_ok = 'Il motore prende vita',
     hotwire_fail = 'Il grimaldello si è spezzato',
     alert_carjack = 'Segnalata effrazione di veicolo',
+    sug_givekeys = 'Dai le chiavi del tuo veicolo a un giocatore',
+    sug_adminkeys = 'Admin: ottieni le chiavi del veicolo in cui sei o dalle a un giocatore',
+    arg_id = 'id giocatore',
 }

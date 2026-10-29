@@ -35,4 +35,5 @@ Locales.it = {
     err_no_license = 'Impossibile leggere la tua licenza.',
     err_not_found = 'Personaggio non trovato.',
     err_not_owner = 'Quel personaggio non è tuo.',
+    sug_logout = 'Salva il personaggio e torna alla selezione',
 }

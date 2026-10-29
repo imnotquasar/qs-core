@@ -14,4 +14,7 @@ Locales.fr = {
     hotwire_ok = 'Le moteur rugit',
     hotwire_fail = 'Le crochet s\'est cassé',
     alert_carjack = 'Effraction de véhicule signalée',
+    sug_givekeys = 'Donner les clés de votre véhicule à un joueur',
+    sug_adminkeys = 'Admin : obtenir les clés du véhicule où vous êtes, ou les donner à un joueur',
+    arg_id = 'id du joueur',
 }

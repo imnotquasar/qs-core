@@ -4,6 +4,7 @@ Config = {}
 Config.Control = 38
 Config.InteractDistance = 2.2
 Config.TargetDistance = 3.5 -- cuff / escort / search reach
+Config.MenuKey = 'F6'
 
 -- Mission Row PD
 Config.Station = {

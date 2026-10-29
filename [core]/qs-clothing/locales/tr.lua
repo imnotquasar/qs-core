@@ -24,4 +24,5 @@ Locales.tr = {
     cat_hat = 'Şapka',
     ui_cancel = 'İptal',
     cat_beard = 'Sakal',
+    sug_clothing = 'Admin: tam görünüm düzenleyicisini aç',
 }

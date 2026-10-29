@@ -8,6 +8,7 @@ Locales.ru = {
     help_shift_start = 'Нажмите ~INPUT_CONTEXT~ чтобы начать смену доставки',
     help_shift_end = 'Нажмите ~INPUT_CONTEXT~ чтобы закончить смену',
     help_deliver = 'Нажмите ~INPUT_CONTEXT~ чтобы доставить посылку',
+    help_leave_van = 'Выйдите из фургона, чтобы доставить посылку',
     need_job = 'У вас нет подходящей работы для этого',
     working = 'Работа...',
     processing = 'Обработка...',

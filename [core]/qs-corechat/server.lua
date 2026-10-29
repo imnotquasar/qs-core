@@ -1,5 +1,22 @@
 local core = exports['qs-core']
 
+local hidden = {}
+for _, name in ipairs(Config.HiddenCommands or {}) do hidden[name] = true end
+
+RegisterNetEvent('qs-corechat:server:commands', function()
+    local src = source
+    if not core:RateLimit(('chat-cmds:%d'):format(src), 1, 2000) then return end
+    local list = {}
+    for _, c in ipairs(GetRegisteredCommands()) do
+        local name = c.name
+        if c.resource and c.resource ~= '' and c.resource ~= 'internal' and not hidden[name]
+            and not name:find('^[%+%-]') and IsPlayerAceAllowed(src, ('command.%s'):format(name)) then
+            list[#list + 1] = { name = '/' .. name }
+        end
+    end
+    TriggerClientEvent('qs-corechat:client:commands', src, list)
+end)
+
 RegisterNetEvent('qs-corechat:server:send', function(text)
     local src = source
     text = tostring(text or '')

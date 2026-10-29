@@ -1,6 +1,6 @@
 local core = exports['qs-core']
 
-local function trim(s) return s and (s:gsub('%s+$', '')) or s end
+local function trim(s) return s and s:match('^%s*(.-)%s*$') or s end
 
 core:RegisterCallback('qs-corevehiclekeys:owns', function(src, plate)
     if not Config.AutoKeysForOwned then return false end

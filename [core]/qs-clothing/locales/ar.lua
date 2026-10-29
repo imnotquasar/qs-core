@@ -24,4 +24,5 @@ Locales.ar = {
     cat_hat = 'قبعة',
     ui_cancel = 'إلغاء',
     cat_beard = 'اللحية',
+    sug_clothing = 'مشرف: افتح محرر المظهر الكامل',
 }

@@ -72,5 +72,6 @@ Locales.pl = {
     ui_weather = 'Pogoda',
     ui_time = 'Czas',
     ui_settime = 'Ustaw czas',
+    ui_freezetime = 'Zamroź czas i pogodę',
     ui_online = 'Online',
 }

@@ -405,6 +405,99 @@ local function nearestDowned()
     return target
 end
 
+local menuOpen = false
+local MENU_MOVE = { 30, 31, 32, 33, 34, 35, 21, 22, 59, 60, 71, 72, 76 }
+
+local function menuTarget()
+    local id = nearestPlayer()
+    if not id then return nil end
+    local state = Player(id).state
+    return { id = id, name = GetPlayerName(GetPlayerFromServerId(id)), downed = state and state.dead == true }
+end
+
+local function closeMenu()
+    if not menuOpen then return end
+    menuOpen = false
+    SetNuiFocusKeepInput(false)
+    SetNuiFocus(false, false)
+    send('menu:close')
+end
+
+local function openMenu()
+    if menuOpen or reportOpen or myJob ~= 'ambulance' then return end
+    if IsPauseMenuActive() or IsNuiFocused() or exports['qs-core']:IsDead() then return end
+    menuOpen = true
+    sendTheme()
+    sendLocale()
+    local target = menuTarget()
+    send('menu:open', { target = target })
+    SetNuiFocus(true, true)
+    SetNuiFocusKeepInput(true)
+    CreateThread(function()
+        local lastKey = target and (target.id .. tostring(target.downed))
+        local nextCheck = 0
+        while menuOpen do
+            DisableAllControlActions(0)
+            for i = 1, #MENU_MOVE do EnableControlAction(0, MENU_MOVE[i], true) end
+            if IsDisabledControlJustReleased(0, 322) then closeMenu() break end
+            if GetGameTimer() >= nextCheck then
+                nextCheck = GetGameTimer() + 300
+                if myJob ~= 'ambulance' or exports['qs-core']:IsDead() then closeMenu() break end
+                local t = menuTarget()
+                local key = t and (t.id .. tostring(t.downed))
+                if key ~= lastKey then
+                    lastKey = key
+                    send('menu:target', { target = t })
+                end
+            end
+            Wait(0)
+        end
+    end)
+end
+
+local emsActions = {
+    diagnose = function()
+        closeMenu()
+        ExecuteCommand('diagnose')
+    end,
+    self = function()
+        closeMenu()
+        if not reportOpen then TriggerServerEvent('qs-ambulance:server:openReport', GetPlayerServerId(PlayerId())) end
+    end,
+    stretcher = function()
+        ExecuteCommand('stretcher')
+    end,
+    patient = function()
+        if myStretcherId then
+            placePatient(myStretcherId)
+        else
+            exports['qs-core']:Notify(T('no_stretcher'), 'error')
+        end
+    end,
+}
+
+RegisterCommand('emsmenu', function()
+    if menuOpen then closeMenu() else openMenu() end
+end, false)
+RegisterKeyMapping('emsmenu', 'EMS menu', 'keyboard', Config.MenuKey or 'F6')
+
+RegisterNUICallback('menu:close', function(_, cb)
+    cb('ok')
+    closeMenu()
+end)
+
+RegisterNUICallback('menu:typing', function(data, cb)
+    cb('ok')
+    if menuOpen then SetNuiFocusKeepInput(not (data and data.on)) end
+end)
+
+RegisterNUICallback('menu:action', function(data, cb)
+    cb('ok')
+    if not menuOpen or not data or myJob ~= 'ambulance' then return end
+    local action = emsActions[data.action]
+    if action then action() end
+end)
+
 RegisterCommand('diagnose', function()
     if myJob ~= 'ambulance' then
         exports['qs-core']:Notify(T('need_job'), 'error')
@@ -917,6 +1010,7 @@ end)
 
 AddEventHandler('onResourceStop', function(res)
     if res ~= GetCurrentResourceName() then return end
+    closeMenu()
     closeReport(false)
     if myStretcherId then TriggerServerEvent('qs-ambulance:server:removeStretcher', myStretcherId) end
     for _, s in pairs(stretchers) do

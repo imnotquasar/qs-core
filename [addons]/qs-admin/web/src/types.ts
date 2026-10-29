@@ -21,6 +21,7 @@ export interface States {
   godmode?: boolean;
   invisible?: boolean;
   noclip?: boolean;
+  timeFrozen?: boolean;
 }
 
 export interface OpenData {

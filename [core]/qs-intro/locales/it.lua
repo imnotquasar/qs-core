@@ -12,4 +12,5 @@ Locales.it = {
     cp_accent = 'Accento',
     cp_confirm = 'Conferma',
     cp_server = 'Il tuo server',
+    sug_introreset = 'Azzera i tuoi colori per rivedere la presentazione al prossimo accesso',
 }

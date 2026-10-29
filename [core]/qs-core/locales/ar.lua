@@ -43,4 +43,5 @@ Locales.ar = {
     cp_confirm = 'تأكيد',
     cp_cancel = 'إلغاء',
     cp_server = 'خادمك',
+    your_id = 'معرّفك: %d',
 }

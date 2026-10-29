@@ -35,4 +35,5 @@ Locales.tr = {
     err_no_license = 'Lisansınız okunamadı.',
     err_not_found = 'Karakter bulunamadı.',
     err_not_owner = 'O karakter size ait değil.',
+    sug_logout = 'Karakterini kaydet ve karakter seçimine dön',
 }

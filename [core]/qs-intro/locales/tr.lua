@@ -12,4 +12,5 @@ Locales.tr = {
     cp_accent = 'Vurgu',
     cp_confirm = 'Onayla',
     cp_server = 'Sunucunuz',
+    sug_introreset = 'Arayüz renklerini sıfırla, böylece intro bir sonraki girişte tekrar oynar',
 }

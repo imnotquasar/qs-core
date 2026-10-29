@@ -4,9 +4,17 @@ local menuOpen = false
 local godmode = false
 local invisible = false
 local spectating = false
+local timeFreeze = nil
+
+local weatherNames = {}
+for _, w in ipairs(Config.Weathers) do weatherNames[joaat(w)] = w end
 
 local function send(action, data)
     SendNUIMessage({ action = action, data = data or {} })
+end
+
+local function currentStates()
+    return { godmode = godmode, invisible = invisible, noclip = core:IsNoclipActive(), timeFrozen = timeFreeze ~= nil }
 end
 
 local function sendTheme()
@@ -41,7 +49,7 @@ local function openMenu()
             weathers = Config.Weathers,
             groups = Config.Groups,
             vehicle = godmode,
-            states = { godmode = godmode, invisible = invisible, noclip = core:IsNoclipActive() },
+            states = currentStates(),
         })
         refreshPlayers()
     end)
@@ -54,8 +62,7 @@ local function closeMenu()
     send('close')
 end
 
-RegisterCommand('admin', openMenu, false)
-RegisterKeyMapping('admin', 'Open admin menu', 'keyboard', Config.OpenKey)
+RegisterNetEvent('qs-admin:client:open', openMenu)
 
 RegisterNUICallback('close', function(_, cb) cb('ok') closeMenu() end)
 RegisterNUICallback('refresh', function(_, cb) cb('ok') refreshPlayers() end)
@@ -184,8 +191,14 @@ RegisterNUICallback('self', function(data, cb)
     elseif w == 'spawnveh' then spawnVehicle(data.data and data.data.model)
     elseif w == 'delveh' then deleteVehicle()
     elseif w == 'cleararea' then clearArea()
+    elseif w == 'freezetime' then
+        TriggerServerEvent('qs-admin:action', 'freezetime', nil, {
+            hour = GetClockHours(),
+            minute = GetClockMinutes(),
+            weather = weatherNames[GetPrevWeatherTypeHashName()],
+        })
     end
-    send('states', { godmode = godmode, invisible = invisible, noclip = core:IsNoclipActive() })
+    send('states', currentStates())
 end)
 
 RegisterNetEvent('qs-admin:client:teleport', function(c)
@@ -247,6 +260,32 @@ RegisterNetEvent('qs-admin:client:time', function(hour, minute)
     NetworkOverrideClockTime(hour, minute or 0, 0)
 end)
 
+local function holdTimeFreeze()
+    CreateThread(function()
+        PauseClock(true)
+        while timeFreeze do
+            NetworkOverrideClockTime(timeFreeze.hour, timeFreeze.minute, 0)
+            if timeFreeze.weather then
+                SetOverrideWeather(timeFreeze.weather)
+                SetWeatherTypeNowPersist(timeFreeze.weather)
+            end
+            Wait(1000)
+        end
+        PauseClock(false)
+        ClearOverrideWeather()
+    end)
+end
+
+local function setTimeFreeze(value)
+    local wasFrozen = timeFreeze ~= nil
+    timeFreeze = value
+    if value and not wasFrozen then holdTimeFreeze() end
+    if menuOpen then send('states', currentStates()) end
+end
+
+AddStateBagChangeHandler('qsFreezeTime', 'global', function(_, _, value) setTimeFreeze(value) end)
+CreateThread(function() if GlobalState.qsFreezeTime then setTimeFreeze(GlobalState.qsFreezeTime) end end)
+
 local function stopSpectate()
     if not spectating then return end
     spectating = false
@@ -296,4 +335,9 @@ AddEventHandler('onResourceStop', function(res)
     if spectating then stopSpectate() end
     if godmode then setGodmode(false) end
     if invisible then setInvisible(false) end
+    if timeFreeze then
+        timeFreeze = nil
+        PauseClock(false)
+        ClearOverrideWeather()
+    end
 end)

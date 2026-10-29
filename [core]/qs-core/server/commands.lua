@@ -85,6 +85,10 @@ registerCommand('cash', false, function(_, _, player)
     player:emit('qs:client:notify', T('balance', player:getMoney('cash'), player:getMoney('bank')), 'primary')
 end, 'Check your balance')
 
+registerCommand('id', false, function(source)
+    if source > 0 then TriggerClientEvent('qs:client:notify', source, T('your_id', source), 'primary') end
+end, 'Show your server ID')
+
 registerCommand('givemoney', false, function(source, args, player)
     if not player then return end
     local amount = math.floor(tonumber(args[1]) or 0)
@@ -230,3 +234,7 @@ end, 'Toggle noclip (admin)')
 registerCommand('tpm', 'command.qs', function(source)
     TriggerClientEvent('qs:client:tpm', source)
 end, 'Teleport to waypoint (admin)')
+
+chatSuggestions[#chatSuggestions + 1] = { name = '/' .. (Config.ColorCommand or 'colors'), help = 'Open your interface colour picker' }
+chatSuggestions[#chatSuggestions + 1] = { name = '/setgroup', help = 'Set a player group (admin)', arguments = { { name = 'id' }, { name = 'group' } } }
+chatSuggestions[#chatSuggestions + 1] = { name = '/removegroup', help = 'Remove a player group (admin)', arguments = { { name = 'id' } } }

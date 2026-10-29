@@ -14,4 +14,7 @@ Locales.pl = {
     hotwire_ok = 'Silnik budzi się do życia',
     hotwire_fail = 'Wytrych się złamał',
     alert_carjack = 'Zgłoszono włamanie do pojazdu',
+    sug_givekeys = 'Daj kluczyki do swojego pojazdu graczowi',
+    sug_adminkeys = 'Admin: weź kluczyki do pojazdu, w którym siedzisz, lub daj je graczowi',
+    arg_id = 'id gracza',
 }

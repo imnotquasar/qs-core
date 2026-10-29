@@ -14,4 +14,7 @@ Locales.pt = {
     hotwire_ok = 'O motor ganha vida',
     hotwire_fail = 'A gazua quebrou',
     alert_carjack = 'Arrombamento de veículo relatado',
+    sug_givekeys = 'Dar as chaves do seu veículo a um jogador',
+    sug_adminkeys = 'Admin: pegar as chaves do veículo em que você está ou dar a um jogador',
+    arg_id = 'id do jogador',
 }

@@ -9,6 +9,7 @@ lua54 'yes'
 
 shared_scripts {
     'locales/*.lua',
+    'config.lua',
 }
 
 client_scripts {

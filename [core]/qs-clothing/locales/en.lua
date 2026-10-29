@@ -24,4 +24,5 @@ Locales.en = {
     cat_hat = 'Hat',
     ui_cancel = 'Cancel',
     cat_beard = 'Beard',
+    sug_clothing = 'Admin: open the full appearance editor',
 }

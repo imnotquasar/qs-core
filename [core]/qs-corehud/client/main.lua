@@ -69,11 +69,15 @@ local function show(data)
     hideCashBurst()
 end
 
+local function radarWanted()
+    return not Config.MinimapOnlyInVehicle or IsPedInAnyVehicle(PlayerPedId(), false)
+end
+
 local function normalizeMinimap()
     CreateThread(function()
         for _, delay in ipairs({ 0, 250, 1000, 3000 }) do
             Wait(delay)
-            DisplayRadar(true)
+            DisplayRadar(not shown or radarWanted())
             SetRadarBigmapEnabled(true, false)
             Wait(0)
             SetRadarBigmapEnabled(false, false)
@@ -92,7 +96,7 @@ end
 AddEventHandler('qs-corehud:display', function(state)
     if state then
         if isDeadNow() then return end
-        DisplayRadar(true)
+        DisplayRadar(radarWanted())
         local data = exports['qs-core']:GetPlayerData()
         if data and data.citizenid then show(data) end
     else
@@ -268,6 +272,18 @@ local function getFuel(veh)
     return GetVehicleFuelLevel(veh)
 end
 
+local radarOn = nil
+
+local function syncRadar()
+    if not shown then return end
+    local want = radarWanted()
+    if want == IsRadarHidden() then DisplayRadar(want) end
+    if want ~= radarOn then
+        radarOn = want
+        send('minimap', { visible = want })
+    end
+end
+
 CreateThread(function()
     local mult = Config.Vehicle.unit == 'mph' and 2.236936 or 3.6
     local inVeh = false
@@ -275,6 +291,7 @@ CreateThread(function()
     while true do
         local ped = PlayerPedId()
         local veh = GetVehiclePedIsIn(ped, false)
+        syncRadar()
 
         if veh ~= 0 and GetPedInVehicleSeat(veh, -1) == ped then
             inVeh = true

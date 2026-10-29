@@ -12,4 +12,5 @@ Locales.fr = {
     cp_accent = 'Accent',
     cp_confirm = 'Confirmer',
     cp_server = 'Votre serveur',
+    sug_introreset = 'Réinitialiser vos couleurs pour revoir la cinématique à la prochaine connexion',
 }

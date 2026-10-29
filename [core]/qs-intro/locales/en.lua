@@ -12,4 +12,5 @@ Locales.en = {
     cp_accent = 'Accent',
     cp_confirm = 'Confirm',
     cp_server = 'Your Server',
+    sug_introreset = 'Clear your interface colours so the intro plays again next time you join',
 }

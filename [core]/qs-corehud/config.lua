@@ -11,6 +11,8 @@ Config.Show = {
 -- hide vanilla map popups
 Config.HideGameText = true
 
+Config.MinimapOnlyInVehicle = true
+
 Config.Vehicle = {
     unit     = 'kmh', -- kmh / mph
     interval = 90,    -- ms while driving

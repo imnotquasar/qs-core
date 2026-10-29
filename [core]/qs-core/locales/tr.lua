@@ -43,4 +43,5 @@ Locales.tr = {
     cp_confirm = 'Onayla',
     cp_cancel = 'İptal',
     cp_server = 'Sunucunuz',
+    your_id = 'Oyuncu ID: %d',
 }

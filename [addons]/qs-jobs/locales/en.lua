@@ -8,6 +8,7 @@ Locales.en = {
     help_shift_start = 'Press ~INPUT_CONTEXT~ to start a delivery shift',
     help_shift_end   = 'Press ~INPUT_CONTEXT~ to end your shift',
     help_deliver     = 'Press ~INPUT_CONTEXT~ to deliver the package',
+    help_leave_van   = 'Get out of the van to deliver the package',
     need_job         = 'You don\'t have the right job for this',
 
     working          = 'Working...',

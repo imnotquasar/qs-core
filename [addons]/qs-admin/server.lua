@@ -1,5 +1,8 @@
 local core = exports['qs-core']
 
+local validWeather = {}
+for _, w in ipairs(Config.Weathers) do validWeather[w] = true end
+
 local function isAdmin(src)
     return src == 0 or IsPlayerAceAllowed(src, Config.Permission)
 end
@@ -28,6 +31,10 @@ local function logAction(src, action, target, extra)
             json.encode({ content = line }), { ['Content-Type'] = 'application/json' })
     end
 end
+
+RegisterCommand('admin', function(src)
+    if src > 0 then TriggerClientEvent('qs-admin:client:open', src) end
+end, true)
 
 core:RegisterCallback('qs-admin:isAllowed', function(src)
     return isAdmin(src)
@@ -117,12 +124,38 @@ RegisterNetEvent('qs-admin:action', function(action, target, data)
     elseif action == 'announce' then
         TriggerClientEvent('qs-admin:client:announce', -1, tostring(data.message or ''))
     elseif action == 'weather' then
-        TriggerClientEvent('qs-admin:client:weather', -1, tostring(data.weather or 'CLEAR'))
+        local weather = tostring(data.weather or 'CLEAR')
+        local frozen = GlobalState.qsFreezeTime
+        if frozen then
+            frozen.weather = weather
+            GlobalState.qsFreezeTime = frozen
+        end
+        TriggerClientEvent('qs-admin:client:weather', -1, weather)
     elseif action == 'time' then
-        TriggerClientEvent('qs-admin:client:time', -1, math.floor(tonumber(data.hour) or 12), math.floor(tonumber(data.minute) or 0))
+        local hour, minute = math.floor(tonumber(data.hour) or 12) % 24, math.floor(tonumber(data.minute) or 0) % 60
+        local frozen = GlobalState.qsFreezeTime
+        if frozen then
+            frozen.hour, frozen.minute = hour, minute
+            GlobalState.qsFreezeTime = frozen
+        end
+        TriggerClientEvent('qs-admin:client:time', -1, hour, minute)
+    elseif action == 'freezetime' then
+        if GlobalState.qsFreezeTime then
+            GlobalState.qsFreezeTime = nil
+            data.state = 'off'
+        else
+            local weather = data.weather
+            if not validWeather[weather] then weather = nil end
+            GlobalState.qsFreezeTime = {
+                hour = math.floor(tonumber(data.hour) or 12) % 24,
+                minute = math.floor(tonumber(data.minute) or 0) % 60,
+                weather = weather,
+            }
+            data.state = 'on'
+        end
     else
         return
     end
 
-    logAction(src, action, target, data.reason or data.job or data.group or data.item or data.weather)
+    logAction(src, action, target, data.reason or data.job or data.group or data.item or data.weather or data.state)
 end)

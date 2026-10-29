@@ -12,4 +12,5 @@ Locales.pl = {
     cp_accent = 'Akcent',
     cp_confirm = 'Potwierdź',
     cp_server = 'Twój serwer',
+    sug_introreset = 'Wyczyść kolory interfejsu, aby intro pojawiło się ponownie przy następnym wejściu',
 }

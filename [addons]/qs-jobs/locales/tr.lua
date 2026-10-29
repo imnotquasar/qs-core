@@ -8,6 +8,7 @@ Locales.tr = {
     help_shift_start = 'Teslimat vardiyasına başlamak için ~INPUT_CONTEXT~ tuşuna basın',
     help_shift_end = 'Vardiyanızı bitirmek için ~INPUT_CONTEXT~ tuşuna basın',
     help_deliver = 'Paketi teslim etmek için ~INPUT_CONTEXT~ tuşuna basın',
+    help_leave_van = 'Paketi teslim etmek için minibüsten inin',
     need_job = 'Bunun için doğru işe sahip değilsiniz',
     working = 'Çalışılıyor...',
     processing = 'İşleniyor...',

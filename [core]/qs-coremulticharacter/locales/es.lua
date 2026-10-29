@@ -36,4 +36,5 @@ Locales.es = {
     err_no_license     = 'No se pudo leer tu licencia.',
     err_not_found      = 'Personaje no encontrado.',
     err_not_owner      = 'Ese personaje no es tuyo.',
+    sug_logout = 'Guarda tu personaje y vuelve a la selección de personajes',
 }

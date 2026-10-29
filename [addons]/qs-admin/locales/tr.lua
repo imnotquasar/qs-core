@@ -72,5 +72,6 @@ Locales.tr = {
     ui_weather = 'Hava durumu',
     ui_time = 'Zaman',
     ui_settime = 'Zamanı Ayarla',
+    ui_freezetime = 'Saati ve havayı dondur',
     ui_online = 'Çevrimiçi',
 }

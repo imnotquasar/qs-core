@@ -8,6 +8,7 @@ Locales.ar = {
     help_shift_start = 'اضغط ~INPUT_CONTEXT~ لبدء وردية التوصيل',
     help_shift_end = 'اضغط ~INPUT_CONTEXT~ لإنهاء ورديتك',
     help_deliver = 'اضغط ~INPUT_CONTEXT~ لتسليم الطرد',
+    help_leave_van = 'انزل من الشاحنة لتسليم الطرد',
     need_job = 'ليس لديك الوظيفة المناسبة لهذا',
     working = 'جارٍ العمل...',
     processing = 'جارٍ المعالجة...',

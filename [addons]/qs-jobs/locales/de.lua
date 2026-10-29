@@ -8,6 +8,7 @@ Locales.de = {
     help_shift_start = 'Drücke ~INPUT_CONTEXT~ um eine Lieferschicht zu beginnen',
     help_shift_end = 'Drücke ~INPUT_CONTEXT~ um deine Schicht zu beenden',
     help_deliver = 'Drücke ~INPUT_CONTEXT~ um das Paket zu liefern',
+    help_leave_van = 'Steig aus dem Van aus, um das Paket zu liefern',
     need_job = 'Du hast nicht den richtigen Job dafür',
     working = 'Arbeite...',
     processing = 'Verarbeite...',

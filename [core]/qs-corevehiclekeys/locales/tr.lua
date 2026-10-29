@@ -14,4 +14,7 @@ Locales.tr = {
     hotwire_ok = 'Motor çalışıyor',
     hotwire_fail = 'Maymuncuk kırıldı',
     alert_carjack = 'Araç hırsızlığı bildirildi',
+    sug_givekeys = 'Aracının anahtarlarını bir oyuncuya ver',
+    sug_adminkeys = 'Admin: bindiğin aracın anahtarlarını al veya bir oyuncuya ver',
+    arg_id = 'oyuncu id',
 }

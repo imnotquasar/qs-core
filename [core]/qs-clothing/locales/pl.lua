@@ -24,4 +24,5 @@ Locales.pl = {
     cat_hat = 'Czapka',
     ui_cancel = 'Anuluj',
     cat_beard = 'Broda',
+    sug_clothing = 'Admin: otwórz pełny edytor wyglądu',
 }

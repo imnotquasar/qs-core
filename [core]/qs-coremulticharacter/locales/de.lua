@@ -35,4 +35,5 @@ Locales.de = {
     err_no_license = 'Deine Lizenz konnte nicht gelesen werden.',
     err_not_found = 'Charakter nicht gefunden.',
     err_not_owner = 'Dieser Charakter gehört dir nicht.',
+    sug_logout = 'Speichere deinen Charakter und kehre zur Charakterauswahl zurück',
 }

@@ -3,9 +3,6 @@ Config = {}
 -- ACE permission
 Config.Permission = 'command.qs'
 
--- open key
-Config.OpenKey = 'F6'
-
 -- discord webhook ('' = off)
 Config.Webhook = ''
 

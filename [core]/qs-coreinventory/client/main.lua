@@ -53,7 +53,7 @@ RegisterNetEvent('qs-inv:client:itembox', function(data)
     if data then send('itembox', data) end
 end)
 
-local function trim(s) return s and s:gsub('%s+$', '') or nil end
+local function trim(s) return s and s:match('^%s*(.-)%s*$') or nil end
 
 local function shutBootFor(sec)
     if sec and sec.kind == 'trunk' and sec.veh and DoesEntityExist(sec.veh) then

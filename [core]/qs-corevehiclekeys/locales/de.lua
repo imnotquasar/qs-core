@@ -14,4 +14,7 @@ Locales.de = {
     hotwire_ok = 'Der Motor springt an',
     hotwire_fail = 'Der Dietrich ist abgebrochen',
     alert_carjack = 'Fahrzeugeinbruch gemeldet',
+    sug_givekeys = 'Gib einem Spieler die Schlüssel deines Fahrzeugs',
+    sug_adminkeys = 'Admin: Schlüssel des Fahrzeugs nehmen, in dem du sitzt, oder einem Spieler geben',
+    arg_id = 'Spieler-ID',
 }

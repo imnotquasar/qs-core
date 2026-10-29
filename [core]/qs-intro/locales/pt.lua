@@ -12,4 +12,5 @@ Locales.pt = {
     cp_accent = 'Destaque',
     cp_confirm = 'Confirmar',
     cp_server = 'Seu servidor',
+    sug_introreset = 'Apagar suas cores da interface para a intro aparecer de novo na próxima entrada',
 }

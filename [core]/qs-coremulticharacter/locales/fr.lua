@@ -35,4 +35,5 @@ Locales.fr = {
     err_no_license = 'Impossible de lire votre licence.',
     err_not_found = 'Personnage introuvable.',
     err_not_owner = 'Ce personnage n\'est pas le vôtre.',
+    sug_logout = 'Sauvegarder votre personnage et revenir à la sélection',
 }

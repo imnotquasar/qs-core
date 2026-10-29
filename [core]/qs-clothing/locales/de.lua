@@ -24,4 +24,5 @@ Locales.de = {
     cat_hat = 'Hut',
     ui_cancel = 'Abbrechen',
     cat_beard = 'Bart',
+    sug_clothing = 'Admin: öffnet den kompletten Aussehens-Editor',
 }

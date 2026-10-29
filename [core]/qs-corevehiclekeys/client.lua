@@ -5,7 +5,7 @@ local ownsChecked = {}
 local hotwiring = false
 local mySrc = -1
 
-local function trim(s) return s and (s:gsub('%s+$', '')) or s end
+local function trim(s) return s and s:match('^%s*(.-)%s*$') or s end
 
 AddEventHandler('qs:client:onPlayerLoaded', function() mySrc = GetPlayerServerId(PlayerId()) end)
 CreateThread(function() Wait(500) mySrc = GetPlayerServerId(PlayerId()) end)
@@ -100,6 +100,12 @@ RegisterCommand('givekeys', function(_, args)
     core:Notify(T('keys_shared'), 'success')
 end, false)
 
+CreateThread(function()
+    Wait(800)
+    TriggerEvent('chat:addSuggestion', '/givekeys', T('sug_givekeys'), { { name = T('arg_id') } })
+    TriggerEvent('chat:addSuggestion', '/adminkeys', T('sug_adminkeys'), { { name = T('arg_id') } })
+end)
+
 local function ensureOwnership(plate)
     if not Config.AutoKeysForOwned or ownsChecked[plate] then return end
     ownsChecked[plate] = true
@@ -164,6 +170,12 @@ CreateThread(function()
             SetVehicleEngineOn(veh, GetIsVehicleEngineRunning(veh), true, false)
         end
         blockedVeh = keyless
-        Wait(500)
+        if keyless then
+            DisableControlAction(0, 71, true)
+            DisableControlAction(0, 72, true)
+            Wait(0)
+        else
+            Wait(500)
+        end
     end
 end)

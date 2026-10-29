@@ -117,6 +117,9 @@ option { background: #0b0f17; }
 .tog.on { border-color: var(--hud-border); background: var(--hud-primary-soft); box-shadow: 0 0 18px -6px var(--hud-glow); }
 .tog.on svg { color: var(--hud-accent); }
 .tog.on em { color: var(--ok); }
+.tog.row { flex-direction: row; gap: 10px; padding: 11px 14px; }
+.tog.row svg { font-size: 15px; }
+.tog.row em { margin-left: auto; }
 
 .server { display: flex; flex-direction: column; gap: 16px; }
 .sec { display: flex; flex-direction: column; gap: 10px; }

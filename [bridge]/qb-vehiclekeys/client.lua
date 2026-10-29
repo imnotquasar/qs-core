@@ -1,5 +1,5 @@
 local localKeys = {}
-local function trim(s) return s and (s:gsub('%s+$', '')) or s end
+local function trim(s) return s and s:match('^%s*(.-)%s*$') or s end
 local function qsk() return GetResourceState('qs-corevehiclekeys') == 'started' end
 
 local function giveKeys(plate)

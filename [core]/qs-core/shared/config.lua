@@ -78,6 +78,15 @@ Config.DisableRain = true
 Config.DisablePeds = false    -- ambient pedestrians
 Config.DisableTraffic = false -- npc / parked cars
 
+Config.DisableVehicleFires = true
+Config.DisableWeaponScroll = true
+
+Config.RemoveAnimals = {
+    'a_c_mtlion', 'a_c_mtlion_02', 'a_c_panther',
+    'a_c_boar', 'a_c_boar_02', 'a_c_coyote', 'a_c_coyote_02',
+    'a_c_sharktiger', 'a_c_sharkhammer',
+}
+
 -- '' = off
 Config.Webhooks = {
     money       = '',

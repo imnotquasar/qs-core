@@ -12,4 +12,5 @@ Locales.es = {
     cp_accent = 'Acento',
     cp_confirm = 'Confirmar',
     cp_server = 'Tu Servidor',
+    sug_introreset = 'Borra tus colores de interfaz para que la intro vuelva a salir al entrar',
 }

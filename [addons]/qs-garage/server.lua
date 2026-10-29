@@ -9,7 +9,7 @@ local function citizenOf(src)
     return player.citizenid or (player.PlayerData and player.PlayerData.citizenid)
 end
 
-local function trim(s) return s and (s:gsub('%s+$', '')) or s end
+local function trim(s) return s and s:match('^%s*(.-)%s*$') or s end
 
 local function plateInWorld(plate)
     for _, v in ipairs(GetAllVehicles()) do
@@ -34,8 +34,8 @@ core:RegisterCallback('qs-garage:list', function(src, garage)
             model = r.model,
             state = r.state,
             fuel = r.fuel,
-            engine = r.engine,
-            body = r.body,
+            engine = 1000.0,
+            body = 1000.0,
             props = r.props,
         }
     end
@@ -60,13 +60,11 @@ core:RegisterCallback('qs-garage:takeout', function(src, garage, plate)
         model = veh.model,
         plate = veh.plate,
         fuel = veh.fuel,
-        engine = veh.engine,
-        body = veh.body,
         props = veh.props,
     }
 end)
 
-core:RegisterCallback('qs-garage:store', function(src, garage, plate, fuel, engine, body, props)
+core:RegisterCallback('qs-garage:store', function(src, garage, plate, fuel, props)
     if not garageIds[garage] then return { ok = false } end
     if not core:RateLimit(('garage-in:%d'):format(src), 1, 1200) then return { ok = false } end
     plate = trim(tostring(plate or ''))
@@ -80,8 +78,8 @@ core:RegisterCallback('qs-garage:store', function(src, garage, plate, fuel, engi
         garage = garage,
         state = 1,
         fuel = math.max(0, math.min(100, math.floor(tonumber(fuel) or 100))),
-        engine = tonumber(engine) or 1000.0,
-        body = tonumber(body) or 1000.0,
+        engine = 1000.0,
+        body = 1000.0,
         props = type(props) == 'table' and props or {},
     })
     return { ok = true }

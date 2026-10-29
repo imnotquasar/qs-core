@@ -8,6 +8,7 @@ Locales.pl = {
     help_shift_start = 'Naciśnij ~INPUT_CONTEXT~ aby rozpocząć zmianę dostaw',
     help_shift_end = 'Naciśnij ~INPUT_CONTEXT~ aby zakończyć zmianę',
     help_deliver = 'Naciśnij ~INPUT_CONTEXT~ aby dostarczyć paczkę',
+    help_leave_van = 'Wysiądź z furgonetki, aby dostarczyć paczkę',
     need_job = 'Nie masz odpowiedniej pracy do tego',
     working = 'Praca...',
     processing = 'Przetwarzanie...',

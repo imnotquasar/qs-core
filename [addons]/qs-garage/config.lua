@@ -3,6 +3,7 @@ Config = {}
 -- E key + reach
 Config.OpenKey = 38
 Config.InteractDistance = 3.0
+Config.MarkerDistance = 30.0
 
 -- preview camera
 Config.Camera = {

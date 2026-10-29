@@ -89,17 +89,34 @@ local function spawnPed(model, loc, scenario)
     return ped
 end
 
+local unplacedProps = {}
+
 local function spawnProp(model, x, y, z, heading)
     local hash = loadModel(model)
     if not hash then return nil end
     local obj = CreateObject(hash, x, y, z, false, false, false)
     SetEntityHeading(obj, heading or (math.random(0, 359) + 0.0))
     PlaceObjectOnGroundProperly(obj)
+    unplacedProps[#unplacedProps + 1] = obj
     FreezeEntityPosition(obj, true)
     SetEntityInvincible(obj, true)
     SetModelAsNoLongerNeeded(hash)
     spawnedProps[#spawnedProps + 1] = obj
     return obj
+end
+
+local function placePendingProps(coords)
+    for i = #unplacedProps, 1, -1 do
+        local obj = unplacedProps[i]
+        if not DoesEntityExist(obj) then
+            table.remove(unplacedProps, i)
+        elseif #(coords - GetEntityCoords(obj)) < 150.0 and HasCollisionLoadedAroundEntity(obj) then
+            FreezeEntityPosition(obj, false)
+            PlaceObjectOnGroundProperly(obj)
+            FreezeEntityPosition(obj, true)
+            table.remove(unplacedProps, i)
+        end
+    end
 end
 
 CreateThread(function()
@@ -210,8 +227,8 @@ local function runTask(cfg, label, opts)
                 Wait(50)
             end
         end)
-    else
-        ClearPedTasks(ped)
+    elseif cfg.anim and cfg.anim.dict then
+        StopAnimTask(ped, cfg.anim.dict, cfg.anim.clip, 1.0)
     end
     if cfg.anim and cfg.anim.dict then RemoveAnimDict(cfg.anim.dict) end
     return ok
@@ -362,6 +379,7 @@ CreateThread(function()
         local sleep = 500
         local coords = GetEntityCoords(PlayerPedId())
         local target = nil
+        if #unplacedProps > 0 then placePendingProps(coords) end
         local best = Config.InteractDistance
 
         for i, z in ipairs(interactables) do
@@ -401,6 +419,8 @@ CreateThread(function()
                         TriggerServerEvent('qs-jobs:server:startShift')
                     end
                 end
+            elseif kind == 'stop' and IsPedInAnyVehicle(PlayerPedId(), false) then
+                helpText(T('help_leave_van'))
             elseif kind == 'stop' then
                 helpText(T('help_deliver'))
                 if IsControlJustPressed(0, Config.Control) and not exports['qs-core']:IsBusy() then

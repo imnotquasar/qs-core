@@ -8,6 +8,7 @@ Locales.pt = {
     help_shift_start = 'Pressione ~INPUT_CONTEXT~ para iniciar um turno de entregas',
     help_shift_end = 'Pressione ~INPUT_CONTEXT~ para terminar seu turno',
     help_deliver = 'Pressione ~INPUT_CONTEXT~ para entregar o pacote',
+    help_leave_van = 'Saia da van para entregar o pacote',
     need_job = 'Você não tem o emprego certo para isso',
     working = 'Trabalhando...',
     processing = 'Processando...',

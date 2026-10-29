@@ -122,6 +122,10 @@ body,
 }
 .hrow.top {
   bottom: 19.5vh;
+  transition: bottom 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hrow.top.nomap {
+  bottom: calc(1.1vh + 32px);
 }
 .hrow.bot {
   bottom: 1.1vh;

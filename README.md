@@ -139,7 +139,9 @@ See [`qs-recipes/README.md`](qs-recipes/README.md#manual-install).
 | `G` | Hotwire |
 | `B` | Seatbelt |
 | `T` | Chat |
-| `F6` | Admin menu (admins only) |
+| `F6` | Job menu (police and EMS) |
+
+Admins open the admin menu with `/admin`.
 
 Players can rebind them in **Settings → Key Bindings → FiveM**.
 

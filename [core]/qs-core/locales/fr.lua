@@ -43,4 +43,5 @@ Locales.fr = {
     cp_confirm = 'Confirmer',
     cp_cancel = 'Annuler',
     cp_server = 'Votre serveur',
+    your_id = 'Votre ID : %d',
 }

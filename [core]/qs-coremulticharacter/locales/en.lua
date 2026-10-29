@@ -36,4 +36,5 @@ Locales.en = {
     err_no_license     = 'Could not read your license.',
     err_not_found      = 'Character not found.',
     err_not_owner      = 'That character is not yours.',
+    sug_logout = 'Save your character and return to character selection',
 }

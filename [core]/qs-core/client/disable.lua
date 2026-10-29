@@ -32,11 +32,55 @@ CreateThread(function()
 end)
 
 CreateThread(function()
+    if not Config.DisableVehicleFires then return end
+    while true do
+        for _, veh in ipairs(GetGamePool('CVehicle')) do
+            SetDisableVehicleEngineFires(veh, true)
+            SetDisableVehiclePetrolTankFires(veh, true)
+            SetDisableVehiclePetrolTankDamage(veh, true)
+            if NetworkHasControlOfEntity(veh) then
+                if IsEntityOnFire(veh) then StopEntityFire(veh) end
+                if GetVehicleEngineHealth(veh) < 0.0 then SetVehicleEngineHealth(veh, 0.0) end
+            end
+        end
+        Wait(1000)
+    end
+end)
+
+CreateThread(function()
+    if not Config.RemoveAnimals or #Config.RemoveAnimals == 0 then return end
+    local blocked = {}
+    for _, model in ipairs(Config.RemoveAnimals) do
+        local hash = joaat(model)
+        blocked[hash] = true
+        SetPedModelIsSuppressed(hash, true)
+    end
+    while true do
+        for _, ped in ipairs(GetGamePool('CPed')) do
+            if blocked[GetEntityModel(ped)] and not IsPedAPlayer(ped) and NetworkHasControlOfEntity(ped) then
+                SetEntityAsMissionEntity(ped, true, true)
+                DeletePed(ped)
+            end
+        end
+        Wait(2000)
+    end
+end)
+
+CreateThread(function()
+    if not Config.DisableWeaponScroll then return end
+    local scroll = { 14, 15, 16, 17, 99, 100, 115, 116, 261, 262 }
+    while true do
+        for i = 1, #scroll do DisableControlAction(0, scroll[i], true) end
+        Wait(0)
+    end
+end)
+
+CreateThread(function()
     if not Config.DisableRain then return end
     local rainy = { [`RAIN`] = true, [`THUNDER`] = true, [`CLEARING`] = true }
     while true do
         Wait(1500)
-        if rainy[GetNextWeatherTypeHashName()] then
+        if rainy[GetNextWeatherTypeHashName()] and not GlobalState.qsFreezeTime then
             SetWeatherTypeOvertimePersist('CLOUDS', 8.0)
         end
     end

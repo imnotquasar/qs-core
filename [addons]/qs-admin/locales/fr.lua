@@ -72,5 +72,6 @@ Locales.fr = {
     ui_weather = 'Météo',
     ui_time = 'Heure',
     ui_settime = 'Définir l\'heure',
+    ui_freezetime = 'Figer l\'heure et la météo',
     ui_online = 'En ligne',
 }

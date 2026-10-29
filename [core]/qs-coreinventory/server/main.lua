@@ -609,7 +609,7 @@ RegisterNetEvent('qs-inv:server:give', function(target, slot, count)
 end)
 
 local function openSecondary(src, kind, id, slots, columns, maxWeight, label)
-    id = tostring(id or ''):gsub('%s+$', '')
+    id = tostring(id or ''):match('^%s*(.-)%s*$')
     if id == '' then return end
     open[src] = { kind = kind, id = id, slots = slots, columns = columns, maxWeight = maxWeight, label = label }
     ensureSecondary(kind, id, slots)

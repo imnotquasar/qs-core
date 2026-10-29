@@ -7,12 +7,47 @@ local function send(action, data)
 end
 
 local suggestions = {}
+local serverCommands = {}
+local clientCommands = {}
+
+local hidden = {}
+for _, name in ipairs(Config.HiddenCommands or {}) do hidden[name] = true end
 
 local function suggestionList()
     local out = {}
     for _, s in pairs(suggestions) do out[#out + 1] = s end
+    for _, auto in ipairs({ serverCommands, clientCommands }) do
+        for name, s in pairs(auto) do
+            if not suggestions[name] then out[#out + 1] = s end
+        end
+    end
     return out
 end
+
+local function toSuggestions(list)
+    local out = {}
+    for _, s in ipairs(list or {}) do
+        if s.name then out[s.name] = { name = s.name, help = '', params = {} } end
+    end
+    return out
+end
+
+local function readClientCommands()
+    local list = {}
+    for _, c in ipairs(GetRegisteredCommands()) do
+        local name = c.name
+        if c.resource and c.resource ~= '' and c.resource ~= 'internal' and not hidden[name]
+            and not name:find('^[%+%-]') and IsAceAllowed(('command.%s'):format(name)) then
+            list[#list + 1] = { name = '/' .. name }
+        end
+    end
+    return toSuggestions(list)
+end
+
+RegisterNetEvent('qs-corechat:client:commands', function(list)
+    serverCommands = toSuggestions(list)
+    if chatOpen then send('suggestions', suggestionList()) end
+end)
 
 RegisterNetEvent('chat:addSuggestion', function(name, help, params)
     if not name then return end
@@ -36,6 +71,8 @@ RegisterCommand('chatopen', function()
     if chatOpen or hiddenByPause or not chatVisible or IsPauseMenuActive() then return end
     chatOpen = true
     SetNuiFocus(true, true)
+    clientCommands = readClientCommands()
+    TriggerServerEvent('qs-corechat:server:commands')
     send('suggestions', suggestionList())
     send('open')
 end, false)

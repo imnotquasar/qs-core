@@ -43,4 +43,5 @@ Locales.ru = {
     cp_confirm = 'Подтвердить',
     cp_cancel = 'Отмена',
     cp_server = 'Ваш сервер',
+    your_id = 'Ваш ID: %d',
 }

@@ -44,6 +44,11 @@ RegisterCommand('introreset', function()
     exports['qs-core']:Notify(T('colours_cleared'), 'success', 5000)
 end, false)
 
+CreateThread(function()
+    Wait(800)
+    TriggerEvent('chat:addSuggestion', '/introreset', T('sug_introreset'))
+end)
+
 if not Config.Enabled then
     AddEventHandler('playerSpawned', function()
         if not decided then decided = true; finished() end

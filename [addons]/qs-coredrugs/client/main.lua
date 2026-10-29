@@ -40,6 +40,8 @@ local function loadModel(model)
     return HasModelLoaded(hash) and hash or nil
 end
 
+local unplacedProps = {}
+
 local function spawnProp(model, x, y, z, heading, snap)
     local hash = loadModel(model)
     if not hash then return nil end
@@ -49,11 +51,26 @@ local function spawnProp(model, x, y, z, heading, snap)
         SetEntityCoordsNoOffset(obj, x, y, z, false, false, false)
     else
         PlaceObjectOnGroundProperly(obj)
+        unplacedProps[#unplacedProps + 1] = obj
     end
     FreezeEntityPosition(obj, true)
     SetEntityInvincible(obj, true)
     SetModelAsNoLongerNeeded(hash)
     return obj
+end
+
+local function placePendingProps(coords)
+    for i = #unplacedProps, 1, -1 do
+        local obj = unplacedProps[i]
+        if not DoesEntityExist(obj) then
+            table.remove(unplacedProps, i)
+        elseif #(coords - GetEntityCoords(obj)) < 150.0 and HasCollisionLoadedAroundEntity(obj) then
+            FreezeEntityPosition(obj, false)
+            PlaceObjectOnGroundProperly(obj)
+            FreezeEntityPosition(obj, true)
+            table.remove(unplacedProps, i)
+        end
+    end
 end
 
 CreateThread(function()
@@ -120,6 +137,7 @@ local function runTask(cfg, label, face, flag)
         loadDict(cfg.anim.dict)
         TaskPlayAnim(ped, cfg.anim.dict, cfg.anim.clip, 4.0, -4.0, cfg.time or 5000, flag or 49, 0.0, false, false, false)
     end
+    FreezeEntityPosition(ped, true)
 
     local ok = exports['qs-core']:Progress({
         duration = cfg.time or 5000,
@@ -128,6 +146,7 @@ local function runTask(cfg, label, face, flag)
         disableMovement = true,
     })
 
+    FreezeEntityPosition(ped, false)
     ClearPedTasks(ped)
     if cfg.anim and cfg.anim.dict then RemoveAnimDict(cfg.anim.dict) end
     return ok
@@ -135,8 +154,8 @@ end
 
 local function attachProp(ped, p)
     if not p or not p.model then return nil end
-    local hash = loadModel(p.model)
-    if not hash then return nil end
+    local hash = joaat(p.model)
+    if not HasModelLoaded(hash) then return nil end
     local c = GetEntityCoords(ped)
     local obj = CreateObject(hash, c.x, c.y, c.z + 0.2, false, false, false)
     local pos = p.pos or vector3(0.0, 0.0, 0.0)
@@ -149,9 +168,6 @@ end
 
 local function startPtfx(ped, f)
     if not f or not f.asset or not f.name then return nil end
-    RequestNamedPtfxAsset(f.asset)
-    local dl = GetGameTimer() + 1500
-    while not HasNamedPtfxAssetLoaded(f.asset) and GetGameTimer() < dl do Wait(0) end
     if not HasNamedPtfxAssetLoaded(f.asset) then return nil end
     UseParticleFxAssetNextCall(f.asset)
     local o = f.offset or vector3(0.0, 0.0, 0.0)
@@ -159,35 +175,87 @@ local function startPtfx(ped, f)
         GetPedBoneIndex(ped, f.bone or 57005), f.scale or 1.0, false, false, false)
 end
 
-local function runProcessStages(cfg, face)
+local function preloadStages(stages)
+    local dicts, models, assets = {}, {}, {}
+    for _, st in ipairs(stages) do
+        if st.anim and st.anim.dict then
+            dicts[st.anim.dict] = true
+            RequestAnimDict(st.anim.dict)
+        end
+        if st.prop and st.prop.model then
+            local hash = joaat(st.prop.model)
+            if IsModelInCdimage(hash) then
+                models[hash] = true
+                RequestModel(hash)
+            end
+        end
+        if st.ptfx and st.ptfx.asset then
+            assets[st.ptfx.asset] = true
+            RequestNamedPtfxAsset(st.ptfx.asset)
+        end
+    end
+    local deadline = GetGameTimer() + 3000
+    while GetGameTimer() < deadline do
+        local ready = true
+        for d in pairs(dicts) do if not HasAnimDictLoaded(d) then ready = false end end
+        for m in pairs(models) do if not HasModelLoaded(m) then ready = false end end
+        for a in pairs(assets) do if not HasNamedPtfxAssetLoaded(a) then ready = false end end
+        if ready then break end
+        Wait(0)
+    end
+    return dicts, models
+end
+
+local function runProcessStages(cfg, label, face)
     local ped = PlayerPedId()
+    local dicts, models = preloadStages(cfg.stages)
     if face then
         TaskTurnPedToFaceCoord(ped, face.x, face.y, face.z, 800)
         Wait(500)
     end
+    FreezeEntityPosition(ped, true)
 
-    for _, st in ipairs(cfg.stages) do
-        local prop = attachProp(ped, st.prop)
-        if st.anim and st.anim.dict then
-            loadDict(st.anim.dict)
-            TaskPlayAnim(ped, st.anim.dict, st.anim.clip, 4.0, -4.0, st.time or 4000, st.flag or 49, 0.0, false, false, false)
-        end
-        local fx = startPtfx(ped, st.ptfx)
+    local total = 0
+    for _, st in ipairs(cfg.stages) do total = total + (st.time or 4000) end
 
-        local ok = exports['qs-core']:Progress({
-            duration = st.time or 4000,
-            label = st.label and T(st.label) or '',
-            canCancel = true,
-            disableMovement = true,
-        })
-
-        if fx then StopParticleFxLooped(fx, false) end
-        if prop and DoesEntityExist(prop) then DeleteEntity(prop) end
-        ClearPedTasks(ped)
-        if st.anim and st.anim.dict then RemoveAnimDict(st.anim.dict) end
-        if not ok then return false end
+    local running = true
+    local current = {}
+    local function clearStage()
+        if current.fx then StopParticleFxLooped(current.fx, false) end
+        if current.prop and DoesEntityExist(current.prop) then DeleteEntity(current.prop) end
+        if current.anim then StopAnimTask(ped, current.anim.dict, current.anim.clip, 1.0) end
+        current = {}
     end
-    return true
+
+    CreateThread(function()
+        for _, st in ipairs(cfg.stages) do
+            if not running then break end
+            clearStage()
+            current.prop = attachProp(ped, st.prop)
+            if st.anim and st.anim.dict and HasAnimDictLoaded(st.anim.dict) then
+                TaskPlayAnim(ped, st.anim.dict, st.anim.clip, 4.0, -4.0, -1, st.flag or 49, 0.0, false, false, false)
+                current.anim = st.anim
+            end
+            current.fx = startPtfx(ped, st.ptfx)
+            local stageEnd = GetGameTimer() + (st.time or 4000)
+            while running and GetGameTimer() < stageEnd do Wait(50) end
+        end
+    end)
+
+    local ok = exports['qs-core']:Progress({
+        duration = total,
+        label = label,
+        canCancel = true,
+        disableMovement = true,
+    })
+
+    running = false
+    clearStage()
+    ClearPedTasks(ped)
+    FreezeEntityPosition(ped, false)
+    for d in pairs(dicts) do RemoveAnimDict(d) end
+    for m in pairs(models) do SetModelAsNoLongerNeeded(m) end
+    return ok
 end
 
 CreateThread(function()
@@ -196,6 +264,7 @@ CreateThread(function()
         local coords = GetEntityCoords(PlayerPedId())
         local target = nil
         local best = Config.InteractDistance
+        if #unplacedProps > 0 then placePendingProps(coords) end
 
         for _, z in ipairs(interactables) do
             local dist = #(coords - z.coords)
@@ -236,7 +305,7 @@ CreateThread(function()
                     else
                         local ok
                         if p.stages then
-                            ok = runProcessStages(p, target.coords)
+                            ok = runProcessStages(p, T('processing', target.label), target.coords)
                         else
                             ok = runTask(p, T('processing', target.label), target.coords)
                         end

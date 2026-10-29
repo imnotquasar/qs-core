@@ -72,5 +72,6 @@ Locales.de = {
     ui_weather = 'Wetter',
     ui_time = 'Zeit',
     ui_settime = 'Zeit setzen',
+    ui_freezetime = 'Zeit & Wetter einfrieren',
     ui_online = 'Online',
 }

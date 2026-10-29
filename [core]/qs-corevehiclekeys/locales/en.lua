@@ -14,4 +14,7 @@ Locales.en = {
     hotwire_ok    = 'The engine roars to life',
     hotwire_fail  = 'The lockpick snapped',
     alert_carjack = 'Vehicle break-in reported',
+    sug_givekeys = 'Give the keys of your vehicle to a player',
+    sug_adminkeys = 'Admin: get the keys of the vehicle you are in, or give them to a player',
+    arg_id = 'player id',
 }

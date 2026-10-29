@@ -265,6 +265,9 @@ export default function App() {
                 <input className="sm" type="number" min={0} max={59} placeholder="MM" value={f.minute || ''} onChange={(e) => setField('minute', e.target.value)} />
                 <button onClick={() => act('time', { hour: f.hour || '12', minute: f.minute || '0' })}>{L('ui_settime', 'Set Time')}</button>
               </div>
+              <button className={`tog row ${states.timeFrozen ? 'on' : ''}`} onClick={() => selfAct('freezetime')}>
+                <FaSnowflake /><span>{L('ui_freezetime', 'Freeze time & weather')}</span><em>{states.timeFrozen ? L('ui_on', 'ON') : L('ui_off', 'OFF')}</em>
+              </button>
             </div>
             <div className="sec online"><FaUserShield /> {L('ui_online', 'Online')}: <b>{players.length}</b></div>
           </div>

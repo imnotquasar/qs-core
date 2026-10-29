@@ -398,3 +398,8 @@ CreateThread(function()
         Wait(sleep)
     end
 end)
+
+CreateThread(function()
+    Wait(800)
+    TriggerEvent('chat:addSuggestion', '/clothing', T('sug_clothing'))
+end)

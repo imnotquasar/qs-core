@@ -12,4 +12,5 @@ Locales.de = {
     cp_accent = 'Akzent',
     cp_confirm = 'Bestätigen',
     cp_server = 'Dein Server',
+    sug_introreset = 'Setzt deine Oberflächenfarben zurück, damit das Intro beim nächsten Beitritt erneut läuft',
 }
