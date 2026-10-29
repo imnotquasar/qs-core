@@ -241,6 +241,7 @@ end)
 
 CreateThread(function()
     Wait(2000)
+    if introPending and LocalPlayer.state.qsIntroDone then introPending = false end
     if not isSelecting and not hasLoaded and not introPending then enterSelection() end
 end)
 

@@ -47,7 +47,7 @@ single shared UI theme, all ready to deploy from txAdmin in one click.
 - **Vehicles** – ownership and keys, lock/unlock, hotwiring, garages with a 3D preview.
 - **Jobs** – job center, gather / process / sell activities, police (cuffs, fines, evidence, armory), EMS (injuries, treatment, stretcher) and a drug economy.
 - **Survival** – hunger and thirst, downed state and revive.
-- **Roleplay** – custom chat with `/me`, `/do`, `/ooc` and more, HUD with speedometer and voice indicator.
+- **Roleplay** – custom chat with `/me`, `/do`, `/ooc` and more, HUD with health, armour, hunger, thirst, money, job and a speedometer.
 - **Administration** – ACE based admin menu, integrated with the txAdmin menu (Heal also revives).
 - **One theme** – every interface reads the same palette, so a single change reskins the whole server.
 - **Localized** – English, Spanish, French, German, Italian, Portuguese, Polish, Russian, Turkish and Arabic.

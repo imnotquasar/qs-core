@@ -779,6 +779,7 @@ end)
 
 AddEventHandler('qs:server:playerUnloaded', function(src)
     if xPlayers[src] then
+        TriggerEvent('esx:playerLogout', src)
         xPlayers[src] = nil
         lastJobs[src] = nil
     end

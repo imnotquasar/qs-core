@@ -18,12 +18,11 @@ function Bans.IsBanned(licenseOrSource)
     if not license then return false end
 
     local row = MySQL.single.await(
-        'SELECT reason, UNIX_TIMESTAMP(expires) AS exp FROM `bans` WHERE license = ? ORDER BY id DESC LIMIT 1',
+        'SELECT reason, UNIX_TIMESTAMP(expires) AS exp FROM `bans` WHERE license = ? AND (expires IS NULL OR expires > NOW()) ORDER BY expires IS NULL DESC, expires DESC LIMIT 1',
         { license }
     )
     if not row then return false end
-    if row.exp and row.exp <= os.time() then return false end
-    return true, row.reason or 'Banned'
+    return true, row.reason or 'Banned', row.exp
 end
 
 function Bans.Add(targetSrc, minutes, reason, adminName)
@@ -64,9 +63,9 @@ AddEventHandler('playerConnecting', function(_, _, deferrals)
     local license = licenseOf(src)
     if not license then deferrals.done() return end
 
-    local banned, reason = Bans.IsBanned(license)
+    local banned, reason, expires = Bans.IsBanned(license)
     if banned then
-        deferrals.done(T('banned', reason or '-', T('ban_permanent')))
+        deferrals.done(T('banned', reason or '-', expires and os.date('%Y-%m-%d %H:%M', expires) or T('ban_permanent')))
         return
     end
 

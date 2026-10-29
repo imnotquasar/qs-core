@@ -397,24 +397,17 @@ ESX.UI.HUD = {
     UpdateElement = function() end,
 }
 
-CreateThread(function()
-    local wasDead = false
-    while true do
-        Wait(1000)
-        if ESX.PlayerLoaded then
-            local ped = PlayerPedId()
-            local dead = IsEntityDead(ped)
-            if dead and not wasDead then
-                local killer = GetPedSourceOfDeath(ped)
-                TriggerEvent('esx:onPlayerDeath', {
-                    victimCoords = GetEntityCoords(ped),
-                    killedByPlayer = killer ~= ped and IsPedAPlayer(killer),
-                    deathCause = GetPedCauseOfDeath(ped),
-                })
-            elseif not dead and wasDead then
-                TriggerEvent('esx:onPlayerSpawn')
-            end
-            wasDead = dead
-        end
-    end
+AddEventHandler('qs:client:onDeath', function()
+    if not ESX.PlayerLoaded then return end
+    local ped = PlayerPedId()
+    local killer = GetPedSourceOfDeath(ped)
+    TriggerEvent('esx:onPlayerDeath', {
+        victimCoords = GetEntityCoords(ped),
+        killedByPlayer = killer ~= ped and IsPedAPlayer(killer),
+        deathCause = GetPedCauseOfDeath(ped),
+    })
+end)
+
+AddEventHandler('qs:client:onRevive', function()
+    if ESX.PlayerLoaded then TriggerEvent('esx:onPlayerSpawn') end
 end)

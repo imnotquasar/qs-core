@@ -1,4 +1,9 @@
 local decided = false
+
+local function finished()
+    LocalPlayer.state:set('qsIntroDone', true, false)
+    TriggerEvent('qs-intro:finished')
+end
 local active = false
 local introPed = nil
 local cam = nil
@@ -41,7 +46,11 @@ end, false)
 
 if not Config.Enabled then
     AddEventHandler('playerSpawned', function()
-        if not decided then decided = true; TriggerEvent('qs-intro:finished') end
+        if not decided then decided = true; finished() end
+    end)
+    CreateThread(function()
+        Wait(1500)
+        if not decided then decided = true; finished() end
     end)
     return
 end
@@ -133,7 +142,7 @@ local function finish()
     DoScreenFadeOut(500)
     Wait(550)
     cleanup()
-    TriggerEvent('qs-intro:finished')
+    finished()
 end
 
 local function dismissLoadingScreen()
@@ -184,7 +193,7 @@ local function decide(palette)
     if type(palette) == 'table' then
 
         exports['qs-core']:SetClientColors(palette)
-        TriggerEvent('qs-intro:finished')
+        finished()
     else
         begin()
     end

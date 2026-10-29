@@ -669,6 +669,17 @@ AddEventHandler('playerDropped', function()
     QBCore.Players[src] = nil
 end)
 
+AddEventHandler('qs:server:playerUnloaded', function(src)
+    local player = QBCore.Players[src]
+    if not player then return end
+    if player.PlayerData.citizenid then
+        QBCore.PlayersByCitizenId[player.PlayerData.citizenid] = nil
+    end
+    TriggerEvent('QBCore:Server:OnPlayerUnload', src)
+    TriggerClientEvent('QBCore:Client:OnPlayerUnload', src)
+    QBCore.Players[src] = nil
+end)
+
 AddEventHandler('qs:server:jobChange', function(src, job)
     local qb = qbJob(job, core:GetMetadata(src))
     if QBCore.Players[src] then QBCore.Players[src].PlayerData.job = qb end

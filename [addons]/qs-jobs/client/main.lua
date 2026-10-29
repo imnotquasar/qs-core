@@ -254,6 +254,9 @@ local function spawnVan()
     SetVehicleNumberPlateText(veh, ('QS%05d'):format(math.random(99999)))
     SetVehicleOnGroundProperly(veh)
     SetVehicleFuelLevel(veh, 100.0)
+    if GetResourceState('qs-corevehiclekeys') == 'started' then
+        exports['qs-corevehiclekeys']:GiveKeys(GetVehicleNumberPlateText(veh))
+    end
     SetModelAsNoLongerNeeded(hash)
 
     if vanBlip and DoesBlipExist(vanBlip) then RemoveBlip(vanBlip) end

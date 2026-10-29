@@ -29,6 +29,11 @@ client_scripts {
     'client/game.lua',
 }
 
+files {
+    'imports.lua',
+    'locale.lua',
+}
+
 dependencies {
     'qs-core',
     -- Install one inventory resource and set Config.CustomInventory accordingly:

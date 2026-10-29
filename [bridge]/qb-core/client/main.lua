@@ -71,6 +71,12 @@ AddEventHandler('qs:client:onPlayerLoaded', function(d)
     syncOut()
 end)
 
+RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+    QBCore.IsLoggedIn = false
+    LocalPlayer.state:set('isLoggedIn', false, false)
+    QBCore.PlayerData = {}
+end)
+
 RegisterNetEvent('qs:gang:set', function(gang)
     if not QBCore.PlayerData.citizenid then return end
     QBCore.PlayerData.gang = gang or DEFAULT_GANG
