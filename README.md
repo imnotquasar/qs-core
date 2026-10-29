@@ -8,7 +8,14 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
   <img src="https://img.shields.io/badge/FiveM-OneSync-orange" alt="FiveM OneSync">
   <img src="https://img.shields.io/badge/txAdmin-recipe-green" alt="txAdmin recipe">
-  <a href="https://www.quasar-store.com/docs/quasar-framework"><img src="https://img.shields.io/badge/docs-quasar--store.com-purple" alt="Documentation"></a>
+  <a href="https://framework.quasar-store.com/docs"><img src="https://img.shields.io/badge/docs-framework.quasar--store.com-purple" alt="Documentation"></a>
+  <a href="https://framework.quasar-store.com"><img src="https://img.shields.io/badge/showcase-framework.quasar--store.com-17c0e4" alt="Showcase"></a>
+</p>
+
+<p align="center">
+  <a href="https://framework.quasar-store.com"><b>Showcase</b></a> ·
+  <a href="https://framework.quasar-store.com/docs"><b>Documentation</b></a> ·
+  <a href="https://www.quasar-store.com"><b>Quasar Store</b></a>
 </p>
 
 ---
@@ -103,10 +110,14 @@ See [`qs-recipes/README.md`](qs-recipes/README.md#manual-install).
 
 ## Documentation
 
-The full documentation is at
-**[quasar-store.com/docs/quasar-framework](https://www.quasar-store.com/docs/quasar-framework)**:
-step-by-step installation, every resource and how to use it, all commands, exports
-and events, configuration, ESX / QBCore compatibility and common errors.
+- **[framework.quasar-store.com/docs](https://framework.quasar-store.com/docs)**:
+  installation guide (txAdmin and manual), first join, controls, commands,
+  configuration, updating and troubleshooting, in 13 languages.
+- **[framework.quasar-store.com](https://framework.quasar-store.com)**: showcase of
+  everything qs-core includes, with in-game screenshots of every interface.
+- **[quasar-store.com/docs/quasar-framework](https://www.quasar-store.com/docs/quasar-framework)**:
+  full reference, every resource and how to use it, all exports and events and
+  ESX / QBCore compatibility.
 
 ## Requirements
 
