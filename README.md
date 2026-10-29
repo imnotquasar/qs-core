@@ -8,6 +8,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
   <img src="https://img.shields.io/badge/FiveM-OneSync-orange" alt="FiveM OneSync">
   <img src="https://img.shields.io/badge/txAdmin-recipe-green" alt="txAdmin recipe">
+  <a href="https://www.quasar-store.com/docs/quasar-framework"><img src="https://img.shields.io/badge/docs-quasar--store.com-purple" alt="Documentation"></a>
 </p>
 
 ---
@@ -99,6 +100,13 @@ SQL on the `users` table (qs-core keeps that table in sync in one direction only
 ### Manual
 
 See [`qs-recipes/README.md`](qs-recipes/README.md#manual-install).
+
+## Documentation
+
+The full documentation is at
+**[quasar-store.com/docs/quasar-framework](https://www.quasar-store.com/docs/quasar-framework)**:
+step-by-step installation, every resource and how to use it, all commands, exports
+and events, configuration, ESX / QBCore compatibility and common errors.
 
 ## Requirements
 
