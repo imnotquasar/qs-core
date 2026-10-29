@@ -16,7 +16,7 @@ Config.Cam = {
 Config.Ped = {
     model  = 'mp_m_freemode_01',
     start  = vec4(997.92, -3112.22, -39.00, 7.86), -- x,y,z,heading
-    finish = vec3(997.76, -3107.40, -39.00),
+    finish = vec3(997.76, -3107.55, -39.00),
     speed  = 1.0, -- 1 walk, 2 run
     pose   = { dict = 'anim@heists@heist_corona@single_team', anim = 'single_team_loop_boss' },
 
