@@ -18,6 +18,7 @@ MySQL.ready(function()
             `sex`          VARCHAR(10)  DEFAULT NULL,
             `skin`         LONGTEXT     DEFAULT NULL,
             `metadata`     LONGTEXT     DEFAULT NULL,
+            `phone_number` VARCHAR(20)  DEFAULT NULL,
             `updated_at`   DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
             `qs_synced_at` DATETIME(3)  NULL DEFAULT NULL,
             PRIMARY KEY (`identifier`)
@@ -28,9 +29,13 @@ MySQL.ready(function()
     local rows = MySQL.query.await([[
         SELECT COLUMN_NAME AS name FROM information_schema.COLUMNS
         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users'
-          AND COLUMN_NAME IN ('updated_at', 'qs_synced_at')
+          AND COLUMN_NAME IN ('phone_number', 'updated_at', 'qs_synced_at')
     ]])
     for _, row in ipairs(rows or {}) do have[row.name] = true end
+
+    if not have.phone_number then
+        MySQL.query.await('ALTER TABLE `users` ADD COLUMN `phone_number` VARCHAR(20) DEFAULT NULL')
+    end
 
     if not have.updated_at then
         MySQL.query.await('ALTER TABLE `users` ADD COLUMN `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)')
