@@ -211,6 +211,71 @@ function Inventory.RegisterStash(id, label, slots, maxWeight, columns)
     return applyStash(id, label, slots, maxWeight, columns)
 end
 
+local inventoryItems = {}
+
+function Inventory.SyncCatalog()
+    local _, exp = Inventory.GetBackend()
+    if not exp or not backendCache or backendCache.name ~= 'qs-inventory' then return false end
+    local ok, list = pcall(function() return exp:GetItemList() end)
+    if not ok or type(list) ~= 'table' then return false end
+
+    local seen = {}
+    for name, it in pairs(list) do
+        if type(name) == 'string' and type(it) == 'table' then
+            seen[name] = true
+            local current = QS.GetItem(name)
+            if not current then inventoryItems[name] = true end
+            local def = {}
+            for k, v in pairs(current or {}) do def[k] = v end
+            def.label = it.label or def.label or name
+            def.weight = tonumber(it.weight) or def.weight or 0
+            def.useable = it.useable or def.useable or false
+            def.description = it.description or def.description
+            def.unique = it.unique or def.unique or false
+            def.image = it.image or def.image
+            if it.type == 'weapon' and not def.weapon then def.weapon = name:upper() end
+            QS.RegisterItem(name, def)
+        end
+    end
+
+    for name in pairs(inventoryItems) do
+        if not seen[name] then
+            QS.RemoveItemDefinition(name)
+            inventoryItems[name] = nil
+        end
+    end
+
+    TriggerEvent('qs:server:itemsUpdated')
+    return true
+end
+
+local function waitForItemList()
+    local deadline = GetGameTimer() + 30000
+    while GetGameTimer() < deadline do
+        if GetResourceState('qs-inventory') == 'started' then
+            local ok, ready = pcall(function() return exports['qs-inventory']:ItemListReady() end)
+            if not ok or ready then return end
+        end
+        Wait(250)
+    end
+end
+
+local catalogSyncPending = false
+
+local function syncCatalogWhenReady()
+    if catalogSyncPending then return end
+    catalogSyncPending = true
+    CreateThread(function()
+        waitForItemList()
+        Inventory.SyncCatalog()
+        catalogSyncPending = false
+    end)
+end
+
+AddEventHandler('qs-inventory:itemListUpdated', function()
+    Inventory.SyncCatalog()
+end)
+
 AddEventHandler('qs-inventory:usedItem', function(src, name, slot, info)
     TriggerEvent('qs:server:usedItem', src, name, slot, info)
 end)
@@ -231,6 +296,7 @@ AddEventHandler('onResourceStart', function(res)
     if res == 'qs-coreinventory' or res == 'qs-inventory' then
         backendCache = nil
         flushPending()
+        if res == 'qs-inventory' then syncCatalogWhenReady() end
     end
 end)
 
@@ -243,4 +309,5 @@ end)
 CreateThread(function()
     Wait(500)
     flushPending()
+    if GetResourceState('qs-inventory'):find('start') then syncCatalogWhenReady() end
 end)

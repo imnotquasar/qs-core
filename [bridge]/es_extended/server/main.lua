@@ -625,7 +625,7 @@ function ESX.GetJobs()
                 skin_female = '{}',
             }
         end
-        out[name] = { label = j.label or name, grades = grades }
+        out[name] = { name = name, label = j.label or name, grades = grades }
     end
     return out
 end

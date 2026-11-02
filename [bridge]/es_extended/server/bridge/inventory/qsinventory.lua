@@ -5,9 +5,16 @@
 
 if Config.CustomInventory ~= 'qs' then return end
 
-MySQL.ready(function()
-    ESX.Items = exports['qs-inventory']:GetItemList()
-end)
+local function syncItems()
+    local ok, items = pcall(function() return exports['qs-inventory']:GetItemList() end)
+    if not ok or type(items) ~= 'table' then return end
+    ESX.Items = items
+    TriggerEvent('esx:itemsUpdated')
+end
+
+MySQL.ready(syncItems)
+
+AddEventHandler('qs:server:itemsUpdated', syncItems)
 
 ESX.GetItemLabel = function(item)
     return exports['qs-inventory']:GetItemLabel(item)

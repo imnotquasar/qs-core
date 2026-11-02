@@ -85,6 +85,71 @@ AddEventHandler('qs:server:catalogReady', function()
     BridgeSyncSharedCatalog()
 end)
 
+local inventoryItems = {}
+local pushedItems = {}
+
+local function itemDiffers(a, b)
+    for _, key in ipairs({ 'label', 'weight', 'type', 'image', 'unique', 'useable', 'description' }) do
+        if a[key] ~= b[key] then return true end
+    end
+    return false
+end
+
+AddEventHandler('qs:server:itemsUpdated', function()
+    if GetResourceState('qs-inventory') ~= 'started' then return end
+    local ok, list = pcall(function() return exports['qs-inventory']:GetItemList() end)
+    if not ok or type(list) ~= 'table' then return end
+
+    local changed, removed = {}, {}
+    for name, it in pairs(list) do
+        if type(name) == 'string' and type(it) == 'table' then
+            local current = QBCore.Shared.Items[name]
+            local item = {}
+            for k, v in pairs(current or {}) do item[k] = v end
+            item.name = name
+            item.label = it.label or item.label or name
+            item.weight = tonumber(it.weight) or item.weight or 0
+            item.type = it.type or item.type or 'item'
+            item.image = it.image or item.image or (name .. '.png')
+            item.unique = it.unique or false
+            item.useable = it.useable or false
+            item.description = it.description or item.description or ''
+            if item.shouldClose == nil then item.shouldClose = true end
+            if not current then inventoryItems[name] = true end
+            if not current or itemDiffers(current, item) then
+                QBCore.Shared.Items[name] = item
+                changed[name] = item
+                pushedItems[name] = item
+            end
+        end
+    end
+
+    for name in pairs(inventoryItems) do
+        if not list[name] then
+            QBCore.Shared.Items[name] = nil
+            inventoryItems[name] = nil
+            pushedItems[name] = nil
+            removed[#removed + 1] = name
+        end
+    end
+
+    if next(changed) then
+        TriggerClientEvent('QBCore:Client:OnSharedUpdateMultiple', -1, 'Items', changed)
+    end
+    for _, name in ipairs(removed) do
+        TriggerClientEvent('QBCore:Client:OnSharedUpdate', -1, 'Items', name, nil)
+    end
+    if next(changed) or #removed > 0 then
+        TriggerEvent('QBCore:Server:UpdateObject')
+    end
+end)
+
+AddEventHandler('qs:server:playerLoaded', function(src)
+    if next(pushedItems) then
+        TriggerClientEvent('QBCore:Client:OnSharedUpdateMultiple', src, 'Items', pushedItems)
+    end
+end)
+
 CreateThread(function()
     if GetResourceState('qs-core') == 'started' then
         BridgeSyncSharedCatalog()

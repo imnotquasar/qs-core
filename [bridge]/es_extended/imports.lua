@@ -26,4 +26,8 @@ if not IsDuplicityVersion() then
         end
         ESX.PlayerData.accounts[#ESX.PlayerData.accounts + 1] = account
     end)
+else
+    AddEventHandler('esx:itemsUpdated', function()
+        ESX.Items = ESX.GetItems()
+    end)
 end
