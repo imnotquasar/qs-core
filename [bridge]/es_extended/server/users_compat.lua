@@ -98,8 +98,7 @@ local function syncUser(pd)
         ON DUPLICATE KEY UPDATE
             accounts = VALUES(accounts), `group` = VALUES(`group`), inventory = VALUES(inventory),
             job = VALUES(job), job_grade = VALUES(job_grade), position = VALUES(position),
-            firstname = VALUES(firstname), lastname = VALUES(lastname), dateofbirth = VALUES(dateofbirth),
-            sex = VALUES(sex), skin = VALUES(skin), metadata = VALUES(metadata),
+            metadata = VALUES(metadata),
             updated_at = NOW(3), qs_synced_at = NOW(3)
     ]], {
         pd.citizenid,
@@ -119,6 +118,17 @@ local function syncUser(pd)
 end
 
 AddEventHandler('qs:server:playerSaved', function(_, pd) syncUser(pd) end)
+
+AddEventHandler('qs-clothing:server:skinSaved', function(src, skin)
+    if type(skin) ~= 'table' or not waitSchema() then return end
+    local snap = core:GetPlayer(src)
+    local citizenid = snap and snap.PlayerData and snap.PlayerData.citizenid
+    if not citizenid then return end
+    MySQL.update(
+        'UPDATE `users` SET skin = ?, updated_at = NOW(3), qs_synced_at = NOW(3) WHERE identifier = ?',
+        { json.encode(skin), citizenid }
+    )
+end)
 
 AddEventHandler('qs:server:playerLoaded', function(src)
     local snap = core:GetPlayer(src)
@@ -229,11 +239,6 @@ local function importUser(user)
             ci.sex = user.sex
         end
         patch.charinfo = ci
-    end
-
-    if not same(decode(user.skin), decode(expected.skin)) then
-        local skin = decode(user.skin)
-        if type(skin) == 'table' then patch.skin = skin end
     end
 
     if not same(decode(user.position), decode(expected.position)) then

@@ -5,7 +5,7 @@ version: 1.0.0
 author: Quasar Store
 description: >
   Open-source FiveM roleplay framework with multicharacter, inventory, jobs,
-  police, EMS, banking and vehicles, that also runs ESX and QBCore scripts
+  police, EMS, banking and vehicles, that also runs ESX, QBCore and Qbox scripts
   through built-in compatibility bridges.
 
 tasks:

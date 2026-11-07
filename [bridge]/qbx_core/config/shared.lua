@@ -1,0 +1,18 @@
+return {
+    serverName = 'Server',
+    defaultSpawn = vec4(-540.58, -212.02, 37.65, 208.88),
+    notifyPosition = 'top-right',
+    starterItems = {
+        { name = 'phone', amount = 1 },
+        { name = 'id_card', amount = 1, metadata = function(source)
+                if GetResourceState('qbx_idcard') ~= 'started' then return nil end
+                return exports.qbx_idcard:GetMetaLicense(source, {'id_card'})
+            end
+        },
+        { name = 'driver_license', amount = 1, metadata = function(source)
+                if GetResourceState('qbx_idcard') ~= 'started' then return nil end
+                return exports.qbx_idcard:GetMetaLicense(source, {'driver_license'})
+            end
+        },
+    }
+}

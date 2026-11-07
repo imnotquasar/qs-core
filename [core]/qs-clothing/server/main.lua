@@ -12,5 +12,6 @@ RegisterNetEvent('qs-clothing:server:save', function(skin)
     local src = source
     if type(skin) ~= 'table' then return end
     core:SetSkin(src, skin)
+    TriggerEvent('qs-clothing:server:skinSaved', src, skin)
     TriggerClientEvent('qs:client:notify', src, T('outfit_saved'), 'success')
 end)

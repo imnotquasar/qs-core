@@ -41,6 +41,14 @@ function PlayerMethods:getSource() return self.source end
 
 function PlayerMethods:getCharInfo() return self.PlayerData.charinfo end
 
+function PlayerMethods:setCharInfo(key, value)
+    if type(key) ~= 'string' then return false end
+    self.PlayerData.charinfo = self.PlayerData.charinfo or {}
+    self.PlayerData.charinfo[key] = value
+    self:emit('qs:charinfo:set', key, value)
+    return true
+end
+
 function PlayerMethods:getPed() return GetPlayerPed(self.source) end
 
 function PlayerMethods:getMoney(account)
@@ -151,6 +159,7 @@ end
 function PlayerMethods:setMetadata(key, value)
     self.PlayerData.metadata[key] = value
     self:emit('qs:metadata:set', key, value)
+    TriggerEvent('qs:server:metadataChange', self.source, key, value)
 end
 
 function PlayerMethods:getInventory()

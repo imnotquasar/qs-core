@@ -47,6 +47,22 @@ their APIs on top of qs-core so third-party scripts keep working.
         shared/main.lua
     Also [bridge]/es_extended/client/game.lua (vehicle properties).
 
+[bridge]/qbx_core
+    Based on Qbox - https://github.com/Qbox-project/qbx_core
+    Copyright (C) Qbox Project and contributors
+    License: GPL-3.0
+    Modified for qs-core in 2026 (adapted to run on top of qs-core).
+    Files taken from Qbox (modules/playerdata.lua and modules/utils.lua adapted):
+        modules/lib.lua, modules/hooks.lua, modules/logger.lua,
+        modules/playerdata.lua, modules/utils.lua
+        shared/functions.lua, shared/locale.lua, shared/main.lua,
+        shared/vehicles.lua, shared/weapons.lua, shared/items.lua,
+        shared/locations.lua
+        config/client.lua, config/server.lua, config/shared.lua
+        data/nationalities.lua, locales/*.json
+    The server/ and client/ files are original qs-core code that reproduces the
+    Qbox API on top of qs-core.
+
 The other bridges ([bridge]/esx_society, [bridge]/qb-management,
 [bridge]/qb-vehiclekeys, [bridge]/progressbar, [bridge]/LegacyFuel) are original
 qs-core code that only reproduces the public API names of those resources.

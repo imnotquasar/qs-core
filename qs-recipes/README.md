@@ -21,7 +21,7 @@ every section) and downloads:
 |---|---|---|
 | `[core]` | qs-core and the resources needed to play | this repository |
 | `[addons]` | jobs, police, EMS, banking, garages, admin… | this repository |
-| `[bridge]` | ESX / QBCore compatibility | this repository |
+| `[bridge]` | ESX / QBCore / Qbox compatibility | this repository |
 | `[standalone]` | oxmysql 2.14.3, ox_lib 3.39.0, pma-voice 6.6.2 | their own repositories |
 | `[maps]` | bob74_ipl 2.7.1, Pillbox hospital interior | their own repositories |
 | `[cfx-default]` | mapmanager, spawnmanager | citizenfx/cfx-server-data |
@@ -33,7 +33,8 @@ never breaks a new install.
 
 - Join the server: txAdmin already made you an admin (admin menu with **/admin**).
 - Change the language in `server.cfg` with `setr qs:locale "en"`.
-- Add ESX or QBCore scripts at the end of `server.cfg` (`[bridge]` starts right after `qs-core`).
+- Add ESX, QBCore or Qbox scripts at the end of `server.cfg` (`[bridge]` starts right after `qs-core`).
+- For Qbox scripts, delete the `stop qbx_core` line from `server.cfg`.
 
 ## Manual install
 
@@ -55,5 +56,5 @@ as it is instead of replacing it with `ensure [core]`.
 
 ## License
 
-GNU GPL v3.0 (`GPL-3.0-only`), see [`LICENSE`](../LICENSE). The ESX/QBCore bridges
-include code derived from ESX Legacy and QBCore (GPL-3.0); see [`NOTICE`](../NOTICE).
+GNU GPL v3.0 (`GPL-3.0-only`), see [`LICENSE`](../LICENSE). The ESX/QBCore/Qbox bridges
+include code derived from ESX Legacy, QBCore and Qbox (GPL-3.0); see [`NOTICE`](../NOTICE).

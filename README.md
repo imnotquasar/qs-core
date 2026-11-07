@@ -1,7 +1,7 @@
 <h1 align="center">qs-core</h1>
 
 <p align="center">
-  <b>The first multi-framework for FiveM: ESX, QBCore and qs-core in one hyper-optimized core.</b>
+  <b>The first multi-framework for FiveM: ESX, QBCore, Qbox and qs-core in one hyper-optimized core.</b>
 </p>
 
 <p align="center">
@@ -20,9 +20,9 @@
 
 ---
 
-**Forget about framework limits.** Choosing between ESX and QBCore used to mean
-giving up half of the scripts on the market. qs-core is the first multi-framework:
-one core that speaks **ESX**, **QBCore** and its own API at the same time, so every
+**Forget about framework limits.** Choosing between ESX, QBCore and Qbox used to mean
+giving up most of the scripts on the market. qs-core is the first multi-framework:
+one core that speaks **ESX**, **QBCore**, **Qbox** and its own API at the same time, so every
 script you own runs on the same server, with the same players, the same money and
 the same inventory, without touching a single line of its code.
 
@@ -32,7 +32,7 @@ single shared UI theme, all ready to deploy from txAdmin in one click.
 
 ## Why qs-core
 
-- **All in one.** ESX scripts, QBCore scripts and qs-core scripts side by side on a
+- **All in one.** ESX, QBCore, Qbox and qs-core scripts side by side on a
   single server. No more "this script is only for QB", no more rewriting resources,
   no more maintaining two frameworks.
 - **One player, one truth.** Every bridge reads and writes the same qs-core player:
@@ -62,12 +62,13 @@ single shared UI theme, all ready to deploy from txAdmin in one click.
 
 ## How the multi-framework works
 
-qs-core ships two bridge resources named `es_extended` and `qb-core`. Scripts find
-them exactly as they would find the real frameworks:
+qs-core ships three bridge resources named `es_extended`, `qb-core` and `qbx_core`.
+Scripts find them exactly as they would find the real frameworks:
 
 ```lua
 local ESX = exports['es_extended']:getSharedObject()   -- ESX scripts
 local QBCore = exports['qb-core']:GetCoreObject()      -- QBCore scripts
+local player = exports.qbx_core:GetPlayer(source)        -- Qbox scripts
 ```
 
 Behind those objects, every call is answered by qs-core, so a player has **one**
@@ -76,17 +77,20 @@ was written for.
 
 | Covered by the bridges | |
 |---|---|
-| Player object | money and accounts, jobs, gangs, metadata, character info |
+| Player object | money and accounts, jobs, gangs, metadata, character info, Qbox multi-job and multi-gang |
 | Items | usable items, add / remove / check, per-item metadata |
-| Server logic | callbacks, commands, common events (`esx:playerLoaded`, `QBCore:Server:PlayerLoaded`…) |
-| Database | `users` (ESX) and `players` (QBCore) tables, owned vehicle tables |
-| Client helpers | ESX `Game`, `UI.Menu`, `Streaming`; QBCore `Functions` (progress bars, vehicle properties…) |
+| Server logic | callbacks, commands, hooks, common events (`esx:playerLoaded`, `QBCore:Server:PlayerLoaded`, `qbx_core:server:onGroupUpdate`…) |
+| Database | `users` (ESX) and `players` (QBCore / Qbox) tables, `owned_vehicles` and `player_vehicles` |
+| Client helpers | ESX `Game`, `UI.Menu`, `Streaming`; QBCore `Functions` (progress bars, vehicle properties…); Qbox `QBX.PlayerData` and the `@qbx_core/modules` files |
 | Ecosystem | `esx_society`, `qb-management`, `qb-vehiclekeys`, `progressbar`, `LegacyFuel` |
 
 Libraries such as `ox_lib`, `qb-target`, `qb-menu`, `qb-input` and `PolyZone` work
 as they are.
 
-**Not covered yet:** Qbox-only scripts (`qbx_core`), scripts that call the exports of
+The Qbox bridge is optional because qs-inventory switches to its Qbox mode as soon as
+`qbx_core` is running. To turn it on, delete the `stop qbx_core` line from `server.cfg`.
+
+**Not covered yet:** scripts that call the exports of
 `qb-inventory` or `ox_inventory` directly, and scripts that edit money or jobs with raw
 SQL on the `users` table (qs-core keeps that table in sync in one direction only).
 
@@ -117,7 +121,7 @@ See [`qs-recipes/README.md`](qs-recipes/README.md#manual-install).
   everything qs-core includes, with in-game screenshots of every interface.
 - **[quasar-store.com/docs/quasar-framework](https://www.quasar-store.com/docs/quasar-framework)**:
   full reference, every resource and how to use it, all exports and events and
-  ESX / QBCore compatibility.
+  ESX / QBCore / Qbox compatibility.
 
 ## Requirements
 
@@ -151,7 +155,7 @@ Players can rebind them in **Settings → Key Bindings → FiveM**.
 qs-core/
 ├── [core]/        qs-core and the resources required to play
 ├── [addons]/      jobs, police, EMS, banking, garages, admin… (optional)
-├── [bridge]/      ESX and QBCore compatibility
+├── [bridge]/      ESX, QBCore and Qbox compatibility
 ├── qs-recipes/    txAdmin recipe and server.cfg template
 ├── LICENSE
 └── NOTICE
@@ -165,9 +169,10 @@ surrounding code and test them on a running server before opening a pull request
 ## License
 
 qs-core is licensed under the **GNU General Public License v3.0** (`GPL-3.0-only`).
-The ESX and QBCore bridges contain code derived from
-[ESX Legacy](https://github.com/esx-framework/esx_core) and
-[QBCore](https://github.com/qbcore-framework/qb-core), both GPL-3.0. See
+The ESX, QBCore and Qbox bridges contain code derived from
+[ESX Legacy](https://github.com/esx-framework/esx_core),
+[QBCore](https://github.com/qbcore-framework/qb-core) and
+[Qbox](https://github.com/Qbox-project/qbx_core), all GPL-3.0. See
 [`NOTICE`](NOTICE) for attribution and third-party licenses.
 
-qs-core is not affiliated with or endorsed by the ESX or QBCore projects.
+qs-core is not affiliated with or endorsed by the ESX, QBCore or Qbox projects.
