@@ -3,6 +3,9 @@ local core = exports['qs-core']
 local validWeather = {}
 for _, w in ipairs(Config.Weathers) do validWeather[w] = true end
 
+local validGroup = {}
+for _, g in ipairs(Config.Groups) do validGroup[g] = true end
+
 local function isAdmin(src)
     return src == 0 or IsPlayerAceAllowed(src, Config.Permission)
 end
@@ -64,7 +67,10 @@ end)
 local function ban(src, target, reason, minutes)
     local lic = GetPlayerIdentifierByType(target, 'license')
     if not lic then return end
-    minutes = tonumber(minutes) or 0
+    local raw = minutes
+    minutes = tonumber(raw)
+    if raw == nil or raw == '' then minutes = 0 end
+    if not minutes or not (minutes >= 0) then return end
     local expires = minutes > 0 and (os.date('%Y-%m-%d %H:%M:%S', os.time() + minutes * 60)) or nil
     MySQL.insert('INSERT INTO `bans` (license, name, reason, banned_by, expires) VALUES (?, ?, ?, ?, ?)', {
         lic, GetPlayerName(target), reason or 'No reason', adminName(src), expires,
@@ -76,7 +82,9 @@ RegisterNetEvent('qs-admin:action', function(action, target, data)
     local src = source
     if not isAdmin(src) then return end
     data = data or {}
+    if type(data) ~= 'table' then return end
     target = tonumber(target)
+    if target and (target < 1 or target ~= math.floor(target)) then return end
 
     if action == 'goto' then
         local c = target and coordsOf(target)
@@ -103,7 +111,7 @@ RegisterNetEvent('qs-admin:action', function(action, target, data)
     elseif action == 'setjob' then
         if target then core:SetJob(target, data.job, tonumber(data.grade) or 0) end
     elseif action == 'setgroup' then
-        if target and data.group then ExecuteCommand(('setgroup %d %s'):format(target, data.group)) end
+        if target and validGroup[data.group] then ExecuteCommand(('setgroup %d %s'):format(target, data.group)) end
     elseif action == 'money' then
         if target then
             local amount = math.floor(tonumber(data.amount) or 0)

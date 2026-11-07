@@ -49,6 +49,7 @@ end
 
 RegisterNetEvent('qs-rp:me', function(text)
     local src = source
+    if not core:RateLimit(('rp:%d'):format(src), 5, 3000) then return end
     text = clamp(text)
     if text == '' then notify(src, T('empty')) return end
     toChat(nearby(src, Config.Proximity), {
@@ -59,6 +60,7 @@ end)
 
 RegisterNetEvent('qs-rp:do', function(text)
     local src = source
+    if not core:RateLimit(('rp:%d'):format(src), 5, 3000) then return end
     text = clamp(text)
     if text == '' then notify(src, T('empty')) return end
     toChat(nearby(src, Config.Proximity), {
@@ -69,6 +71,7 @@ end)
 
 RegisterNetEvent('qs-rp:b', function(text)
     local src = source
+    if not core:RateLimit(('rp:%d'):format(src), 5, 3000) then return end
     text = clamp(text)
     if text == '' then notify(src, T('empty')) return end
     toChat(nearby(src, Config.Proximity), {
@@ -79,6 +82,7 @@ end)
 
 RegisterNetEvent('qs-rp:ooc', function(text)
     local src = source
+    if not core:RateLimit(('rp:%d'):format(src), 5, 3000) then return end
     text = clamp(text)
     if text == '' then notify(src, T('empty')) return end
     TriggerClientEvent('qs-corechat:client:message', -1, {
@@ -89,6 +93,7 @@ end)
 
 RegisterNetEvent('qs-rp:try', function(text)
     local src = source
+    if not core:RateLimit(('rp:%d'):format(src), 5, 3000) then return end
     text = clamp(text)
     if text == '' then notify(src, T('empty')) return end
     local ok = math.random(1, 2) == 1
@@ -100,6 +105,7 @@ end)
 
 RegisterNetEvent('qs-rp:pm', function(targetId, text)
     local src = source
+    if not core:RateLimit(('rp:%d'):format(src), 5, 3000) then return end
     targetId = tonumber(targetId)
     text = clamp(text)
     if not targetId or text == '' then notify(src, T('empty')) return end
@@ -118,6 +124,7 @@ end)
 
 RegisterNetEvent('qs-rp:ame', function(text)
     local src = source
+    if not core:RateLimit(('rp:%d'):format(src), 5, 3000) then return end
     text = clamp(text)
     if text == '' then notify(src, T('empty')) return end
     for _, pid in ipairs(nearby(src, Config.AmeDistance)) do

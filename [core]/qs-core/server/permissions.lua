@@ -9,8 +9,9 @@ function Permissions.LicenseOf(source)
 end
 
 function Permissions.Has(source, permission)
-    if not source or source == 0 then return true end
-    if not permission then return true end
+    if not source then return false end
+    if source == 0 then return true end
+    if not permission then return false end
 
     if type(permission) == 'table' then
         for _, p in ipairs(permission) do
@@ -35,6 +36,7 @@ function Permissions.Add(source, permission)
     local lic = Permissions.LicenseOf(source)
     if not lic or not permission then return false end
     permission = tostring(permission):lower()
+    if not permission:match('^[%w_%.%-]+$') then return false end
     ExecuteCommand(('add_ace identifier.%s qbcore.%s allow'):format(lic, permission))
     ExecuteCommand(('add_ace identifier.%s group.%s allow'):format(lic, permission))
     return true
@@ -44,6 +46,7 @@ function Permissions.Remove(source, permission)
     local lic = Permissions.LicenseOf(source)
     if not lic or not permission then return false end
     permission = tostring(permission):lower()
+    if not permission:match('^[%w_%.%-]+$') then return false end
     ExecuteCommand(('remove_ace identifier.%s qbcore.%s allow'):format(lic, permission))
     ExecuteCommand(('remove_ace identifier.%s group.%s allow'):format(lic, permission))
     return true

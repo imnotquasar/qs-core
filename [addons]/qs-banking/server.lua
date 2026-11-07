@@ -1,6 +1,6 @@
 local core = exports['qs-core']
 
-local function plateless(n) return tostring(n):gsub('%s+', '') end
+local function plateless(n) return (tostring(n):gsub('%s+', '')) end
 
 local function newAccountNumber()
     for _ = 1, 40 do
@@ -138,7 +138,12 @@ RegisterNetEvent('qs-banking:server:transfer', function(account, amount)
         TriggerClientEvent('qs:client:notify', targetPlayer.source, T('received', amount), 'success')
         pushData(targetPlayer.source, targetCid)
     else
-        creditOfflineBank(targetCid, amount)
+        if not creditOfflineBank(targetCid, amount) then
+            core:AddMoney(src, 'bank', total, 'bank-transfer-refund')
+            TriggerClientEvent('qs:client:notify', src, T('bad_account'), 'error')
+            pushData(src, player.citizenid)
+            return
+        end
         log(targetCid, 'transfer_in', amount, 0, T('log_from', player.citizenid))
     end
 

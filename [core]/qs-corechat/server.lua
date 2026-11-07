@@ -21,6 +21,7 @@ RegisterNetEvent('qs-corechat:server:send', function(text)
     local src = source
     text = tostring(text or '')
     if #text == 0 then return end
+    if not core:RateLimit(('chat-send:%d'):format(src), 4, 3000) then return end
     if #text > 256 then text = text:sub(1, 256) end
 
     local name

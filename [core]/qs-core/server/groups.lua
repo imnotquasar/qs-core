@@ -19,7 +19,7 @@ RegisterCommand('setgroup', function(source, args)
 
     local target = tonumber(args[1])
     local group = args[2] and args[2]:lower() or nil
-    if not target or not group then
+    if not target or not group or #group > 32 or group:find('[^%w_%-]') then
         print('^3[qs-core] Usage: setgroup <serverId> <group>   e.g. setgroup 1 admin^7')
         return
     end

@@ -479,14 +479,23 @@ function QBCore.Functions.CreateCallback(name, cb)
 end
 
 function QBCore.Functions.TriggerClientCallback(name, source, cb, ...)
-    QBCore.ClientCallbacks[name] = cb
+    QBCore.ClientCallbacks[name .. ':' .. source] = cb
     TriggerClientEvent('QBCore:Client:TriggerClientCallback', source, name, ...)
 end
 
 RegisterNetEvent('QBCore:Server:TriggerClientCallback', function(name, ...)
-    if QBCore.ClientCallbacks[name] then
-        QBCore.ClientCallbacks[name](...)
-        QBCore.ClientCallbacks[name] = nil
+    local key = tostring(name) .. ':' .. source
+    local cb = QBCore.ClientCallbacks[key]
+    if cb then
+        QBCore.ClientCallbacks[key] = nil
+        cb(...)
+    end
+end)
+
+AddEventHandler('playerDropped', function()
+    local suffix = ':' .. source
+    for key in pairs(QBCore.ClientCallbacks) do
+        if key:sub(-#suffix) == suffix then QBCore.ClientCallbacks[key] = nil end
     end
 end)
 

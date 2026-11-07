@@ -10,7 +10,7 @@ end, false)
 
 RegisterNetEvent('qs-clothing:server:save', function(skin)
     local src = source
-    if type(skin) ~= 'table' then return end
+    if type(skin) ~= 'table' or #json.encode(skin) > 30000 then return end
     core:SetSkin(src, skin)
     TriggerEvent('qs-clothing:server:skinSaved', src, skin)
     TriggerClientEvent('qs:client:notify', src, T('outfit_saved'), 'success')

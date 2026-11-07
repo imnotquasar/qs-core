@@ -304,7 +304,9 @@ RegisterNetEvent('qs-ambulance:server:createStretcher', function(netId, coords)
     local src = source
     if not isMedic(src) then return end
     if not core:RateLimit(('amb-str:%d'):format(src), 1, 1500) then return end
-    if type(coords) ~= 'table' then return end
+    if type(coords) ~= 'table' or type(netId) ~= 'number' then return end
+    local x, y, z, w = tonumber(coords.x), tonumber(coords.y), tonumber(coords.z), tonumber(coords.w) or 0.0
+    if not (x and y and z) then return end
     for _, s in pairs(stretchers) do
         if s.owner == src then return end
     end
@@ -312,7 +314,7 @@ RegisterNetEvent('qs-ambulance:server:createStretcher', function(netId, coords)
     local id = stretcherSeq
     stretchers[id] = {
         id = id, netId = netId, owner = src, patient = nil,
-        coords = { x = coords.x, y = coords.y, z = coords.z, w = coords.w or 0.0 },
+        coords = { x = x, y = y, z = z, w = w },
     }
     TriggerClientEvent('qs-ambulance:client:stretcherAdd', -1, stretchers[id])
     TriggerClientEvent('qs-ambulance:client:stretcherId', src, id)
@@ -321,8 +323,12 @@ end)
 RegisterNetEvent('qs-ambulance:server:updateStretcher', function(id, data)
     local s = stretchers[tonumber(id) or -1]
     if not s or s.owner ~= source or type(data) ~= 'table' then return end
-    if data.netId then s.netId = data.netId end
-    if data.coords then s.coords = data.coords end
+    if not core:RateLimit(('amb-strupd:%d'):format(source), 10, 1000) then return end
+    if type(data.netId) == 'number' then s.netId = data.netId end
+    if type(data.coords) == 'table' then
+        local x, y, z, w = tonumber(data.coords.x), tonumber(data.coords.y), tonumber(data.coords.z), tonumber(data.coords.w) or 0.0
+        if x and y and z then s.coords = { x = x, y = y, z = z, w = w } end
+    end
     TriggerClientEvent('qs-ambulance:client:stretcherUpdate', -1, s.id, {
         netId = s.netId, coords = s.coords,
     })

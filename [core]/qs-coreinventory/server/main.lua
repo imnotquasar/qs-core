@@ -152,7 +152,9 @@ local function ensureSecondary(kind, id, slots)
         local sql = KIND_SQL[kind]
         local raw = sql and MySQL.scalar.await(('SELECT items FROM %s WHERE %s = ?'):format(sql.tbl, sql.col), { id })
         local ok, decoded = pcall(function() return raw and json.decode(raw) end)
-        secCache[key] = (ok and decoded) and normalize(decoded, slots) or normalize({}, slots)
+        if secCache[key] == nil then
+            secCache[key] = (ok and decoded) and normalize(decoded, slots) or normalize({}, slots)
+        end
     end
     return normalize(secCache[key], slots)
 end
@@ -424,6 +426,10 @@ local function slotMove(items, sList, sN, sMaxW, from, dList, dN, dMaxW, to)
                 if a.count <= 0 then sList[from] = false end
             end
         else
+            if not same and (weightOf(dList, items, dN) - w * b.count + w * a.count > dMaxW
+                or weightOf(sList, items, sN) - w * a.count + w * b.count > sMaxW) then
+                return
+            end
             sList[from], dList[to] = b, a
         end
     else
@@ -462,12 +468,14 @@ local function moveItem(src, fromC, from, toC, to)
 end
 
 RegisterNetEvent('qs-inv:server:move', function(fromC, from, toC, to)
+    if not core:RateLimit(('inv-act:%d'):format(source), 30, 1000) then return end
     moveItem(source, fromC == 'secondary' and 'secondary' or 'player', math.floor(tonumber(from) or 0),
         toC == 'secondary' and 'secondary' or 'player', math.floor(tonumber(to) or 0))
 end)
 
 RegisterNetEvent('qs-inv:server:split', function(slot, count, container)
     local src = source
+    if not core:RateLimit(('inv-act:%d'):format(src), 30, 1000) then return end
     slot = tonumber(slot) or 0
     container = container == 'secondary' and 'secondary' or 'player'
     if container == 'secondary' and not open[src] then return end
@@ -501,6 +509,7 @@ end)
 RegisterNetEvent('qs-inv:server:take', function(slot, count)
     local src = source
     if not open[src] then return end
+    if not core:RateLimit(('inv-act:%d'):format(src), 30, 1000) then return end
     slot = tonumber(slot) or 0
     count = tonumber(count)
 
@@ -568,6 +577,7 @@ end)
 
 RegisterNetEvent('qs-inv:server:drop', function(container, slot, count)
     local src = source
+    if not core:RateLimit(('inv-act:%d'):format(src), 30, 1000) then return end
     container = container == 'secondary' and 'secondary' or 'player'
     slot = tonumber(slot) or 0
     count = math.floor(tonumber(count) or 0)
@@ -590,6 +600,7 @@ end)
 
 RegisterNetEvent('qs-inv:server:give', function(target, slot, count)
     local src = source
+    if not core:RateLimit(('inv-act:%d'):format(src), 30, 1000) then return end
     target = tonumber(target)
     slot = tonumber(slot) or 0
     count = math.floor(tonumber(count) or 0)
@@ -722,6 +733,7 @@ CreateThread(function()
 end)
 
 RegisterNetEvent('qs-inv:server:request', function()
+    if not core:RateLimit(('inv-req:%d'):format(source), 5, 1000) then return end
     refresh(source)
 end)
 
