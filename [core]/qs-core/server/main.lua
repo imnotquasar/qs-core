@@ -64,6 +64,8 @@ local function uniqueCitizenId()
 end
 
 function QS.CreateCharacter(source, charinfo, skin, cid)
+    if QS.Players[source] then return nil, 'already_loaded' end
+
     local license = getLicense(source)
     if not license then return nil, 'no_license' end
 
@@ -100,6 +102,8 @@ function QS.CreateCharacter(source, charinfo, skin, cid)
 end
 
 function QS.LoadCharacter(source, citizenid, isNew)
+    if QS.Players[source] then return false, 'already_loaded' end
+
     local license = getLicense(source)
     if not license then return false, 'no_license' end
 
@@ -115,6 +119,8 @@ function QS.LoadCharacter(source, citizenid, isNew)
     if not data.metadata.gang then
         data.metadata.gang = QS.BuildGang('none', 0)
     end
+
+    if QS.Players[source] then return false, 'already_loaded' end
 
     local player = CreatePlayer(source, data)
     isNew = isNew or false
@@ -271,8 +277,8 @@ end)
 exports('RegisterUsableItem', function(item, cb)
     return Inventory.RegisterUsableItem(item, cb)
 end)
-exports('RegisterStash', function(id, label, slots, maxWeight, columns)
-    return Inventory.RegisterStash(id, label, slots, maxWeight, columns)
+exports('RegisterStash', function(id, label, slots, maxWeight, columns, coords, radius, job)
+    return Inventory.RegisterStash(id, label, slots, maxWeight, columns, coords, radius, job)
 end)
 
 local function registerJob(name, def)
