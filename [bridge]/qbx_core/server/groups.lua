@@ -28,14 +28,24 @@ local function PublishCatalog()
     GlobalState.qbxGangs = GetGangs()
 end
 
-local function jobChanged(name, job)
+local batching = false
+
+local function runBatch(fn)
+    batching = true
+    local ok, err = pcall(fn)
+    batching = false
     PublishCatalog()
+    if not ok then error(err, 0) end
+end
+
+local function jobChanged(name, job)
+    if not batching then PublishCatalog() end
     TriggerEvent('qbx_core:server:onJobUpdate', name, job)
     TriggerClientEvent('qbx_core:client:onJobUpdate', -1, name, job)
 end
 
 local function gangChanged(name, gang)
-    PublishCatalog()
+    if not batching then PublishCatalog() end
     TriggerEvent('qbx_core:server:onGangUpdate', name, gang)
     TriggerClientEvent('qbx_core:client:onGangUpdate', -1, name, gang)
 end
@@ -66,9 +76,11 @@ end
 
 local function CreateJobs(jobs)
     if type(jobs) ~= 'table' then return false, 'invalid_jobs' end
-    for name, job in pairs(jobs) do
-        if type(name) == 'string' and type(job) == 'table' then writeJob(name:lower(), job) end
-    end
+    runBatch(function()
+        for name, job in pairs(jobs) do
+            if type(name) == 'string' and type(job) == 'table' then writeJob(name:lower(), job) end
+        end
+    end)
     return true, 'success'
 end
 
@@ -84,9 +96,11 @@ end
 
 local function CreateGangs(gangs)
     if type(gangs) ~= 'table' then return false, 'invalid_gangs' end
-    for name, gang in pairs(gangs) do
-        if type(name) == 'string' and type(gang) == 'table' then writeGang(name:lower(), gang) end
-    end
+    runBatch(function()
+        for name, gang in pairs(gangs) do
+            if type(name) == 'string' and type(gang) == 'table' then writeGang(name:lower(), gang) end
+        end
+    end)
     return true, 'success'
 end
 

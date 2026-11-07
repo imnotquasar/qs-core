@@ -95,7 +95,7 @@ local function itemDiffers(a, b)
     return false
 end
 
-AddEventHandler('qs:server:itemsUpdated', function()
+local function syncInventoryItems()
     if GetResourceState('qs-inventory') ~= 'started' then return end
     local ok, list = pcall(function() return exports['qs-inventory']:GetItemList() end)
     if not ok or type(list) ~= 'table' then return end
@@ -142,6 +142,17 @@ AddEventHandler('qs:server:itemsUpdated', function()
     if next(changed) or #removed > 0 then
         TriggerEvent('QBCore:Server:UpdateObject')
     end
+end
+
+local syncQueued = false
+
+AddEventHandler('qs:server:itemsUpdated', function()
+    if syncQueued then return end
+    syncQueued = true
+    SetTimeout(250, function()
+        syncQueued = false
+        syncInventoryItems()
+    end)
 end)
 
 AddEventHandler('qs:server:playerLoaded', function(src)

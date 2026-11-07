@@ -33,16 +33,22 @@ end)
 
 CreateThread(function()
     if not Config.DisableVehicleFires then return end
+    local configured = {}
     while true do
+        local current = {}
         for _, veh in ipairs(GetGamePool('CVehicle')) do
-            SetDisableVehicleEngineFires(veh, true)
-            SetDisableVehiclePetrolTankFires(veh, true)
-            SetDisableVehiclePetrolTankDamage(veh, true)
+            if not configured[veh] then
+                SetDisableVehicleEngineFires(veh, true)
+                SetDisableVehiclePetrolTankFires(veh, true)
+                SetDisableVehiclePetrolTankDamage(veh, true)
+            end
+            current[veh] = true
             if NetworkHasControlOfEntity(veh) then
                 if IsEntityOnFire(veh) then StopEntityFire(veh) end
                 if GetVehicleEngineHealth(veh) < 0.0 then SetVehicleEngineHealth(veh, 0.0) end
             end
         end
+        configured = current
         Wait(1000)
     end
 end)
@@ -62,7 +68,7 @@ CreateThread(function()
                 DeletePed(ped)
             end
         end
-        Wait(2000)
+        Wait(10000)
     end
 end)
 
