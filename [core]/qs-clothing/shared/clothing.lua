@@ -6,6 +6,8 @@ Clothing.Models = {
 }
 
 Clothing.Sections = {
+    { key = 'heritage',    label = 'Heritage' },
+    { key = 'features',    label = 'Face Shape' },
     { key = 'face',        label = 'Face & Hair' },
     { key = 'upper',       label = 'Upper Body' },
     { key = 'lower',       label = 'Lower Body' },
@@ -13,7 +15,66 @@ Clothing.Sections = {
     { key = 'tattoos',     label = 'Tattoos' },
 }
 
+Clothing.Fathers = {
+    { id = 0, name = 'Benjamin' }, { id = 1, name = 'Daniel' }, { id = 2, name = 'Joshua' },
+    { id = 3, name = 'Noah' }, { id = 4, name = 'Andrew' }, { id = 5, name = 'Juan' },
+    { id = 6, name = 'Alex' }, { id = 7, name = 'Isaac' }, { id = 8, name = 'Evan' },
+    { id = 9, name = 'Ethan' }, { id = 10, name = 'Vincent' }, { id = 11, name = 'Angel' },
+    { id = 12, name = 'Diego' }, { id = 13, name = 'Adrian' }, { id = 14, name = 'Gabriel' },
+    { id = 15, name = 'Michael' }, { id = 16, name = 'Santiago' }, { id = 17, name = 'Kevin' },
+    { id = 18, name = 'Louis' }, { id = 19, name = 'Samuel' }, { id = 20, name = 'Anthony' },
+    { id = 42, name = 'Claude' }, { id = 43, name = 'Niko' }, { id = 44, name = 'John' },
+}
+
+Clothing.Mothers = {
+    { id = 21, name = 'Hannah' }, { id = 22, name = 'Aubrey' }, { id = 23, name = 'Jasmine' },
+    { id = 24, name = 'Gisele' }, { id = 25, name = 'Amelia' }, { id = 26, name = 'Isabella' },
+    { id = 27, name = 'Zoe' }, { id = 28, name = 'Ava' }, { id = 29, name = 'Camila' },
+    { id = 30, name = 'Violet' }, { id = 31, name = 'Sophia' }, { id = 32, name = 'Evelyn' },
+    { id = 33, name = 'Nicole' }, { id = 34, name = 'Ashley' }, { id = 35, name = 'Gracie' },
+    { id = 36, name = 'Brianna' }, { id = 37, name = 'Natalie' }, { id = 38, name = 'Olivia' },
+    { id = 39, name = 'Elizabeth' }, { id = 40, name = 'Charlotte' }, { id = 41, name = 'Emma' },
+    { id = 45, name = 'Misty' },
+}
+
+Clothing.Features = {
+    { key = 'nose_width',        label = 'Nose Width' },
+    { key = 'nose_height',       label = 'Nose Height' },
+    { key = 'nose_length',       label = 'Nose Length' },
+    { key = 'nose_bridge',       label = 'Nose Bridge' },
+    { key = 'nose_tip',          label = 'Nose Tip' },
+    { key = 'nose_shift',        label = 'Nose Shift' },
+    { key = 'brow_height',       label = 'Brow Height' },
+    { key = 'brow_depth',        label = 'Brow Depth' },
+    { key = 'cheekbone_height',  label = 'Cheekbone Height' },
+    { key = 'cheekbone_width',   label = 'Cheekbone Width' },
+    { key = 'cheek_width',       label = 'Cheek Width' },
+    { key = 'eye_opening',       label = 'Eye Opening' },
+    { key = 'lip_thickness',     label = 'Lip Thickness' },
+    { key = 'jaw_width',         label = 'Jaw Width' },
+    { key = 'jaw_shape',         label = 'Jaw Shape' },
+    { key = 'chin_height',       label = 'Chin Height' },
+    { key = 'chin_depth',        label = 'Chin Depth' },
+    { key = 'chin_width',        label = 'Chin Width' },
+    { key = 'chin_cleft',        label = 'Chin Cleft' },
+    { key = 'neck_thickness',    label = 'Neck Thickness' },
+}
+
+function Clothing.DefaultHeritage(sex)
+    if sex == 'female' then
+        return { father = 0, mother = 21, shape = 0.8, skin = 0.5 }
+    end
+    return { father = 0, mother = 21, shape = 0.2, skin = 0.5 }
+end
+
+function Clothing.DefaultFeatures()
+    local out = {}
+    for i = 1, #Clothing.Features do out[i] = 0.0 end
+    return out
+end
+
 Clothing.Categories = {
+    { key = 'eyes',       label = 'Eye Color',  kind = 'eyecolor',  max = 31,  section = 'features' },
     { key = 'hair',       label = 'Hair',       kind = 'component', id = 2,  max = 80,  section = 'face' },
     { key = 'beard',      label = 'Beard',      kind = 'overlay',   id = 1,  max = 28,  section = 'face' },
     { key = 'undershirt', label = 'Undershirt', kind = 'component', id = 8,  max = 200, section = 'upper' },
@@ -92,8 +153,10 @@ end
 
 function Clothing.DefaultSkin(sex)
     local skin = { sex = (sex == 'female') and 'female' or 'male' }
+    skin.heritage = Clothing.DefaultHeritage(skin.sex)
+    skin.features = Clothing.DefaultFeatures()
     for _, cat in ipairs(Clothing.Categories) do
-        if cat.kind == 'tattoo' then
+        if cat.kind == 'tattoo' or cat.kind == 'eyecolor' then
             skin[cat.key] = { drawable = 0, texture = 0 }
         else
             skin[cat.key] = { drawable = (cat.kind == 'prop' or cat.kind == 'overlay') and -1 or 0, texture = 0 }

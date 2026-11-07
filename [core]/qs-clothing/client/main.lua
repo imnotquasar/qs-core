@@ -39,10 +39,74 @@ local function reapplyTattoos(skin)
     end
 end
 
+local function clamp(v, lo, hi, fallback)
+    v = tonumber(v)
+    if not v then return fallback end
+    return math.max(lo, math.min(hi, v))
+end
+
+local function validParent(list, id, fallback)
+    id = tonumber(id)
+    for _, p in ipairs(list) do
+        if p.id == id then return id end
+    end
+    return fallback
+end
+
+local function normalizeHeritage(h)
+    h = type(h) == 'table' and h or {}
+    return {
+        father = validParent(Clothing.Fathers, h.father, 0),
+        mother = validParent(Clothing.Mothers, h.mother, 21),
+        shape = clamp(h.shape, 0.0, 1.0, 0.0),
+        skin = clamp(h.skin, 0.0, 1.0, 0.0),
+    }
+end
+
+local function normalizeFeatures(f)
+    f = type(f) == 'table' and f or {}
+    local out = {}
+    for i = 1, #Clothing.Features do
+        out[i] = clamp(f[i] or f[tostring(i)], -1.0, 1.0, 0.0)
+    end
+    return out
+end
+
+local function applyHeritage(h)
+    h = normalizeHeritage(h)
+    SetPedHeadBlendData(PlayerPedId(), h.father, h.mother, 0, h.father, h.mother, 0, h.shape + 0.0, h.skin + 0.0, 0.0, false)
+end
+
+local function applyFeatures(f)
+    local ped = PlayerPedId()
+    f = normalizeFeatures(f)
+    for i = 1, #f do
+        SetPedFaceFeature(ped, i - 1, f[i] + 0.0)
+    end
+end
+
+local function copySkin(skin)
+    local out = {}
+    for k, v in pairs(skin or {}) do
+        if type(v) == 'table' then
+            local t = {}
+            for k2, v2 in pairs(v) do t[k2] = v2 end
+            out[k] = t
+        else
+            out[k] = v
+        end
+    end
+    out.heritage = normalizeHeritage(out.heritage)
+    out.features = normalizeFeatures(out.features)
+    return out
+end
+
 local function applyCategory(cat, drawable, texture)
     local ped = PlayerPedId()
     if cat.kind == 'tattoo' then
         return
+    elseif cat.kind == 'eyecolor' then
+        SetPedEyeColor(ped, math.max(0, drawable or 0))
     elseif cat.kind == 'component' then
         SetPedComponentVariation(ped, cat.id, drawable, texture, 0)
     elseif cat.kind == 'overlay' then
@@ -82,7 +146,8 @@ function ApplyAppearance(skin, sex)
 
     local ped = PlayerPedId()
     SetPedDefaultComponentVariation(ped)
-    SetPedHeadBlendData(ped, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, false)
+    applyHeritage(skin.heritage)
+    applyFeatures(skin.features)
 
     for _, cat in ipairs(Clothing.Categories) do
         local entry = skin[cat.key]
@@ -184,12 +249,10 @@ local function openEditor(opts)
     editing = true
     startEditorLoop()
     TriggerEvent('qs-corehud:display', false)
-    SetPedHeadBlendData(PlayerPedId(), 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, false)
 
-    local working = {}
-    for k, v in pairs(savedSkin) do
-        working[k] = (type(v) == 'table') and { drawable = v.drawable, texture = v.texture } or v
-    end
+    local working = copySkin(savedSkin)
+    applyHeritage(working.heritage)
+    applyFeatures(working.features)
 
     editSkin = working
     local disabled = opts.disabled or { 'tattoos' }
@@ -203,6 +266,9 @@ local function openEditor(opts)
         data = {
             categories = Clothing.Categories,
             sections = Clothing.Sections,
+            fathers = Clothing.Fathers,
+            mothers = Clothing.Mothers,
+            features = Clothing.Features,
             skin = working,
             creator = false,
             disabled = disabled,
@@ -229,10 +295,7 @@ function OpenCreator(sex, cb)
     creatorCb = cb
     editing = true
 
-    local working = {}
-    for k, v in pairs(savedSkin) do
-        working[k] = (type(v) == 'table') and { drawable = v.drawable, texture = v.texture } or v
-    end
+    local working = copySkin(savedSkin)
 
     editSkin = working
     SetNuiFocus(true, true)
@@ -243,10 +306,13 @@ function OpenCreator(sex, cb)
         data = {
             categories = Clothing.Categories,
             sections = Clothing.Sections,
+            fathers = Clothing.Fathers,
+            mothers = Clothing.Mothers,
+            features = Clothing.Features,
             skin = working,
             creator = true,
             disabled = { 'tattoos' },
-            defaultSection = 'face',
+            defaultSection = 'heritage',
         },
     })
 end
@@ -273,6 +339,23 @@ RegisterNUICallback('change', function(data, cb)
     end
 end)
 
+RegisterNUICallback('heritage', function(data, cb)
+    cb('ok')
+    if not editSkin then return end
+    editSkin.heritage = normalizeHeritage(data)
+    applyHeritage(editSkin.heritage)
+end)
+
+RegisterNUICallback('feature', function(data, cb)
+    cb('ok')
+    if not editSkin then return end
+    local i = math.floor(tonumber(data.index) or 0)
+    if i < 1 or i > #Clothing.Features then return end
+    editSkin.features = normalizeFeatures(editSkin.features)
+    editSkin.features[i] = clamp(data.value, -1.0, 1.0, 0.0)
+    SetPedFaceFeature(PlayerPedId(), i - 1, editSkin.features[i] + 0.0)
+end)
+
 RegisterNUICallback('section', function(data, cb)
     if creatorCb then
         TriggerEvent('qs:clothing:section', data.key)
@@ -290,7 +373,7 @@ end)
 
 RegisterNUICallback('save', function(data, cb)
     SetNuiFocus(false, false)
-    savedSkin = data.skin
+    savedSkin = copySkin(data.skin)
     savedSkin.sex = savedSkin.sex or 'male'
     if creatorCb then
         finishCreator(savedSkin, true)

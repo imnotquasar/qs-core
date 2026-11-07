@@ -31,6 +31,8 @@ Config.Preview = {
     creatorSide   = 0.12,
     creatorInterp = 1200, -- ms
     creatorSections = {
+        heritage    = { dist = 1.85, height = 0.66, target = 0.63, fov = 18.0 },
+        features    = { dist = 1.50, height = 0.66, target = 0.64, fov = 14.0 },
         face        = { dist = 1.85, height = 0.66, target = 0.63, fov = 18.0 },
         upper       = { dist = 2.45, height = 0.50, target = 0.25, fov = 24.0 },
         lower       = { dist = 2.45, height = 0.10, target = -0.35, fov = 30.0 },
