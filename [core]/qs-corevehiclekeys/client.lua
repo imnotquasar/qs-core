@@ -10,18 +10,36 @@ local function trim(s) return s and s:match('^%s*(.-)%s*$') or s end
 AddEventHandler('qs:client:onPlayerLoaded', function() mySrc = GetPlayerServerId(PlayerId()) end)
 CreateThread(function() Wait(500) mySrc = GetPlayerServerId(PlayerId()) end)
 
+local function external()
+    local state = GetResourceState('qs-vehiclekeys')
+    return state ~= 'missing' and state ~= 'stopped' and state ~= 'stopping'
+end
+
 local function hasKeys(plate) return plate ~= nil and keys[trim(plate)] == true end
 local function giveKeys(plate) if plate then keys[trim(plate)] = true end end
 local function removeKeys(plate) if plate then keys[trim(plate)] = nil end end
 
-exports('GiveKeys', function(plate) giveKeys(plate) end)
-exports('RemoveKeys', function(plate) removeKeys(plate) end)
-exports('HasKeys', function(plate) return hasKeys(plate) end)
+exports('GiveKeys', function(plate)
+    if external() then return exports['qs-core']:GiveVehicleKeys(plate) end
+    giveKeys(plate)
+end)
+exports('RemoveKeys', function(plate)
+    if external() then return exports['qs-core']:RemoveVehicleKeys(plate) end
+    removeKeys(plate)
+end)
+exports('HasKeys', function(plate)
+    if external() then return exports['qs-core']:HasVehicleKeys(plate) end
+    return hasKeys(plate)
+end)
 exports('GetKeys', function() return keys end)
 
-RegisterNetEvent('vehiclekeys:client:SetOwner', function(plate) giveKeys(plate) end)
-RegisterNetEvent('qs-corevehiclekeys:client:give', function(plate) giveKeys(plate) end)
-RegisterNetEvent('qs-corevehiclekeys:client:remove', function(plate) removeKeys(plate) end)
+RegisterNetEvent('vehiclekeys:client:SetOwner', function(plate) if not external() then giveKeys(plate) end end)
+RegisterNetEvent('qs-corevehiclekeys:client:give', function(plate)
+    if external() then exports['qs-core']:GiveVehicleKeys(plate) else giveKeys(plate) end
+end)
+RegisterNetEvent('qs-corevehiclekeys:client:remove', function(plate)
+    if external() then exports['qs-core']:RemoveVehicleKeys(plate) else removeKeys(plate) end
+end)
 
 local function helpText(msg, duration)
     BeginTextCommandDisplayHelp('STRING')
@@ -63,6 +81,7 @@ local function lockAnim()
 end
 
 local function toggleLock()
+    if external() then return end
     local veh = currentVehicle()
     if not veh then return end
     local plate = trim(GetVehicleNumberPlateText(veh))
@@ -89,20 +108,24 @@ RegisterNetEvent('qs-corevehiclekeys:client:lockState', function(netId, state, s
     if veh and DoesEntityExist(veh) then SetVehicleDoorsLocked(veh, state) end
 end)
 
-RegisterCommand('givekeys', function(_, args)
-    local veh = GetVehiclePedIsIn(PlayerPedId(), false)
-    if veh == 0 then core:Notify(T('not_in_veh'), 'error') return end
-    local plate = trim(GetVehicleNumberPlateText(veh))
-    if not hasKeys(plate) then core:Notify(T('no_keys'), 'error') return end
-    local target = tonumber(args[1]) or nearestPlayer(Config.GiveDistance)
-    if not target then core:Notify(T('no_player'), 'error') return end
-    TriggerServerEvent('qs-corevehiclekeys:server:giveTo', target, plate)
-    core:Notify(T('keys_shared'), 'success')
-end, false)
+if not external() then
+    RegisterCommand('givekeys', function(_, args)
+        local veh = GetVehiclePedIsIn(PlayerPedId(), false)
+        if veh == 0 then core:Notify(T('not_in_veh'), 'error') return end
+        local plate = trim(GetVehicleNumberPlateText(veh))
+        if not hasKeys(plate) then core:Notify(T('no_keys'), 'error') return end
+        local target = tonumber(args[1]) or nearestPlayer(Config.GiveDistance)
+        if not target then core:Notify(T('no_player'), 'error') return end
+        TriggerServerEvent('qs-corevehiclekeys:server:giveTo', target, plate)
+        core:Notify(T('keys_shared'), 'success')
+    end, false)
+end
 
 CreateThread(function()
     Wait(800)
-    TriggerEvent('chat:addSuggestion', '/givekeys', T('sug_givekeys'), { { name = T('arg_id') } })
+    if not external() then
+        TriggerEvent('chat:addSuggestion', '/givekeys', T('sug_givekeys'), { { name = T('arg_id') } })
+    end
     TriggerEvent('chat:addSuggestion', '/adminkeys', T('sug_adminkeys'), { { name = T('arg_id') } })
 end)
 
@@ -140,7 +163,7 @@ local blockedVeh = nil
 
 RegisterCommand('hotwire', function()
     local veh = blockedVeh
-    if not veh or hotwiring or GetVehiclePedIsIn(PlayerPedId(), false) ~= veh then return end
+    if external() or not veh or hotwiring or GetVehiclePedIsIn(PlayerPedId(), false) ~= veh then return end
     if not hasLockpick() then return end
     CreateThread(function() hotwire(veh, trim(GetVehicleNumberPlateText(veh))) end)
 end, false)
@@ -151,6 +174,10 @@ CreateThread(function()
         local ped = PlayerPedId()
         local veh = GetVehiclePedIsIn(ped, false)
         local keyless = nil
+        if external() then
+            veh = 0
+            blockedVeh = nil
+        end
         if veh ~= 0 and GetPedInVehicleSeat(veh, -1) == ped then
             local plate = trim(GetVehicleNumberPlateText(veh))
             if not hasKeys(plate) then

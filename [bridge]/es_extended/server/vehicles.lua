@@ -1,15 +1,44 @@
-CreateThread(function()
-    MySQL.query([[
-        CREATE TABLE IF NOT EXISTS `owned_vehicles` (
-            `owner`    VARCHAR(60) DEFAULT NULL,
-            `plate`    VARCHAR(12) NOT NULL,
-            `vehicle`  LONGTEXT DEFAULT NULL,
-            `type`     VARCHAR(20) NOT NULL DEFAULT 'car',
-            `job`      VARCHAR(20) DEFAULT NULL,
-            `stored`   TINYINT(1) NOT NULL DEFAULT 0,
-            PRIMARY KEY (`plate`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    ]])
+local OWNED_VEHICLES_VIEW = [[
+    SELECT
+        `citizenid` AS `owner`,
+        `plate`,
+        `props` AS `vehicle`,
+        'car' AS `type`,
+        NULL AS `job`,
+        `state` AS `stored`,
+        `garage` AS `parking`,
+        NULL AS `pound`
+    FROM `vehicles`
+]]
+
+local function tableType(name)
+    return MySQL.scalar.await(
+        'SELECT `TABLE_TYPE` FROM information_schema.TABLES WHERE `TABLE_SCHEMA` = DATABASE() AND `TABLE_NAME` = ?',
+        { name }
+    )
+end
+
+local function ensureOwnedVehiclesView()
+    if not tableType('vehicles') then
+        print('^3[es_extended bridge]^7 table `vehicles` not found, import qs-core/sql/qscore.sql so owned_vehicles can be linked to qs-core vehicles')
+        return
+    end
+    if tableType('owned_vehicles') == 'BASE TABLE' then
+        local rows = tonumber(MySQL.scalar.await('SELECT COUNT(*) FROM `owned_vehicles`')) or 0
+        if rows > 0 then
+            print('^3[es_extended bridge]^7 owned_vehicles is a real table with data, so it was left untouched; scripts that read it will not see qs-core vehicles')
+            return
+        end
+        MySQL.query.await('DROP TABLE `owned_vehicles`')
+    end
+    MySQL.query.await('CREATE OR REPLACE VIEW `owned_vehicles` AS ' .. OWNED_VEHICLES_VIEW)
+end
+
+MySQL.ready(function()
+    local ok, err = pcall(ensureOwnedVehiclesView)
+    if not ok then
+        print(('^1[es_extended bridge]^7 could not create the owned_vehicles view: %s'):format(err))
+    end
 end)
 
 function ESX.GetVehicleType(modelName, _player, cb)

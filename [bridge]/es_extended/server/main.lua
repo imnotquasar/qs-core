@@ -82,25 +82,30 @@ local function esxInventory(src)
     for slot = 1, #view do
         local it = view[slot]
         if it and type(it) == 'table' then
-            if byName[it.name] then
+            local hasInfo = type(it.info) == 'table' and next(it.info) ~= nil
+            local entry = {
+                name = it.name,
+                label = it.label or it.name,
+                count = it.count,
+                weight = it.weight or 0,
+                usable = it.useable or false,
+                rare = false,
+                canRemove = true,
+                slot = slot,
+                info = hasInfo and it.info or nil,
+                metadata = hasInfo and it.info or nil,
+            }
+            if hasInfo then
+                order[#order + 1] = entry
+            elseif byName[it.name] then
                 byName[it.name].count = byName[it.name].count + it.count
             else
-                byName[it.name] = {
-                    name = it.name,
-                    label = it.label or it.name,
-                    count = it.count,
-                    weight = it.weight or 0,
-                    usable = it.useable or false,
-                    rare = false,
-                    canRemove = true,
-                }
-                order[#order + 1] = it.name
+                byName[it.name] = entry
+                order[#order + 1] = entry
             end
         end
     end
-    local out = {}
-    for _, name in ipairs(order) do out[#out + 1] = byName[name] end
-    return out
+    return order
 end
 
 local function ensureJobRegistered(name)
@@ -330,18 +335,18 @@ local function CreateExtendedPlayer(src)
             }
         end
 
-        function self.addInventoryItem(name, count)
+        function self.addInventoryItem(name, count, metadata, slot)
             count = math.floor(tonumber(count) or 1)
-            local ok = inv:AddItem(src, name, count)
+            local ok = inv:AddItem(src, name, count, tonumber(slot), type(metadata) == 'table' and metadata or nil)
             if ok then
                 TriggerClientEvent('esx:addInventoryItem', src, name, inv:GetItemCount(src, name))
             end
             return ok
         end
 
-        function self.removeInventoryItem(name, count)
+        function self.removeInventoryItem(name, count, metadata, slot)
             count = math.floor(tonumber(count) or 1)
-            local ok = inv:RemoveItem(src, name, count)
+            local ok = inv:RemoveItem(src, name, count, tonumber(slot), type(metadata) == 'table' and metadata or nil)
             if ok then
                 TriggerClientEvent('esx:removeInventoryItem', src, name, inv:GetItemCount(src, name))
             end
@@ -591,10 +596,19 @@ function ESX.UseItem(source, item, ...)
     if cb then cb(source, item, ...) end
 end
 
-AddEventHandler('qs:server:usedItem', function(src, name)
+AddEventHandler('qs:server:usedItem', function(src, name, slot, info)
     if useCustomInventory then return end
     local cb = usableItems[name]
-    if cb then cb(src, name) end
+    if not cb then return end
+    local data = slot and inv:GetItemBySlot(src, slot) or nil
+    local item = {
+        name = name,
+        count = data and data.count or 1,
+        slot = tonumber(slot),
+        info = (data and data.info) or info or {},
+    }
+    item.metadata = item.info
+    cb(src, name, item)
 end)
 
 function ESX.GetItems()

@@ -253,7 +253,7 @@ local function takeOut(plate)
         local v = CreateVehicle(hash, s.x, s.y, s.z, s.w or 0.0, true, true)
         SetVehicleOnGroundProperly(v)
         SetVehicleNumberPlateText(v, res.plate)
-        if GetResourceState('qs-corevehiclekeys') == 'started' then exports['qs-corevehiclekeys']:GiveKeys(res.plate) end
+        exports['qs-core']:GiveVehicleKeys(v, res.model)
         setProps(v, res.props)
         SetVehicleFixed(v)
         SetVehicleDeformationFixed(v)

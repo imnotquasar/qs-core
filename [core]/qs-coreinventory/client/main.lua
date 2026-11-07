@@ -91,8 +91,7 @@ local function nearestTrunk()
 end
 
 local function hasVehKeys(plate)
-    if GetResourceState('qs-corevehiclekeys') ~= 'started' then return true end
-    return exports['qs-corevehiclekeys']:HasKeys(plate) == true
+    return exports['qs-core']:HasVehicleKeys(plate) == true
 end
 
 local trunkBlockNotified = 0

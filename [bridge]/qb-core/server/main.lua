@@ -524,8 +524,9 @@ function QBCore.Functions.CreateUseableItem(item, cb)
     ensureItemUseable(item)
 
     if not usesAdvancedInventory() then
-        core:RegisterUsableItem(item, function(src)
-            cb(src, qbUsableItemData(src, item))
+        core:RegisterUsableItem(item, function(src, slot, info)
+            if type(slot) == 'table' then return cb(src, slot) end
+            cb(src, qbUsableItemData(src, item, tonumber(slot), info))
         end)
     end
 

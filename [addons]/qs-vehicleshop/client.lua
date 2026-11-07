@@ -196,7 +196,7 @@ local function deliverVehicle(loc, model, plate)
     local v = CreateVehicle(hash, s.x, s.y, s.z, s.w or 0.0, true, true)
     SetVehicleOnGroundProperly(v)
     SetVehicleNumberPlateText(v, plate)
-    if GetResourceState('qs-corevehiclekeys') == 'started' then exports['qs-corevehiclekeys']:GiveKeys(plate) end
+    exports['qs-core']:GiveVehicleKeys(v)
     SetVehicleFuelLevel(v, 100.0)
     SetVehicleDirtLevel(v, 0.0)
     SetEntityAsMissionEntity(v, true, true)
