@@ -217,9 +217,9 @@ registerCommand('kick', 'command.qs', function(source, args)
 end, 'Kick a player')
 
 registerCommand('ban', 'command.qs', function(source, args)
-    local target, minutes = tonumber(args[1]), tonumber(args[2]) or 0
+    local target, minutes = tonumber(args[1]), tonumber(args[2])
     local reason = table.concat(args, ' ', 3)
-    if not target or not Bans then return end
+    if not target or not minutes or not (minutes >= 0) or not Bans then return end
     Bans.Add(target, minutes, reason ~= '' and reason or 'No reason', tostring(source))
 end, 'Ban a player: /ban <id> <minutes|0=perma> <reason>')
 

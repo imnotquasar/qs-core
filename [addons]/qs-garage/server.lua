@@ -1,7 +1,18 @@
 local core = exports['qs-core']
 
 local garageIds = {}
-for _, g in ipairs(Config.Garages) do garageIds[g.id] = true end
+local garageById = {}
+for _, g in ipairs(Config.Garages) do
+    garageIds[g.id] = true
+    garageById[g.id] = g
+end
+
+local function nearGarage(src, id)
+    local g = garageById[id]
+    local ped = GetPlayerPed(src)
+    if not g or ped == 0 then return false end
+    return #(GetEntityCoords(ped) - vector3(g.coords.x, g.coords.y, g.coords.z)) <= Config.MarkerDistance
+end
 
 local function citizenOf(src)
     local player = core:GetPlayer(src)
@@ -10,6 +21,19 @@ local function citizenOf(src)
 end
 
 local function trim(s) return s and s:match('^%s*(.-)%s*$') or s end
+
+local function plateNear(src, plate, reach)
+    local ped = GetPlayerPed(src)
+    if ped == 0 or plate == '' then return false end
+    local pos = GetEntityCoords(ped)
+    for _, v in ipairs(GetAllVehicles()) do
+        if DoesEntityExist(v) and trim(GetVehicleNumberPlateText(v)) == plate
+            and #(pos - GetEntityCoords(v)) <= reach then
+            return v
+        end
+    end
+    return false
+end
 
 local function plateInWorld(plate)
     for _, v in ipairs(GetAllVehicles()) do
@@ -43,7 +67,7 @@ core:RegisterCallback('qs-garage:list', function(src, garage)
 end)
 
 core:RegisterCallback('qs-garage:takeout', function(src, garage, plate)
-    if not garageIds[garage] then return { ok = false } end
+    if not garageIds[garage] or not nearGarage(src, garage) then return { ok = false } end
     if not core:RateLimit(('garage-out:%d'):format(src), 1, 1200) then return { ok = false } end
     plate = trim(tostring(plate or ''))
     local cid = citizenOf(src)
@@ -65,9 +89,12 @@ core:RegisterCallback('qs-garage:takeout', function(src, garage, plate)
 end)
 
 core:RegisterCallback('qs-garage:store', function(src, garage, plate, fuel, props)
-    if not garageIds[garage] then return { ok = false } end
+    if not garageIds[garage] or not nearGarage(src, garage) then return { ok = false } end
     if not core:RateLimit(('garage-in:%d'):format(src), 1, 1200) then return { ok = false } end
     plate = trim(tostring(plate or ''))
+    local stored = plateNear(src, plate, Config.MarkerDistance + 10.0)
+    if not stored then return { ok = false } end
+    if type(props) == 'table' and #json.encode(props) > 20000 then return { ok = false } end
     local cid = citizenOf(src)
     if not cid then return { ok = false } end
 
@@ -82,5 +109,6 @@ core:RegisterCallback('qs-garage:store', function(src, garage, plate, fuel, prop
         body = 1000.0,
         props = type(props) == 'table' and props or {},
     })
+    if DoesEntityExist(stored) then DeleteEntity(stored) end
     return { ok = true }
 end)

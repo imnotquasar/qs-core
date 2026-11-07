@@ -11,7 +11,7 @@ core:RegisterItems({
 
 CreateThread(function()
     Wait(1000)
-    core:RegisterStash('police_evidence', 'Evidence Locker', 50, 200000, 5)
+    core:RegisterStash('police_evidence', 'Evidence Locker', 50, 200000, 5, Config.Station.locker, 4.0, 'police')
 end)
 
 local cuffed = {}
@@ -26,7 +26,11 @@ local function jobName(src)
     return (job and job.name) or 'unemployed'
 end
 
-local function isCop(src) return jobName(src) == 'police' end
+local function isCop(src)
+    local player = core:GetPlayer(src)
+    local job = player and player.PlayerData and player.PlayerData.job
+    return job ~= nil and job.name == 'police'
+end
 
 local function charName(src)
     local player = core:GetPlayer(src)
@@ -122,7 +126,7 @@ end)
 RegisterNetEvent('qs-police:server:putInCar', function(target)
     local src = source
     target = tonumber(target)
-    if not target or not isCop(src) or not cuffed[target] then return end
+    if not target or target == src or not isCop(src) or not cuffed[target] then return end
     if distBetween(src, target) > Config.TargetDistance + 3.0 then return end
     if escorts[target] then
         escorts[target] = nil
@@ -134,7 +138,7 @@ end)
 RegisterNetEvent('qs-police:server:outCar', function(target)
     local src = source
     target = tonumber(target)
-    if not target or not isCop(src) or not cuffed[target] then return end
+    if not target or target == src or not isCop(src) or not cuffed[target] then return end
     if distBetween(src, target) > Config.TargetDistance + 3.0 then return end
     TriggerClientEvent('qs-police:client:outCar', target)
 end)
@@ -213,7 +217,7 @@ RegisterNetEvent('qs-police:server:fine', function(target, amount, reason)
     target = tonumber(target)
     amount = math.floor(tonumber(amount) or 0)
     if not target or target == src or not isCop(src) then return end
-    if amount < Config.Fine.min or amount > Config.Fine.max then return end
+    if not (amount >= Config.Fine.min and amount <= Config.Fine.max) then return end
     if not core:RateLimit(('pd-fine:%d'):format(src), 1, 3000) then return end
     if distBetween(src, target) > 6.0 then return end
 
@@ -227,9 +231,12 @@ RegisterNetEvent('qs-police:server:fine', function(target, amount, reason)
 end)
 
 local function addEvidence(data)
-    local count = 0
-    for _ in pairs(evidence) do count = count + 1 end
-    if count >= Config.Evidence.maxPoints then return end
+    local count, mine = 0, 0
+    for _, e in pairs(evidence) do
+        count = count + 1
+        if e.owner == data.owner then mine = mine + 1 end
+    end
+    if count >= Config.Evidence.maxPoints or mine >= 25 then return end
 
     evidenceSeq = evidenceSeq + 1
     data.id = evidenceSeq
@@ -245,9 +252,10 @@ RegisterNetEvent('qs-police:server:casing', function(coords, weaponLabel)
     if ped == 0 then return end
     local real = GetEntityCoords(ped)
     local c = vector3(tonumber(coords.x) or 0.0, tonumber(coords.y) or 0.0, tonumber(coords.z) or 0.0)
-    if #(real - c) > (Config.Evidence.maxCasingDist or 150.0) then return end
+    if not (#(real - c) <= (Config.Evidence.maxCasingDist or 150.0)) then return end
 
     addEvidence({
+        owner = src,
         type = 'casing',
         coords = { x = c.x, y = c.y, z = c.z },
         weapon = tostring(weaponLabel or 'Unknown'):sub(1, 40),
@@ -270,6 +278,7 @@ RegisterNetEvent('qs-police:server:blood', function()
     if not cid then return end
 
     addEvidence({
+        owner = src,
         type = 'blood',
         coords = { x = c.x, y = c.y, z = c.z },
         dna = cid,

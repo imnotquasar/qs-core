@@ -58,18 +58,24 @@ core:RegisterCallback('qs-vehicleshop:buy', function(src, model)
         return { ok = false, msg = 'money', price = entry.price }
     end
 
-    core:CreateOwnedVehicle({
-        citizenid = citizenid,
-        license = GetPlayerIdentifierByType(src, 'license'),
-        plate = plate,
-        model = model,
-        garage = Config.DefaultGarage,
-        state = 0,
-        fuel = 100,
-        engine = 1000.0,
-        body = 1000.0,
-        props = {},
-    })
+    local ok, created = pcall(function()
+        return core:CreateOwnedVehicle({
+            citizenid = citizenid,
+            license = GetPlayerIdentifierByType(src, 'license'),
+            plate = plate,
+            model = model,
+            garage = Config.DefaultGarage,
+            state = 0,
+            fuel = 100,
+            engine = 1000.0,
+            body = 1000.0,
+            props = {},
+        })
+    end)
+    if not ok or not created then
+        core:AddMoney(src, account, entry.price, 'vehicleshop-refund:' .. model)
+        return { ok = false, msg = 'plate' }
+    end
 
     return { ok = true, plate = plate, model = model, account = account, price = entry.price }
 end)

@@ -39,7 +39,7 @@ local function removeMoney(account, amount)
     saveAccount(account)
 end
 
-RegisterNetEvent('esx_society:registerSociety', function(name, label, account, datastore, jobs, data)
+AddEventHandler('esx_society:registerSociety', function(name, label, account, datastore, jobs, data)
     societies[name] = {
         name = name,
         label = label or name,
@@ -68,8 +68,8 @@ ESX.RegisterServerCallback('esx_society:getSocietyMoney', function(source, cb, s
     cb(getMoney(society))
 end)
 
-RegisterNetEvent('esx_society:addMoney', function(society, amount) addMoney(society, amount) end)
-RegisterNetEvent('esx_society:removeMoney', function(society, amount) removeMoney(society, amount) end)
+AddEventHandler('esx_society:addMoney', function(society, amount) addMoney(society, amount) end)
+AddEventHandler('esx_society:removeMoney', function(society, amount) removeMoney(society, amount) end)
 
 exports('getSociety', getSociety)
 exports('getSocietyMoney', getMoney)

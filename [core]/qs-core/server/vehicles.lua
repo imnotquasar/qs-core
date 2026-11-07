@@ -1,8 +1,14 @@
 Vehicles = {}
 
+local function stateOf(value)
+    if value == true then return 1 end
+    if value == false then return 0 end
+    return tonumber(value) or 1
+end
+
 local function decodeRow(row)
     row.props = row.props and json.decode(row.props) or {}
-    row.state = tonumber(row.state) or 1
+    row.state = stateOf(row.state)
     row.fuel = tonumber(row.fuel) or 100
     return row
 end

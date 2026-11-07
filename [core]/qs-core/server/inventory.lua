@@ -49,10 +49,10 @@ local function applyUsable(item, cb)
     return false
 end
 
-local function applyStash(id, label, slots, maxWeight, columns)
+local function applyStash(id, label, slots, maxWeight, columns, coords, radius, job)
     local _, exp = Inventory.GetBackend()
     if not exp or not exp.RegisterStash then return false end
-    return exp:RegisterStash(id, label, slots, maxWeight, columns)
+    return exp:RegisterStash(id, label, slots, maxWeight, columns, coords, radius, job)
 end
 
 local function flushPending()
@@ -65,7 +65,7 @@ local function flushPending()
     pendingUsables = {}
 
     for _, stash in ipairs(pendingStashes) do
-        applyStash(stash.id, stash.label, stash.slots, stash.maxWeight, stash.columns)
+        applyStash(stash.id, stash.label, stash.slots, stash.maxWeight, stash.columns, stash.coords, stash.radius, stash.job)
     end
     pendingStashes = {}
 end
@@ -200,15 +200,16 @@ function Inventory.RegisterUsableItem(item, cb)
     return applyUsable(item, cb)
 end
 
-function Inventory.RegisterStash(id, label, slots, maxWeight, columns)
+function Inventory.RegisterStash(id, label, slots, maxWeight, columns, coords, radius, job)
     local _, exp = Inventory.GetBackend()
     if not exp or not exp.RegisterStash then
         pendingStashes[#pendingStashes + 1] = {
             id = id, label = label, slots = slots, maxWeight = maxWeight, columns = columns,
+            coords = coords, radius = radius, job = job,
         }
         return true
     end
-    return applyStash(id, label, slots, maxWeight, columns)
+    return applyStash(id, label, slots, maxWeight, columns, coords, radius, job)
 end
 
 local inventoryItems = {}

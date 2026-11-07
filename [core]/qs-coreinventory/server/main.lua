@@ -152,15 +152,34 @@ local function ensureSecondary(kind, id, slots)
         local sql = KIND_SQL[kind]
         local raw = sql and MySQL.scalar.await(('SELECT items FROM %s WHERE %s = ?'):format(sql.tbl, sql.col), { id })
         local ok, decoded = pcall(function() return raw and json.decode(raw) end)
-        secCache[key] = (ok and decoded) and normalize(decoded, slots) or normalize({}, slots)
+        if secCache[key] == nil then
+            secCache[key] = (ok and decoded) and normalize(decoded, slots) or normalize({}, slots)
+        end
     end
     return normalize(secCache[key], slots)
+end
+
+local function withinReach(src, o)
+    local a = o.anchor
+    if not a then return true end
+    local ped = GetPlayerPed(src)
+    if ped == 0 then return false end
+    local pos = a.coords
+    if a.veh then
+        if not DoesEntityExist(a.veh) then return false end
+        pos = GetEntityCoords(a.veh)
+    end
+    return #(GetEntityCoords(ped) - pos) <= a.radius
 end
 
 local function containerGet(src, container)
     if container == 'secondary' then
         local o = open[src]
         if not o then return nil end
+        if not withinReach(src, o) then
+            open[src] = nil
+            return nil
+        end
         return ensureSecondary(o.kind, o.id, o.slots), o.slots, o.maxWeight, o
     end
     return playerList(src), SLOTS, MAXW, nil
@@ -213,7 +232,7 @@ function AddItem(src, name, count, slot, info)
     count = math.floor(tonumber(count) or 0)
     local items = catalogue()
     local def = items[name]
-    if not def or count <= 0 then return false end
+    if not def or not (count > 0) then return false end
     info = cloneInfo(info)
 
     local list = playerList(src)
@@ -273,7 +292,7 @@ end
 
 function RemoveItem(src, name, count, slot)
     count = math.floor(tonumber(count) or 0)
-    if count <= 0 then return false end
+    if not (count > 0) then return false end
 
     local list = playerList(src)
 
@@ -323,7 +342,7 @@ end
 
 function CanCarryItem(src, name, count, info)
     count = math.floor(tonumber(count) or 1)
-    if count <= 0 then return false end
+    if not (count > 0) then return false end
     local items = catalogue()
     local def = items[name]
     if not def then return false end
@@ -374,7 +393,7 @@ exports('createQuest', function(...) return true end)
 local function slotMove(items, sList, sN, sMaxW, from, dList, dN, dMaxW, to)
     local a = sList[from]
     if not a then return end
-    if to < 1 or to > dN then return end
+    if not (to >= 1 and to <= dN) then return end
     local same = sList == dList
     local def = items[a.name]
     local ms = maxStack(def)
@@ -407,6 +426,10 @@ local function slotMove(items, sList, sN, sMaxW, from, dList, dN, dMaxW, to)
                 if a.count <= 0 then sList[from] = false end
             end
         else
+            if not same and (weightOf(dList, items, dN) - w * b.count + w * a.count > dMaxW
+                or weightOf(sList, items, sN) - w * a.count + w * b.count > sMaxW) then
+                return
+            end
             sList[from], dList[to] = b, a
         end
     else
@@ -427,7 +450,7 @@ local function moveItem(src, fromC, from, toC, to)
     local items = catalogue()
     local sList, sN, sMaxW = containerGet(src, fromC)
     if not sList then return end
-    if from < 1 or from > sN then return end
+    if not (from >= 1 and from <= sN) then return end
 
     local dList, dN, dMaxW
     if toC == fromC then
@@ -445,12 +468,14 @@ local function moveItem(src, fromC, from, toC, to)
 end
 
 RegisterNetEvent('qs-inv:server:move', function(fromC, from, toC, to)
-    moveItem(source, fromC == 'secondary' and 'secondary' or 'player', tonumber(from) or 0,
-        toC == 'secondary' and 'secondary' or 'player', tonumber(to) or 0)
+    if not core:RateLimit(('inv-act:%d'):format(source), 30, 1000) then return end
+    moveItem(source, fromC == 'secondary' and 'secondary' or 'player', math.floor(tonumber(from) or 0),
+        toC == 'secondary' and 'secondary' or 'player', math.floor(tonumber(to) or 0))
 end)
 
 RegisterNetEvent('qs-inv:server:split', function(slot, count, container)
     local src = source
+    if not core:RateLimit(('inv-act:%d'):format(src), 30, 1000) then return end
     slot = tonumber(slot) or 0
     container = container == 'secondary' and 'secondary' or 'player'
     if container == 'secondary' and not open[src] then return end
@@ -464,7 +489,7 @@ RegisterNetEvent('qs-inv:server:split', function(slot, count, container)
     local n = tonumber(count)
     n = n and math.floor(n) or math.floor(a.count / 2)
     if n > a.count - 1 then n = a.count - 1 end
-    if n < 1 then return end
+    if not (n >= 1) then return end
 
     local empty
     for i = 1, (nSlots or SLOTS) do
@@ -484,6 +509,7 @@ end)
 RegisterNetEvent('qs-inv:server:take', function(slot, count)
     local src = source
     if not open[src] then return end
+    if not core:RateLimit(('inv-act:%d'):format(src), 30, 1000) then return end
     slot = tonumber(slot) or 0
     count = tonumber(count)
 
@@ -551,6 +577,7 @@ end)
 
 RegisterNetEvent('qs-inv:server:drop', function(container, slot, count)
     local src = source
+    if not core:RateLimit(('inv-act:%d'):format(src), 30, 1000) then return end
     container = container == 'secondary' and 'secondary' or 'player'
     slot = tonumber(slot) or 0
     count = math.floor(tonumber(count) or 0)
@@ -558,7 +585,7 @@ RegisterNetEvent('qs-inv:server:drop', function(container, slot, count)
     local list = containerGet(src, container)
     if not list then return end
     local e = list[slot]
-    if not e or count <= 0 then return end
+    if not e or not (count > 0) then return end
 
     local take = math.min(count, e.count)
     e.count = e.count - take
@@ -573,10 +600,11 @@ end)
 
 RegisterNetEvent('qs-inv:server:give', function(target, slot, count)
     local src = source
+    if not core:RateLimit(('inv-act:%d'):format(src), 30, 1000) then return end
     target = tonumber(target)
     slot = tonumber(slot) or 0
     count = math.floor(tonumber(count) or 0)
-    if not target or target == src or count <= 0 then return end
+    if not target or target == src or not (count > 0) then return end
 
     local pedA, pedB = GetPlayerPed(src), GetPlayerPed(target)
     if pedA == 0 or pedB == 0 then return end
@@ -608,21 +636,48 @@ RegisterNetEvent('qs-inv:server:give', function(target, slot, count)
     TriggerClientEvent('qs:client:notify', target, T('received', count, label), 'success')
 end)
 
-local function openSecondary(src, kind, id, slots, columns, maxWeight, label)
+local function openSecondary(src, kind, id, slots, columns, maxWeight, label, anchor)
     id = tostring(id or ''):match('^%s*(.-)%s*$')
     if id == '' then return end
-    open[src] = { kind = kind, id = id, slots = slots, columns = columns, maxWeight = maxWeight, label = label }
+    open[src] = { kind = kind, id = id, slots = slots, columns = columns, maxWeight = maxWeight, label = label, anchor = anchor }
     ensureSecondary(kind, id, slots)
     refresh(src)
 end
 
+local function vehicleNear(src, plate)
+    plate = tostring(plate or ''):match('^%s*(.-)%s*$')
+    if plate == '' then return end
+    local ped = GetPlayerPed(src)
+    if ped == 0 then return end
+    local pos = GetEntityCoords(ped)
+    local reach = (Config.TrunkCloseDistance or 5.0) + 1.5
+    for _, veh in ipairs(GetAllVehicles()) do
+        local vp = GetVehicleNumberPlateText(veh)
+        if vp and vp:match('^%s*(.-)%s*$') == plate and #(pos - GetEntityCoords(veh)) <= reach then
+            return veh, plate, reach
+        end
+    end
+end
+
 RegisterNetEvent('qs-inv:server:openTrunk', function(plate)
-    openSecondary(source, 'trunk', plate, Config.TrunkSlots, Config.TrunkColumns, Config.TrunkMaxWeight, T('trunk'))
+    local src = source
+    if not core:RateLimit(('inv-open:%d'):format(src), 5, 1000) then return end
+    local veh, id, reach = vehicleNear(src, plate)
+    if not veh then return end
+    openSecondary(src, 'trunk', id, Config.TrunkSlots, Config.TrunkColumns, Config.TrunkMaxWeight, T('trunk'), { veh = veh, radius = reach })
 end)
 
 RegisterNetEvent('qs-inv:server:openGlovebox', function(plate)
-    openSecondary(source, 'glovebox', plate, Config.GloveboxSlots, Config.GloveboxColumns, Config.GloveboxMaxWeight, T('glovebox'))
+    local src = source
+    if not core:RateLimit(('inv-open:%d'):format(src), 5, 1000) then return end
+    local veh, id, reach = vehicleNear(src, plate)
+    if not veh then return end
+    openSecondary(src, 'glovebox', id, Config.GloveboxSlots, Config.GloveboxColumns, Config.GloveboxMaxWeight, T('glovebox'), { veh = veh, radius = reach })
 end)
+
+local function clampInt(value, default, lo, hi)
+    return math.max(lo, math.min(hi, math.floor(tonumber(value) or default)))
+end
 
 RegisterNetEvent('qs-inv:server:openStash', function(id, opts)
     local src = source
@@ -630,33 +685,42 @@ RegisterNetEvent('qs-inv:server:openStash', function(id, opts)
     if id == '' then return end
     local def = stashDefs[id]
     if not def then
-
         if type(opts) == 'table' and (opts.slots or opts.maxWeight) then
             def = {
-                label = opts.label or 'Stash',
-                slots = math.floor(tonumber(opts.slots) or 50),
-                maxWeight = math.floor(tonumber(opts.maxWeight) or 100000),
-                columns = math.floor(tonumber(opts.columns) or 5),
+                label = tostring(opts.label or 'Stash'):sub(1, 40),
+                slots = clampInt(opts.slots, 50, 1, 200),
+                maxWeight = clampInt(opts.maxWeight, 100000, 1, 1000000),
+                columns = clampInt(opts.columns, 5, 1, 10),
             }
             stashDefs[id] = def
         else
             return
         end
     end
-    openSecondary(src, 'stash', id, def.slots, def.columns or 5, def.maxWeight, def.label)
+    if def.job then
+        local player = core:GetPlayer(src)
+        local job = player and player.PlayerData and player.PlayerData.job
+        if not (job and job.name == def.job) then return end
+    end
+    local anchor = def.coords and { coords = def.coords, radius = def.radius } or nil
+    if anchor and not withinReach(src, { anchor = anchor }) then return end
+    openSecondary(src, 'stash', id, def.slots, def.columns or 5, def.maxWeight, def.label, anchor)
 end)
 
 RegisterNetEvent('qs-inv:server:closeSecondary', function()
     open[source] = nil
 end)
 
-function RegisterStash(id, label, slots, maxWeight, columns)
+function RegisterStash(id, label, slots, maxWeight, columns, coords, radius, job)
     if not id then return false end
     stashDefs[tostring(id)] = {
         label = label or 'Stash',
         slots = math.floor(tonumber(slots) or 50),
         maxWeight = math.floor(tonumber(maxWeight) or 100000),
         columns = math.floor(tonumber(columns) or 5),
+        coords = coords and vector3(coords.x, coords.y, coords.z) or nil,
+        radius = tonumber(radius) or 3.0,
+        job = job,
     }
     return true
 end
@@ -664,11 +728,12 @@ exports('RegisterStash', RegisterStash)
 
 CreateThread(function()
     for _, s in ipairs(Config.Stashes or {}) do
-        if s.id then RegisterStash(s.id, s.label, s.slots, s.maxWeight, s.columns) end
+        if s.id then RegisterStash(s.id, s.label, s.slots, s.maxWeight, s.columns, s.coords, s.radius, s.job) end
     end
 end)
 
 RegisterNetEvent('qs-inv:server:request', function()
+    if not core:RateLimit(('inv-req:%d'):format(source), 5, 1000) then return end
     refresh(source)
 end)
 

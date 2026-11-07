@@ -154,7 +154,10 @@ RegisterNetEvent('qs-jobs:server:process', function(key)
         return
     end
     if not player:removeItem(p.input, p.inputAmount) then return end
-    player:addItem(p.output, p.outputAmount)
+    if player:addItem(p.output, p.outputAmount) == false then
+        player:addItem(p.input, p.inputAmount)
+        return
+    end
     local def = core:GetItem(p.output)
     TriggerClientEvent('qs:client:notify', src, T('processed', p.outputAmount, (def and def.label) or p.output), 'success')
 end)
