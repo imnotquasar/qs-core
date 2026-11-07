@@ -11,7 +11,7 @@ core:RegisterItems({
 
 CreateThread(function()
     Wait(1000)
-    core:RegisterStash('police_evidence', 'Evidence Locker', 50, 200000, 5)
+    core:RegisterStash('police_evidence', 'Evidence Locker', 50, 200000, 5, Config.Station.locker, 4.0, 'police')
 end)
 
 local cuffed = {}
@@ -213,7 +213,7 @@ RegisterNetEvent('qs-police:server:fine', function(target, amount, reason)
     target = tonumber(target)
     amount = math.floor(tonumber(amount) or 0)
     if not target or target == src or not isCop(src) then return end
-    if amount < Config.Fine.min or amount > Config.Fine.max then return end
+    if not (amount >= Config.Fine.min and amount <= Config.Fine.max) then return end
     if not core:RateLimit(('pd-fine:%d'):format(src), 1, 3000) then return end
     if distBetween(src, target) > 6.0 then return end
 

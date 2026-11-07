@@ -24,7 +24,7 @@ end
 function Accounts.Add(source, account, amount, reason)
     account = normalizeAccount(account)
     amount = tonumber(amount)
-    if not amount or amount <= 0 then return false end
+    if not amount or not (amount > 0 and amount < math.huge) then return false end
 
     if PRIMARY[account] then
         local player = QS.GetPlayer(source)
@@ -44,7 +44,7 @@ end
 function Accounts.Remove(source, account, amount, reason)
     account = normalizeAccount(account)
     amount = tonumber(amount)
-    if not amount or amount <= 0 then return false end
+    if not amount or not (amount > 0 and amount < math.huge) then return false end
 
     if PRIMARY[account] then
         local player = QS.GetPlayer(source)
@@ -66,7 +66,7 @@ end
 function Accounts.Set(source, account, amount)
     account = normalizeAccount(account)
     amount = tonumber(amount)
-    if amount == nil or amount < 0 then return false end
+    if not amount or not (amount >= 0 and amount < math.huge) then return false end
 
     if PRIMARY[account] then
         local player = QS.GetPlayer(source)

@@ -57,7 +57,7 @@ end
 
 function PlayerMethods:addMoney(account, amount, reason)
     amount = tonumber(amount)
-    if not amount or amount <= 0 then return false end
+    if not amount or not (amount > 0 and amount < math.huge) then return false end
     if self.PlayerData.money[account] == nil then
         Utils.Error(('addMoney: unknown account "%s" for %s'):format(account, self.citizenid))
         return false
@@ -72,7 +72,7 @@ end
 
 function PlayerMethods:removeMoney(account, amount, reason)
     amount = tonumber(amount)
-    if not amount or amount <= 0 then return false end
+    if not amount or not (amount > 0 and amount < math.huge) then return false end
     local balance = self.PlayerData.money[account]
     if balance == nil then
         Utils.Error(('removeMoney: unknown account "%s" for %s'):format(account, self.citizenid))
@@ -88,7 +88,7 @@ end
 
 function PlayerMethods:setMoney(account, amount)
     amount = tonumber(amount)
-    if not amount or amount < 0 then return false end
+    if not amount or not (amount >= 0 and amount < math.huge) then return false end
     if self.PlayerData.money[account] == nil then return false end
 
     self.PlayerData.money[account] = amount
