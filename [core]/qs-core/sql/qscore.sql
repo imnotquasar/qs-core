@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `stash_inventories` (
     PRIMARY KEY (`stash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `vehicles` (
+CREATE TABLE IF NOT EXISTS `qs_vehicles` (
     `id`         INT NOT NULL AUTO_INCREMENT,
     `citizenid`  VARCHAR(50) NOT NULL,
     `license`    VARCHAR(60) DEFAULT NULL,

@@ -931,7 +931,9 @@ local function spawnAmbulance()
     local veh = CreateVehicle(hash, g.spawn.x, g.spawn.y, g.spawn.z, g.spawn.w or 0.0, true, false)
     SetVehicleOnGroundProperly(veh)
     SetVehicleFuelLevel(veh, 100.0)
-    exports['qs-core']:GiveVehicleKeys(veh)
+    if GetResourceState('qs-corevehiclekeys') == 'started' then
+        exports['qs-corevehiclekeys']:GiveKeys(GetVehicleNumberPlateText(veh))
+    end
     SetModelAsNoLongerNeeded(hash)
 end
 

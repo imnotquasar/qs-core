@@ -82,30 +82,25 @@ local function esxInventory(src)
     for slot = 1, #view do
         local it = view[slot]
         if it and type(it) == 'table' then
-            local hasInfo = type(it.info) == 'table' and next(it.info) ~= nil
-            local entry = {
-                name = it.name,
-                label = it.label or it.name,
-                count = it.count,
-                weight = it.weight or 0,
-                usable = it.useable or false,
-                rare = false,
-                canRemove = true,
-                slot = slot,
-                info = hasInfo and it.info or nil,
-                metadata = hasInfo and it.info or nil,
-            }
-            if hasInfo then
-                order[#order + 1] = entry
-            elseif byName[it.name] then
+            if byName[it.name] then
                 byName[it.name].count = byName[it.name].count + it.count
             else
-                byName[it.name] = entry
-                order[#order + 1] = entry
+                byName[it.name] = {
+                    name = it.name,
+                    label = it.label or it.name,
+                    count = it.count,
+                    weight = it.weight or 0,
+                    usable = it.useable or false,
+                    rare = false,
+                    canRemove = true,
+                }
+                order[#order + 1] = it.name
             end
         end
     end
-    return order
+    local out = {}
+    for _, name in ipairs(order) do out[#out + 1] = byName[name] end
+    return out
 end
 
 local function ensureJobRegistered(name)
@@ -335,18 +330,18 @@ local function CreateExtendedPlayer(src)
             }
         end
 
-        function self.addInventoryItem(name, count, metadata, slot)
+        function self.addInventoryItem(name, count)
             count = math.floor(tonumber(count) or 1)
-            local ok = inv:AddItem(src, name, count, tonumber(slot), type(metadata) == 'table' and metadata or nil)
+            local ok = inv:AddItem(src, name, count)
             if ok then
                 TriggerClientEvent('esx:addInventoryItem', src, name, inv:GetItemCount(src, name))
             end
             return ok
         end
 
-        function self.removeInventoryItem(name, count, metadata, slot)
+        function self.removeInventoryItem(name, count)
             count = math.floor(tonumber(count) or 1)
-            local ok = inv:RemoveItem(src, name, count, tonumber(slot), type(metadata) == 'table' and metadata or nil)
+            local ok = inv:RemoveItem(src, name, count)
             if ok then
                 TriggerClientEvent('esx:removeInventoryItem', src, name, inv:GetItemCount(src, name))
             end
@@ -596,19 +591,10 @@ function ESX.UseItem(source, item, ...)
     if cb then cb(source, item, ...) end
 end
 
-AddEventHandler('qs:server:usedItem', function(src, name, slot, info)
+AddEventHandler('qs:server:usedItem', function(src, name)
     if useCustomInventory then return end
     local cb = usableItems[name]
-    if not cb then return end
-    local data = slot and inv:GetItemBySlot(src, slot) or nil
-    local item = {
-        name = name,
-        count = data and data.count or 1,
-        slot = tonumber(slot),
-        info = (data and data.info) or info or {},
-    }
-    item.metadata = item.info
-    cb(src, name, item)
+    if cb then cb(src, name) end
 end)
 
 function ESX.GetItems()
@@ -653,6 +639,12 @@ function ESX.DoesJobExist(job, grade)
 end
 
 ESX.Jobs = ESX.GetJobs()
+
+function ESX.RefreshJobs()
+    ESX.Jobs = ESX.GetJobs()
+    return ESX.Jobs
+end
+
 ESX.Items = ESX.Items or {}
 if not useCustomInventory then
     for name, def in pairs(core:GetItems() or {}) do

@@ -147,6 +147,7 @@ local function itembox(src, name, count, kind)
 end
 
 local function ensureSecondary(kind, id, slots)
+    if kind == 'player' then return playerList(tonumber(id)) end
     local key = kind .. ':' .. id
     if secCache[key] == nil then
         local sql = KIND_SQL[kind]
@@ -166,10 +167,18 @@ local function containerGet(src, container)
     return playerList(src), SLOTS, MAXW, nil
 end
 
+local refresh
+
 local function containerSave(src, container, list)
     if container == 'secondary' then
         local o = open[src]
         if not o then return end
+        if o.kind == 'player' then
+            local target = tonumber(o.id)
+            core:SetInventory(target, list)
+            refresh(target)
+            return
+        end
         secCache[o.kind .. ':' .. o.id] = list
         local sql = KIND_SQL[o.kind]
         if sql then
@@ -183,7 +192,7 @@ local function containerSave(src, container, list)
     end
 end
 
-local function refresh(src)
+function refresh(src)
     local items = catalogue()
     local pList = playerList(src)
     local data = {
@@ -699,4 +708,63 @@ end)
 CreateThread(function()
     Wait(200)
     TriggerEvent('qs-inventory:registerUsables')
+end)
+
+exports('ClearInventory', function(src, keep)
+    if type(src) == 'string' and not tonumber(src) then
+        secCache['stash:' .. src] = nil
+        MySQL.query('DELETE FROM stash_inventories WHERE stash = ?', { src })
+        return true
+    end
+    src = tonumber(src)
+    local keepNames = {}
+    if type(keep) == 'string' then keepNames[keep] = true end
+    if type(keep) == 'table' then
+        for _, name in ipairs(keep) do keepNames[name] = true end
+    end
+    local list = playerList(src)
+    for slot, entry in pairs(list) do
+        if type(entry) == 'table' and not keepNames[entry.name] then list[slot] = false end
+    end
+    core:SetInventory(src, list)
+    refresh(src)
+    return true
+end)
+
+exports('OpenPlayerFor', function(src, target)
+    target = tonumber(target)
+    if not target or not core:GetPlayer(target) then return false end
+    TriggerClientEvent('qs-inv:client:openServerSecondary', src, 'player')
+    openSecondary(src, 'player', target, SLOTS, Config.Columns, MAXW, GetPlayerName(target))
+    return true
+end)
+
+exports('AddToStash', function(id, name, count, info)
+    id = tostring(id or '')
+    local def = stashDefs[id]
+    count = math.floor(tonumber(count) or 0)
+    if not def or count <= 0 or not catalogue()[name] then return false end
+    local list = ensureSecondary('stash', id, def.slots)
+    local target
+    for slot = 1, def.slots do
+        local entry = list[slot]
+        if type(entry) == 'table' and entry.name == name and sameInfo(entry.info, info) then
+            entry.count = entry.count + count
+            target = slot
+            break
+        end
+    end
+    if not target then
+        for slot = 1, def.slots do
+            if type(list[slot]) ~= 'table' then
+                list[slot] = { name = name, count = count, info = cloneInfo(info) }
+                target = slot
+                break
+            end
+        end
+    end
+    if not target then return false end
+    secCache['stash:' .. id] = list
+    MySQL.query('INSERT INTO stash_inventories (stash, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = VALUES(items)', { id, json.encode(list) })
+    return true
 end)

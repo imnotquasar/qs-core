@@ -21,6 +21,66 @@ function Database.EnsureCidColumn()
     end
 end
 
+function Database.EnsureCollation()
+    if GetResourceState('qbx_core') ~= 'started' then return end
+    local columns = MySQL.query.await([[
+        SELECT COLUMN_NAME AS name FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'players'
+          AND COLUMN_NAME IN ('citizenid', 'license') AND COLLATION_NAME <> 'utf8mb4_unicode_ci'
+    ]]) or {}
+    if #columns > 0 then Utils.Warn('Qbox mode: adjusting the players table. If a Qbox script reports a foreign key error now, restart the server once.') end
+    for _, column in ipairs(columns) do
+        local size = column.name == 'citizenid' and 50 or 60
+        local ok, err = pcall(MySQL.query.await, ('ALTER TABLE `players` MODIFY `%s` VARCHAR(%d) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL'):format(column.name, size))
+        if not ok then Utils.Warn(('Could not change players.%s collation: %s'):format(column.name, tostring(err))) end
+    end
+end
+
+local function tableExists(name)
+    return (tonumber(MySQL.scalar.await(
+        'SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?', { name }
+    )) or 0) > 0
+end
+
+function Database.EnsureVehiclesTable()
+    local legacy = (tonumber(MySQL.scalar.await([[
+        SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'vehicles' AND COLUMN_NAME = 'citizenid'
+    ]])) or 0) > 0
+
+    if legacy and not tableExists('qs_vehicles') then
+        MySQL.query.await('RENAME TABLE `vehicles` TO `qs_vehicles`')
+        Utils.Info('Renamed the owned vehicles table to qs_vehicles.')
+    elseif legacy then
+        MySQL.query.await([[
+            INSERT IGNORE INTO `qs_vehicles` (`citizenid`, `license`, `plate`, `model`, `garage`, `state`, `fuel`, `engine`, `body`, `props`)
+            SELECT `citizenid`, `license`, `plate`, `model`, `garage`, `state`, `fuel`, `engine`, `body`, `props` FROM `vehicles`
+        ]])
+        MySQL.query.await('DROP TABLE IF EXISTS `qs_vehicles_old`')
+        MySQL.query.await('RENAME TABLE `vehicles` TO `qs_vehicles_old`')
+        Utils.Warn('Merged the old vehicles table into qs_vehicles and kept a copy as qs_vehicles_old.')
+    end
+
+    MySQL.query.await([[
+        CREATE TABLE IF NOT EXISTS `qs_vehicles` (
+            `id`         INT NOT NULL AUTO_INCREMENT,
+            `citizenid`  VARCHAR(50) NOT NULL,
+            `license`    VARCHAR(60) DEFAULT NULL,
+            `plate`      VARCHAR(12) NOT NULL,
+            `model`      VARCHAR(60) NOT NULL,
+            `garage`     VARCHAR(60) NOT NULL DEFAULT 'legion',
+            `state`      TINYINT(1)  NOT NULL DEFAULT 1,
+            `fuel`       INT         NOT NULL DEFAULT 100,
+            `engine`     FLOAT       NOT NULL DEFAULT 1000.0,
+            `body`       FLOAT       NOT NULL DEFAULT 1000.0,
+            `props`      LONGTEXT    DEFAULT NULL,
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `uniq_vehicles_plate` (`plate`),
+            KEY `idx_vehicles_citizenid` (`citizenid`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ]])
+end
+
 function Database.EnsureCharacterSlots(license)
     if not license then return end
 

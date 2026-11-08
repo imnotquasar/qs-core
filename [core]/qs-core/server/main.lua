@@ -2,10 +2,16 @@ QS.DatabaseReady = false
 
 CreateThread(function()
     MySQL.ready(function()
+        Database.EnsureCollation()
+        Database.EnsureVehiclesTable()
         Database.EnsureCidColumn()
         QS.DatabaseReady = true
         Utils.Info('Database connection established.')
     end)
+end)
+
+exports('IsDatabaseReady', function()
+    return QS.DatabaseReady == true
 end)
 
 function QS.GetPlayer(source)

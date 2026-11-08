@@ -126,7 +126,9 @@ local function spawnVehicle(model)
     SetVehicleFuelLevel(veh, 100.0)
     SetPedIntoVehicle(ped, veh, -1)
     SetModelAsNoLongerNeeded(hash)
-    exports['qs-core']:GiveVehicleKeys(veh)
+    if GetResourceState('qs-corevehiclekeys') == 'started' then
+        exports['qs-corevehiclekeys']:GiveKeys(GetVehicleNumberPlateText(veh))
+    end
     core:Notify(T('veh_spawned'), 'success')
 end
 

@@ -1,3 +1,4 @@
+---@type table<string, Vehicle>
 return {
     adder = {
         name = 'Adder',
@@ -7937,6 +7938,8 @@ return {
         type = 'automobile',
         hash = `ztype`,
     },
+    -- Money Fronts (mp2025_01)
+    -- Build Number: 3570
 
     cheetah3 = {
         name = 'Cheetah 3',

@@ -1,44 +1,58 @@
-local OWNED_VEHICLES_VIEW = [[
-    SELECT
-        `citizenid` AS `owner`,
-        `plate`,
-        `props` AS `vehicle`,
-        'car' AS `type`,
-        NULL AS `job`,
-        `state` AS `stored`,
-        `garage` AS `parking`,
-        NULL AS `pound`
-    FROM `vehicles`
-]]
+local function ensureVehicleCatalog()
+    local deadline = GetGameTimer() + 30000
+    while not exports['qs-core']:IsDatabaseReady() and GetGameTimer() < deadline do Wait(100) end
 
-local function tableType(name)
-    return MySQL.scalar.await(
-        'SELECT `TABLE_TYPE` FROM information_schema.TABLES WHERE `TABLE_SCHEMA` = DATABASE() AND `TABLE_NAME` = ?',
-        { name }
-    )
-end
+    MySQL.query.await([[
+        CREATE TABLE IF NOT EXISTS `vehicles` (
+            `name`     VARCHAR(60) NOT NULL,
+            `model`    VARCHAR(60) NOT NULL,
+            `price`    INT         NOT NULL,
+            `category` VARCHAR(60) DEFAULT NULL,
+            PRIMARY KEY (`model`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ]])
 
-local function ensureOwnedVehiclesView()
-    if not tableType('vehicles') then
-        print('^3[es_extended bridge]^7 table `vehicles` not found, import qs-core/sql/qscore.sql so owned_vehicles can be linked to qs-core vehicles')
+    local hasColumns = (tonumber(MySQL.scalar.await([[
+        SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'vehicles' AND COLUMN_NAME IN ('name', 'price', 'category')
+    ]])) or 0) == 3
+    if not hasColumns then
+        print('^3[es_extended bridge]^7 The vehicles table does not have the ESX columns, the vehicle catalog was not added')
         return
     end
-    if tableType('owned_vehicles') == 'BASE TABLE' then
-        local rows = tonumber(MySQL.scalar.await('SELECT COUNT(*) FROM `owned_vehicles`')) or 0
-        if rows > 0 then
-            print('^3[es_extended bridge]^7 owned_vehicles is a real table with data, so it was left untouched; scripts that read it will not see qs-core vehicles')
-            return
+    if (tonumber(MySQL.scalar.await('SELECT COUNT(*) FROM `vehicles`')) or 0) > 0 then return end
+
+    local catalog = BridgeVehicleCatalog
+    for first = 1, #catalog, 100 do
+        local rows, params = {}, {}
+        for i = first, math.min(first + 99, #catalog) do
+            rows[#rows + 1] = '(?, ?, ?, ?)'
+            local vehicle = catalog[i]
+            params[#params + 1] = vehicle[1]
+            params[#params + 1] = vehicle[2]
+            params[#params + 1] = vehicle[3]
+            params[#params + 1] = vehicle[4]
         end
-        MySQL.query.await('DROP TABLE `owned_vehicles`')
+        MySQL.query.await('INSERT IGNORE INTO `vehicles` (`name`, `model`, `price`, `category`) VALUES ' .. table.concat(rows, ', '), params)
     end
-    MySQL.query.await('CREATE OR REPLACE VIEW `owned_vehicles` AS ' .. OWNED_VEHICLES_VIEW)
 end
 
 MySQL.ready(function()
-    local ok, err = pcall(ensureOwnedVehiclesView)
-    if not ok then
-        print(('^1[es_extended bridge]^7 could not create the owned_vehicles view: %s'):format(err))
-    end
+    ensureVehicleCatalog()
+end)
+
+CreateThread(function()
+    MySQL.query([[
+        CREATE TABLE IF NOT EXISTS `owned_vehicles` (
+            `owner`    VARCHAR(60) DEFAULT NULL,
+            `plate`    VARCHAR(12) NOT NULL,
+            `vehicle`  LONGTEXT DEFAULT NULL,
+            `type`     VARCHAR(20) NOT NULL DEFAULT 'car',
+            `job`      VARCHAR(20) DEFAULT NULL,
+            `stored`   TINYINT(1) NOT NULL DEFAULT 0,
+            PRIMARY KEY (`plate`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ]])
 end)
 
 function ESX.GetVehicleType(modelName, _player, cb)

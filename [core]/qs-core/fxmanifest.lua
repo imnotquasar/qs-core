@@ -36,7 +36,6 @@ server_scripts {
     'server/colors.lua',
     'server/groups.lua',
     'server/vehicles.lua',
-    'server/vehiclekeys.lua',
 }
 
 client_scripts {
@@ -48,7 +47,6 @@ client_scripts {
     'client/admin.lua',
     'client/noclip.lua',
     'client/teleport.lua',
-    'client/vehiclekeys.lua',
 }
 
 ui_page 'web/build/index.html'

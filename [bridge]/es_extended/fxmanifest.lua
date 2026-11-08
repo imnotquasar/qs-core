@@ -18,6 +18,7 @@ server_scripts {
     'server/common.lua',
     'server/classes/overrides/*.lua',
     'server/main.lua',
+    'server/vehicle_catalog.lua',
     'server/vehicles.lua',
     'server/users_compat.lua',
     'server/multichar_compat.lua',

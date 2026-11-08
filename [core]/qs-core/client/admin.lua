@@ -43,7 +43,9 @@ RegisterNetEvent('qs:client:spawnCar', function(model)
     SetVehicleNumberPlateText(veh, plate)
     SetVehicleHasBeenOwnedByPlayer(veh, true)
     SetModelAsNoLongerNeeded(hash)
-    VehicleKeys.Give(veh)
+    if GetResourceState('qs-corevehiclekeys') == 'started' then
+        exports['qs-corevehiclekeys']:GiveKeys(plate)
+    end
 end)
 
 RegisterNetEvent('qs:client:deleteVehicle', function()

@@ -17,6 +17,34 @@ RegisterNetEvent('qs-corechat:server:commands', function()
     TriggerClientEvent('qs-corechat:client:commands', src, list)
 end)
 
+local messageHooks = {}
+
+local function chatExport(name, fn)
+    AddEventHandler(('__cfx_export_chat_%s'):format(name), function(setCB) setCB(fn) end)
+end
+
+chatExport('registerMessageHook', function(hook)
+    messageHooks[#messageHooks + 1] = hook
+end)
+
+chatExport('addMessage', function(target, message)
+    TriggerClientEvent('chat:addMessage', target, message)
+end)
+
+local function runMessageHooks(src, message)
+    local cancelled, routing = false, -1
+    for _, hook in ipairs(messageHooks) do
+        pcall(hook, src, message, {
+            updateMessage = function(changes)
+                for key, value in pairs(changes or {}) do message[key] = value end
+            end,
+            cancel = function() cancelled = true end,
+            setRouting = function(target) routing = target end,
+        })
+    end
+    return not cancelled, routing
+end
+
 RegisterNetEvent('qs-corechat:server:send', function(text)
     local src = source
     text = tostring(text or '')
@@ -31,5 +59,18 @@ RegisterNetEvent('qs-corechat:server:send', function(text)
     end
     if not name or name == '' then name = GetPlayerName(src) end
 
-    TriggerClientEvent('qs-corechat:client:message', -1, { author = name, text = text })
+    TriggerEvent('chatMessage', src, name, text)
+    if WasEventCanceled() then return end
+
+    local message = { author = name, text = text, args = { name, text } }
+    local allowed, routing = runMessageHooks(src, message)
+    if not allowed then return end
+
+    if type(routing) == 'table' then
+        for _, target in ipairs(routing) do
+            TriggerClientEvent('qs-corechat:client:message', target, message)
+        end
+    else
+        TriggerClientEvent('qs-corechat:client:message', routing, message)
+    end
 end)

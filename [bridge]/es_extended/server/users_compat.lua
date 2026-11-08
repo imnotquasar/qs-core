@@ -276,7 +276,7 @@ AddEventHandler('playerConnecting', function(_, _, deferrals)
                        u.dateofbirth, u.sex, u.skin, u.position, u.metadata,
                        CAST(u.updated_at AS CHAR) AS stamp
                 FROM `users` u
-                JOIN `players` p ON p.citizenid = u.identifier
+                JOIN `players` p ON p.citizenid COLLATE utf8mb4_unicode_ci = u.identifier COLLATE utf8mb4_unicode_ci
                 WHERE p.license IN (%s)
                   AND (u.qs_synced_at IS NULL OR u.updated_at > u.qs_synced_at)
             ]]):format(placeholders), identifiers)

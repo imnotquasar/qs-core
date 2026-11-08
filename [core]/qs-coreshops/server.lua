@@ -22,6 +22,7 @@ local function shopView(shop)
 end
 
 local function jobOk(src, shop)
+    if shop.canUse then return shop.canUse(src) == true end
     if not shop.job then return true end
     local player = core:GetPlayer(src)
     local job = player and player.PlayerData and player.PlayerData.job
@@ -29,6 +30,7 @@ local function jobOk(src, shop)
 end
 
 local function nearAny(src, shop, dist)
+    if not shop.locations or #shop.locations == 0 then return true end
     local ped = GetPlayerPed(src)
     if ped == 0 then return false end
     local coords = GetEntityCoords(ped)
@@ -91,4 +93,22 @@ RegisterNetEvent('qs-coreshops:server:buy', function(name, itemName, count)
     end
 
     TriggerClientEvent('qs-coreshops:client:cash', src, core:GetMoney(src, Config.PayAccount))
+end)
+
+exports('RegisterShop', function(shop)
+    if type(shop) ~= 'table' or not shop.name then return false end
+    shopsByName[shop.name] = shop
+    return true
+end)
+
+exports('OpenShop', function(src, name)
+    local shop = shopsByName[name]
+    if not shop or not jobOk(src, shop) or not nearAny(src, shop, Config.BuyDistance) then return false end
+    TriggerClientEvent('qs-coreshops:client:open', src, {
+        name = shop.name,
+        label = shop.label,
+        items = shopView(shop),
+        cash = core:GetMoney(src, Config.PayAccount),
+    })
+    return true
 end)

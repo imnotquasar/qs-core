@@ -39,30 +39,32 @@ function ErrorResult(code, message)
     return false, { code = code, message = message or code }
 end
 
-MySQL.ready(function()
-    MySQL.query.await([[
-        CREATE TABLE IF NOT EXISTS `qbx_player_groups` (
-            `citizenid` VARCHAR(50) NOT NULL,
-            `group`     VARCHAR(50) NOT NULL,
-            `type`      VARCHAR(4)  NOT NULL,
-            `grade`     TINYINT UNSIGNED NOT NULL DEFAULT 0,
-            PRIMARY KEY (`citizenid`, `type`, `group`),
-            KEY `idx_qbx_groups_group` (`group`, `type`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    ]])
-    MySQL.query.await([[
-        CREATE TABLE IF NOT EXISTS `qbx_users` (
-            `userId`   INT UNSIGNED NOT NULL AUTO_INCREMENT,
-            `username` VARCHAR(255) DEFAULT NULL,
-            `license`  VARCHAR(60)  DEFAULT NULL,
-            `license2` VARCHAR(60)  DEFAULT NULL,
-            `fivem`    VARCHAR(60)  DEFAULT NULL,
-            `discord`  VARCHAR(60)  DEFAULT NULL,
-            PRIMARY KEY (`userId`),
-            UNIQUE KEY `uniq_qbx_users_license` (`license`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    ]])
-    QBX.DatabaseReady = true
+SetTimeout(1000, function()
+    MySQL.ready(function()
+        MySQL.query.await([[
+            CREATE TABLE IF NOT EXISTS `qbx_player_groups` (
+                `citizenid` VARCHAR(50) NOT NULL,
+                `group`     VARCHAR(50) NOT NULL,
+                `type`      VARCHAR(4)  NOT NULL,
+                `grade`     TINYINT UNSIGNED NOT NULL DEFAULT 0,
+                PRIMARY KEY (`citizenid`, `type`, `group`),
+                KEY `idx_qbx_groups_group` (`group`, `type`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ]])
+        MySQL.query.await([[
+            CREATE TABLE IF NOT EXISTS `qbx_users` (
+                `userId`   INT UNSIGNED NOT NULL AUTO_INCREMENT,
+                `username` VARCHAR(255) DEFAULT NULL,
+                `license`  VARCHAR(60)  DEFAULT NULL,
+                `license2` VARCHAR(60)  DEFAULT NULL,
+                `fivem`    VARCHAR(60)  DEFAULT NULL,
+                `discord`  VARCHAR(60)  DEFAULT NULL,
+                PRIMARY KEY (`userId`),
+                UNIQUE KEY `uniq_qbx_users_license` (`license`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ]])
+        QBX.DatabaseReady = true
+    end)
 end)
 
 function WaitDatabase()
@@ -73,10 +75,18 @@ end
 
 local catalog = { jobs = nil, gangs = nil, at = 0 }
 
+local function onlyDefinitions(list)
+    local out = {}
+    for name, def in pairs(list or {}) do
+        if type(def) == 'table' then out[name] = def end
+    end
+    return out
+end
+
 local function refreshCatalog()
     if catalog.jobs and GetGameTimer() - catalog.at < 1000 then return end
-    catalog.jobs = core:GetJobs() or {}
-    catalog.gangs = core:GetGangs() or {}
+    catalog.jobs = onlyDefinitions(core:GetJobs())
+    catalog.gangs = onlyDefinitions(core:GetGangs())
     catalog.at = GetGameTimer()
 end
 
@@ -324,13 +334,13 @@ function PreloadGroups(licenses)
     local citizens = MySQL.query.await(('SELECT `citizenid` FROM `players` WHERE `license` IN (%s)'):format(placeholders), licenses) or {}
     local rows = MySQL.query.await(([[
         SELECT g.`citizenid`, g.`group`, g.`type`, g.`grade` FROM `qbx_player_groups` g
-        JOIN `players` p ON p.`citizenid` = g.`citizenid` WHERE p.`license` IN (%s)
+        JOIN `players` p ON p.`citizenid` COLLATE utf8mb4_unicode_ci = g.`citizenid` COLLATE utf8mb4_unicode_ci WHERE p.`license` IN (%s)
     ]]):format(placeholders), licenses)
     for _, row in ipairs(citizens) do QBX.Groups[row.citizenid] = { job = {}, gang = {} } end
     storeGroupRows(rows)
 end
 
-function GroupsOf(citizenid)
+function GroupsOf(citizenid, noWait)
     local groups = QBX.Groups[citizenid]
     if groups then return groups end
     groups = { job = {}, gang = {} }
@@ -339,7 +349,7 @@ function GroupsOf(citizenid)
         if not WaitDatabase() then return end
         storeGroupRows(MySQL.query.await('SELECT `citizenid`, `group`, `type`, `grade` FROM `qbx_player_groups` WHERE `citizenid` = ?', { citizenid }))
     end
-    if coroutine.isyieldable() then
+    if not noWait and coroutine.isyieldable() then
         load()
     else
         CreateThread(function()
@@ -358,7 +368,7 @@ function BuildPlayerData(pd, src)
     local extra = meta.accounts_extra or {}
     local pos = pd.position or {}
     local citizenid = pd.citizenid
-    local groups = GroupsOf(citizenid)
+    local groups = GroupsOf(citizenid, src ~= nil)
 
     local job = qbxJob(pd.job, meta)
     local gang = qbxGang(src and core:GetGangForPlayer(src) or meta.gang)

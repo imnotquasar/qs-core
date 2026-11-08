@@ -4,6 +4,7 @@ local themeSent = false
 local secondary = nil
 local autoContext = true
 local pendingStash = nil
+local pendingServerSecondary = nil
 local stashZones = {}
 local radialOpen = false
 local radialReleased = false
@@ -74,6 +75,7 @@ local function closeInventory()
     SetNuiFocusKeepInput(false)
     SetNuiFocus(false, false)
     send('close')
+    TriggerEvent('qs-inv:client:closed')
 end
 
 local function nearestTrunk()
@@ -91,7 +93,8 @@ local function nearestTrunk()
 end
 
 local function hasVehKeys(plate)
-    return exports['qs-core']:HasVehicleKeys(plate) == true
+    if GetResourceState('qs-corevehiclekeys') ~= 'started' then return true end
+    return exports['qs-corevehiclekeys']:HasKeys(plate) == true
 end
 
 local trunkBlockNotified = 0
@@ -226,7 +229,11 @@ local function openInventory()
     inv.secondary = nil
     secondary = nil
 
-    if pendingStash then
+    if pendingServerSecondary then
+        autoContext = false
+        secondary = { kind = pendingServerSecondary }
+        pendingServerSecondary = nil
+    elseif pendingStash then
         autoContext = false
         secondary = { kind = 'stash', id = pendingStash.id }
         TriggerServerEvent('qs-inv:server:openStash', pendingStash.id, pendingStash.opts)
@@ -242,7 +249,16 @@ local function openInventory()
     send('locale', Locales[GetConvar('qs:locale', 'en')] or Locales.en or {})
     openLoop()
     proximityLoop()
+    TriggerEvent('qs-inv:client:opened')
 end
+
+exports('CloseInventory', closeInventory)
+
+RegisterNetEvent('qs-inv:client:openServerSecondary', function(kind)
+    if isOpen then return end
+    pendingServerSecondary = kind
+    openInventory()
+end)
 
 RegisterCommand('inventory', function()
     if isOpen then closeInventory() else openInventory() end

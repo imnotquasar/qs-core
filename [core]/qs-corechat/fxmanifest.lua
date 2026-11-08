@@ -27,6 +27,8 @@ files {
     'web/build/**',
 }
 
+provide 'chat'
+
 dependencies {
     'qs-core',
 }

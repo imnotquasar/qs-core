@@ -8,66 +8,53 @@ local function decodeRow(row)
 end
 
 function Vehicles.GetByCitizen(citizenid)
-    local rows = MySQL.query.await('SELECT * FROM `vehicles` WHERE `citizenid` = ?', { citizenid }) or {}
+    local rows = MySQL.query.await('SELECT * FROM `qs_vehicles` WHERE `citizenid` = ?', { citizenid }) or {}
     for _, r in ipairs(rows) do decodeRow(r) end
     return rows
 end
 
 function Vehicles.GetByGarage(citizenid, garage)
-    local rows = MySQL.query.await('SELECT * FROM `vehicles` WHERE `citizenid` = ? AND `garage` = ?', { citizenid, garage }) or {}
+    local rows = MySQL.query.await('SELECT * FROM `qs_vehicles` WHERE `citizenid` = ? AND `garage` = ?', { citizenid, garage }) or {}
     for _, r in ipairs(rows) do decodeRow(r) end
     return rows
 end
 
 function Vehicles.GetByPlate(plate)
-    local row = MySQL.single.await('SELECT * FROM `vehicles` WHERE `plate` = ?', { plate })
+    local row = MySQL.single.await('SELECT * FROM `qs_vehicles` WHERE `plate` = ?', { plate })
     return row and decodeRow(row) or nil
 end
 
 function Vehicles.PlateExists(plate)
-    return MySQL.scalar.await('SELECT 1 FROM `vehicles` WHERE `plate` = ?', { plate }) ~= nil
-end
-
-local function withModel(props, model)
-    local out = {}
-    if type(props) == 'table' then
-        for k, v in pairs(props) do out[k] = v end
-    end
-    if type(model) == 'string' and model ~= '' then
-        out.modelname = model
-        if out.model == nil then out.model = joaat(model) end
-    end
-    return out
+    return MySQL.scalar.await('SELECT 1 FROM `qs_vehicles` WHERE `plate` = ?', { plate }) ~= nil
 end
 
 function Vehicles.Create(data)
     return MySQL.insert.await(
-        'INSERT INTO `vehicles` (`citizenid`, `license`, `plate`, `model`, `garage`, `state`, `fuel`, `engine`, `body`, `props`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO `qs_vehicles` (`citizenid`, `license`, `plate`, `model`, `garage`, `state`, `fuel`, `engine`, `body`, `props`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         {
             data.citizenid, data.license, data.plate, data.model,
             data.garage or 'legion', data.state == nil and 1 or data.state,
             data.fuel or 100, data.engine or 1000.0, data.body or 1000.0,
-            json.encode(withModel(data.props, data.model)),
+            json.encode(data.props or {}),
         }
     )
 end
 
 function Vehicles.Update(plate, data)
-    local model = data.model or MySQL.scalar.await('SELECT `model` FROM `vehicles` WHERE `plate` = ?', { plate })
     MySQL.update.await(
-        'UPDATE `vehicles` SET `garage` = ?, `state` = ?, `fuel` = ?, `engine` = ?, `body` = ?, `props` = ? WHERE `plate` = ?',
+        'UPDATE `qs_vehicles` SET `garage` = ?, `state` = ?, `fuel` = ?, `engine` = ?, `body` = ?, `props` = ? WHERE `plate` = ?',
         {
             data.garage, data.state, data.fuel or 100, data.engine or 1000.0,
-            data.body or 1000.0, json.encode(withModel(data.props, model)), plate,
+            data.body or 1000.0, json.encode(data.props or {}), plate,
         }
     )
 end
 
 function Vehicles.SetState(plate, state, garage)
     if garage then
-        MySQL.update.await('UPDATE `vehicles` SET `state` = ?, `garage` = ? WHERE `plate` = ?', { state, garage, plate })
+        MySQL.update.await('UPDATE `qs_vehicles` SET `state` = ?, `garage` = ? WHERE `plate` = ?', { state, garage, plate })
     else
-        MySQL.update.await('UPDATE `vehicles` SET `state` = ? WHERE `plate` = ?', { state, plate })
+        MySQL.update.await('UPDATE `qs_vehicles` SET `state` = ? WHERE `plate` = ?', { state, plate })
     end
 end
 
@@ -115,24 +102,6 @@ function Vehicles.GetQBShape(citizenid)
     end
     return out
 end
-
-CreateThread(function()
-    MySQL.ready(function()
-        local ok, rows = pcall(MySQL.query.await,
-            [[SELECT `id`, `model`, `props` FROM `vehicles` WHERE `props` IS NULL OR `props` NOT LIKE '%"modelname"%']])
-        if not ok or type(rows) ~= 'table' then return end
-        for _, row in ipairs(rows) do
-            local props = {}
-            if type(row.props) == 'string' and row.props ~= '' then
-                local decoded, value = pcall(json.decode, row.props)
-                if decoded and type(value) == 'table' then props = value end
-            end
-            MySQL.update.await('UPDATE `vehicles` SET `props` = ? WHERE `id` = ?', {
-                json.encode(withModel(props, row.model)), row.id,
-            })
-        end
-    end)
-end)
 
 exports('GetOwnedVehicles', Vehicles.GetByCitizen)
 exports('GetGarageVehicles', Vehicles.GetByGarage)

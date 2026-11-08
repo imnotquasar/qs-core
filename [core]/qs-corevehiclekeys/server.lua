@@ -33,7 +33,8 @@ RegisterCommand('adminkeys', function(src, args)
         TriggerClientEvent('qs:client:notify', src, T('no_player'), 'error')
         return
     end
-    core:GiveVehicleKeys(target, veh)
+    local plate = trim(GetVehicleNumberPlateText(veh))
+    TriggerClientEvent('vehiclekeys:client:SetOwner', target, plate)
     TriggerClientEvent('qs:client:notify', target, T('got_keys'), 'success')
     if target ~= src then TriggerClientEvent('qs:client:notify', src, T('keys_shared'), 'success') end
 end, true)

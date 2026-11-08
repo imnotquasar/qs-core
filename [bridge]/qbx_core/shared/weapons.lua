@@ -1,4 +1,8 @@
+---@deprecated This file is deprecated. If you are utilizing QB-Core bridge functionality you will need to populate weapons here for them to be available in QBCore.Shared.Weapons. If not please add your weapons in ox_inventory/data/weapons.lua file.
+---@type table<number, Weapon>
 return {
+    -- // WEAPONS
+    -- Melee
     [`weapon_unarmed`] 				 = {name = 'weapon_unarmed', 		label = 'Fists', 				weapontype = 'Melee',	ammotype = nil, damagereason = 'Melee killed / Whacked / Executed / Beat down / Murdered / Battered'},
     [`weapon_dagger`] 				 = {name = 'weapon_dagger', 		label = 'Dagger', 				weapontype = 'Melee',	ammotype = nil,	damagereason = 'Knifed / Stabbed / Eviscerated'},
     [`weapon_bat`] 					 = {name = 'weapon_bat', 			label = 'Bat', 					weapontype = 'Melee',	ammotype = nil,	damagereason = 'Melee killed / Whacked / Executed / Beat down / Murdered / Battered'},
@@ -24,6 +28,7 @@ return {
     [`weapon_stone_hatchet`] 		 = {name = 'weapon_stone_hatchet', 	label = 'Stone Hatchet',        weapontype = 'Melee',	ammotype = nil,	damagereason = 'Knifed / Stabbed / Eviscerated'},
     [`weapon_candycane`]             = {name = 'weapon_candycane',      label = 'Candy Cane',           weapontype = 'Melee',   ammotype = nil, damagereason = 'Melee Killed / Whacked / Executed / Beat down / Musrdered / Battered / Candy Caned' },
 
+    -- Handguns
     [`weapon_pistol`] 				 = {name = 'weapon_pistol', 		label = 'Pistol', 				    weapontype = 'Pistol',	ammotype = 'AMMO_PISTOL',	damagereason = 'Pistoled / Blasted / Plugged / Bust a cap in'},
     [`weapon_pistol_mk2`] 			 = {name = 'weapon_pistol_mk2', 	label = 'Pistol Mk2', 			    weapontype = 'Pistol',	ammotype = 'AMMO_PISTOL',	damagereason = 'Pistoled / Blasted / Plugged / Bust a cap in'},
     [`weapon_combatpistol`] 		 = {name = 'weapon_combatpistol', 	label = 'Combat Pistol', 			weapontype = 'Pistol',	ammotype = 'AMMO_PISTOL',	damagereason = 'Pistoled / Blasted / Plugged / Bust a cap in'},
@@ -45,6 +50,7 @@ return {
     [`weapon_gadgetpistol`] 		 = {name = 'weapon_gadgetpistol', 	label = 'Gadget Pistol',		    weapontype = 'Pistol',	ammotype = 'AMMO_PISTOL',	damagereason = 'Pistoled / Blasted / Plugged / Bust a cap in'},
     [`weapon_stungun_mp`] 			 = {name = 'weapon_stungun_mp', 	label = 'Taser', 					weapontype = 'Pistol',	ammotype = 'AMMO_STUNGUN',	damagereason = 'Died'},
 
+    -- Submachine Guns
     [`weapon_microsmg`] 			 = {name = 'weapon_microsmg', 		label = 'Micro SMG', 			weapontype = 'Submachine Gun',	ammotype = 'AMMO_SMG',		damagereason = 'Riddled / Drilled / Finished / Submachine Gunned'},
     [`weapon_smg`] 				 	 = {name = 'weapon_smg', 			label = 'SMG', 					weapontype = 'Submachine Gun',	ammotype = 'AMMO_SMG',		damagereason = 'Riddled / Drilled / Finished / Submachine Gunned'},
     [`weapon_smg_mk2`] 				 = {name = 'weapon_smg_mk2', 		label = 'SMG MK2', 			    weapontype = 'Submachine Gun',	ammotype = 'AMMO_SMG',		damagereason = 'Riddled / Drilled / Finished / Submachine Gunned'},
@@ -54,6 +60,7 @@ return {
     [`weapon_minismg`] 				 = {name = 'weapon_minismg', 		label = 'Mini SMG', 			weapontype = 'Submachine Gun',	ammotype = 'AMMO_SMG',		damagereason = 'Riddled / Drilled / Finished / Submachine Gunned'},
     [`weapon_raycarbine`]	         = {name = 'weapon_raycarbine', 	label = 'Raycarbine',	        weapontype = 'Submachine Gun',	ammotype = 'AMMO_SMG',		damagereason = 'Riddled / Drilled / Finished / Submachine Gunned'},
 
+    -- Shotguns
     [`weapon_pumpshotgun`] 			 = {name = 'weapon_pumpshotgun', 	 	label = 'Pump Shotgun', 			weapontype = 'Shotgun',	ammotype = 'AMMO_SHOTGUN',	damagereason = 'Devastated / Pulverized / Shotgunned'},
     [`weapon_pumpshotgun_mk2`]		 = {name = 'weapon_pumpshotgun_mk2',	label = 'Pump Shotgun MK2', 		weapontype = 'Shotgun',	ammotype = 'AMMO_SHOTGUN',	damagereason = 'Devastated / Pulverized / Shotgunned'},
     [`weapon_sawnoffshotgun`] 		 = {name = 'weapon_sawnoffshotgun', 	label = 'Sawn-off Shotgun', 		weapontype = 'Shotgun',	ammotype = 'AMMO_SHOTGUN',	damagereason = 'Devastated / Pulverized / Shotgunned'},
@@ -65,6 +72,7 @@ return {
     [`weapon_autoshotgun`] 			 = {name = 'weapon_autoshotgun', 	 	label = 'Auto Shotgun', 			weapontype = 'Shotgun',	ammotype = 'AMMO_SHOTGUN',	damagereason = 'Devastated / Pulverized / Shotgunned'},
     [`weapon_combatshotgun`]		 = {name = 'weapon_combatshotgun', 		label = 'Combat Shotgun',		    weapontype = 'Shotgun',	ammotype = 'AMMO_SHOTGUN',	damagereason = 'Devastated / Pulverized / Shotgunned'},
 
+    -- Assault Rifles
     [`weapon_assaultrifle`] 		 = {name = 'weapon_assaultrifle', 	 	label = 'Assault Rifle', 				weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
     [`weapon_assaultrifle_mk2`] 	 = {name = 'weapon_assaultrifle_mk2', 	label = 'Assault Rifle MK2', 			weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
     [`weapon_carbinerifle`] 		 = {name = 'weapon_carbinerifle', 	 	label = 'Carbine Rifle', 				weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
@@ -79,11 +87,13 @@ return {
     [`weapon_heavyrifle`] 			 = {name = 'weapon_heavyrifle', 	 	label = 'Heavy Rifle', 					weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
     [`weapon_tacticalrifle`] 		 = {name = 'weapon_tacticalrifle', 	 	label = 'Service Rifle', 				weapontype = 'Assault Rifle',	ammotype = 'AMMO_RIFLE',	damagereason = 'Ended / Rifled / Shot down / Floored'},
 
+    -- Light Machine Guns
     [`weapon_mg`] 					 = {name = 'weapon_mg', 			label = 'Machinegun', 			weapontype = 'Light Machine Gun',	ammotype = 'AMMO_MG',	damagereason = 'Machine gunned / Sprayed / Ruined'},
     [`weapon_combatmg`] 			 = {name = 'weapon_combatmg', 		label = 'Combat MG', 			weapontype = 'Light Machine Gun',	ammotype = 'AMMO_MG',	damagereason = 'Machine gunned / Sprayed / Ruined'},
     [`weapon_combatmg_mk2`]	 		 = {name = 'weapon_combatmg_mk2', 	label = 'Combat MG MK2',	    weapontype = 'Light Machine Gun',	ammotype = 'AMMO_MG',	damagereason = 'Machine gunned / Sprayed / Ruined'},
     [`weapon_gusenberg`] 			 = {name = 'weapon_gusenberg', 		label = 'Thompson SMG', 		weapontype = 'Light Machine Gun',	ammotype = 'AMMO_MG',	damagereason = 'Machine gunned / Sprayed / Ruined'},
 
+    -- Sniper Rifles
     [`weapon_sniperrifle`] 			 = {name = 'weapon_sniperrifle', 	 	label = 'Sniper Rifle', 			weapontype = 'Sniper Rifle',	ammotype = 'AMMO_SNIPER',			damagereason = 'Sniped / Picked off / Scoped'},
     [`weapon_heavysniper`] 			 = {name = 'weapon_heavysniper', 	 	label = 'Heavy Sniper', 			weapontype = 'Sniper Rifle',	ammotype = 'AMMO_SNIPER',			damagereason = 'Sniped / Picked off / Scoped'},
     [`weapon_heavysniper_mk2`]		 = {name = 'weapon_heavysniper_mk2', 	label = 'Heavysniper MK2',	        weapontype = 'Sniper Rifle',	ammotype = 'AMMO_SNIPER',			damagereason = 'Sniped / Picked off / Scoped'},
@@ -92,6 +102,7 @@ return {
     [`weapon_remotesniper`] 		 = {name = 'weapon_remotesniper', 	 	label = 'Remote Sniper', 			weapontype = 'Sniper Rifle',	ammotype = 'AMMO_SNIPER_REMOTE',	damagereason = 'Sniped / Picked off / Scoped'},
     [`weapon_precisionrifle`] 		 = {name = 'weapon_precisionrifle', 	label = 'Precision Rifle', 			weapontype = 'Sniper Rifle',	ammotype = 'AMMO_SNIPER',	        damagereason = 'Sniped / Picked off / Scoped'},
 
+    -- Heavy Weapons
     [`weapon_rpg`] 					 = {name = 'weapon_rpg', 			      	label = 'RPG', 						weapontype = 'Heavy Weapons',	ammotype = 'AMMO_RPG',				damagereason = 'Killed / Exploded / Obliterated / Destroyed / Erased / Annihilated'},
     [`weapon_grenadelauncher`] 		 = {name = 'weapon_grenadelauncher', 	  	label = 'Grenade Launcher', 		weapontype = 'Heavy Weapons',	ammotype = 'AMMO_GRENADELAUNCHER',	damagereason = 'Killed / Exploded / Obliterated / Destroyed / Erased / Annihilated'},
     [`weapon_grenadelauncher_smoke`] = {name = 'weapon_grenadelauncher_smoke',	label = 'Smoke Grenade Launcher',	weapontype = 'Heavy Weapons',	ammotype = 'AMMO_GRENADELAUNCHER',	damagereason = 'Killed / Exploded / Obliterated / Destroyed / Erased / Annihilated'},
@@ -103,6 +114,7 @@ return {
     [`weapon_rayminigun`]			 = {name = 'weapon_rayminigun', 		 	label = 'Ray Minigun',		        weapontype = 'Heavy Weapons',	ammotype = 'AMMO_MINIGUN',			damagereason = 'Killed / Exploded / Obliterated / Destroyed / Erased / Annihilated'},
     [`weapon_emplauncher`] 			 = {name = 'weapon_emplauncher', 			label = 'EMP Launcher', 			weapontype = 'Heavy Weapons',	ammotype = 'AMMO_EMPLAUNCHER',		damagereason = 'Died'},
 
+    -- Throwables
     [`weapon_grenade`] 		        = {name = 'weapon_grenade', 		label = 'Grenade', 			weapontype = 'Throwable',	ammotype = nil,				damagereason = 'Bombed / Exploded / Detonated / Blew up'},
     [`weapon_bzgas`] 		        = {name = 'weapon_bzgas', 			label = 'BZ Gas', 			weapontype = 'Throwable',	ammotype = nil,				damagereason = 'Died'},
     [`weapon_molotov`] 		        = {name = 'weapon_molotov', 		label = 'Molotov', 			weapontype = 'Throwable',	ammotype = nil,				damagereason = 'Torched / Flambeed / Barbecued'},
@@ -114,6 +126,7 @@ return {
     [`weapon_smokegrenade`]         = {name = 'weapon_smokegrenade', 	label = 'Smoke Grenade', 	weapontype = 'Throwable',	ammotype = nil,				damagereason = 'Died'},
     [`weapon_flare`] 		        = {name = 'weapon_flare', 			label = 'Flare pistol', 	weapontype = 'Throwable',	ammotype = 'AMMO_FLARE',	damagereason = 'Died'},
 
+    -- Miscellaneous
     [`weapon_petrolcan`] 			= {name = 'weapon_petrolcan', 		 	label = 'Petrol Can', 				weapontype = 'Miscellaneous',	ammotype = 'AMMO_PETROLCAN',		damagereason = 'Died'},
     [`gadget_parachute`] 			= {name = 'gadget_parachute', 		 	label = 'Parachute', 				weapontype = 'Miscellaneous',	ammotype = nil,						damagereason = 'Died'},
     [`weapon_fireextinguisher`] 	= {name = 'weapon_fireextinguisher',	label = 'Fire Extinguisher',		weapontype = 'Miscellaneous',	ammotype = nil,						damagereason = 'Died'},
@@ -134,6 +147,8 @@ return {
     [`weapon_fire`]					= {name = 'weapon_fire',				label = 'Fire',						weapontype = 'Miscellaneous',	ammotype = nil,						damagereason = 'Torched / Flambeed / Barbecued'},
     [`weapon_metaldetector`] 		= {name = 'weapon_metaldetector', 	    label = 'Metal Dectector', 	        weapontype = 'Miscellaneous',	ammotype = 'nil',	                damagereason = 'Died'},
 
+
+    -- Animals
     [`weapon_animal`]               = {name = 'weapon_animal',	label = 'Animal',	weapontype = 'Animals',	ammotype = nil,	damagereason = 'Mauled'},
     [`weapon_cougar`]               = {name = 'weapon_cougar',	label = 'Cougar',	weapontype = 'Animals',	ammotype = nil,	damagereason = 'Mauled'},
 }

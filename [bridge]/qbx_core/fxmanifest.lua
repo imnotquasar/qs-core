@@ -24,6 +24,7 @@ shared_scripts {
 
 client_scripts {
     'client/main.lua',
+    'client/ox_inventory.lua',
 }
 
 server_scripts {
@@ -35,6 +36,7 @@ server_scripts {
     'server/character.lua',
     'server/events.lua',
     'server/commands.lua',
+    'server/ox_inventory.lua',
 }
 
 files {
@@ -45,12 +47,15 @@ files {
     'shared/jobs.lua',
     'shared/locations.lua',
     'shared/main.lua',
+    'shared/ox_items.lua',
     'shared/vehicles.lua',
     'shared/weapons.lua',
     'config/client.lua',
     'config/shared.lua',
     'locales/*.json',
 }
+
+provide 'ox_inventory'
 
 dependencies {
     'qs-core',

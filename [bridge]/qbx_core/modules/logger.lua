@@ -7,7 +7,8 @@ end
 local logQueue, isProcessingQueue, logCount = {}, false, 0
 local lastRequestTime, requestDelay = 0, 0
 
-local Colors = {
+---@enum Colors
+local Colors = { -- https://www.spycolor.com/
     default = 14423100,
     blue = 255,
     red = 16711680,
@@ -20,6 +21,7 @@ local Colors = {
     lightgreen = 65309,
 }
 
+---Log Queue
 local function applyRequestDelay()
     local currentTime = GetGameTimer()
     local timeDiff = currentTime - lastRequestTime
@@ -40,6 +42,13 @@ local allowedErr = {
     [304] = true
 }
 
+---@class DiscordLog
+---@field webhook string url of the webhook this log should send to
+---@field tags? string[] tags in discord. Example: {'<@%roleid>', '@everyone'}
+---@field embed table formatted embed table for discord webhook
+
+---Log Queue
+---@param payload DiscordLog Queue
 local function logPayload(payload)
     local tags
     local username = 'QBX Logs'
@@ -72,6 +81,7 @@ local function logPayload(payload)
     end, 'POST', json.encode({username = username, avatar_url = avatarUrl, content = tags, embeds = payload.embed}), { ['Content-Type'] = 'application/json' })
 end
 
+---Log Queue
 local function processLogQueue()
     if #logQueue > 0 then
         local payload = table.remove(logQueue, 1)
@@ -92,6 +102,8 @@ local function processLogQueue()
     end
 end
 
+---Creates a discord log
+---@param log Log
 local function discordLog(log)
     local embedData = {
         {
@@ -119,11 +131,23 @@ local function discordLog(log)
     end
 end
 
+---@class Log
+---@field source string source of the log. Usually a playerId or name of a resource.
+---@field event string the action or 'event' being logged. Usually a verb describing what the name is doing. Example: SpawnVehicle
+---@field message string the message attached to the log
+---@field webhook? string Discord logs only. url of the webhook this log should send to
+---@field color? string Discord logs only. what color the message should be
+---@field tags? string[] Discord logs only. tags in discord. Example: {'<@%roleid>', '@everyone'}
+---@field oxLibTags? string -- Tags for ox_lib logger
+
+---Logs using ox_lib, if ox_lib logging is configured. Additionally logs to discord if a web hook is passed.
+---@param log Log
 local function createLog(log)
     if log.webhook then
+        ---@diagnostic disable-next-line: param-type-mismatch
         discordLog(log)
     end
-    lib.logger(log.source, log.event, log.message, log.oxLibTags)
+    lib.logger(log.source, log.event, log.message, log.oxLibTags) -- support for ox_lib: datadog, grafana loki logging, fivemanage
 end
 
 return {

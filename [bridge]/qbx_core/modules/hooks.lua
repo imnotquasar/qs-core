@@ -4,6 +4,7 @@
 assert(lib.checkDependency('ox_lib', '3.8.0', true))
 
 local eventHooks = {}
+-- luacheck: ignore
 local microtime = os.microtime
 
 local function triggerEventHooks(event, payload)
@@ -31,6 +32,10 @@ end
 
 local hookId = 0
 
+---Registers a callback function to be triggered by a resource. Returning false from the callback function cancels the event
+---@param event string
+---@param cb any
+---@return integer hookId
 exports('registerHook', function(event, cb)
     if not eventHooks[event] then
         eventHooks[event] = {}
@@ -61,6 +66,8 @@ end
 
 AddEventHandler('onResourceStop', removeResourceHooks)
 
+---Remove a previously registered hook by its id
+---@param id number hookId
 exports('removeHooks', function(id)
     removeResourceHooks(GetInvokingResource() or cache.resource, id)
 end)

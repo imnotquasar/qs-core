@@ -89,6 +89,7 @@ qbx.armsWithoutGloves = lib.table.freeze({
     }),
 })
 
+
 qbx.duffelbagIndexes = lib.table.freeze({
     male = lib.table.freeze({
         [40] = true,
@@ -118,26 +119,43 @@ qbx.duffelbagIndexes = lib.table.freeze({
     })
 })
 
+
+---Returns the given string with its trailing whitespaces removed.
+---@param str string
+---@return string
 function qbx.string.trim(str)
     local trimmed = str:gsub('^%s*(.-)%s*$', '%1')
     return trimmed
 end
 
+---Returns the given string with its first character capitalized.
+---@param str string
+---@return string
 function qbx.string.capitalize(str)
     local capitalized = str:gsub('^%l', string.upper)
     return capitalized
 end
 
+---Rounds and returns the given number.
+---@param num number
+---@param decimalPlaces? integer
+---@return number rounded integer if `decimalPlaces` isn't passed, number otherwise
 function qbx.math.round(num, decimalPlaces)
     if not decimalPlaces then return math.floor(num + 0.5) end
     local power = 10 ^ decimalPlaces
     return math.floor((num * power) + 0.5) / power
 end
 
+---Returns whether the given value is a finite number (not nil, NaN or infinity).
+---@param value any
+---@return boolean
 function qbx.math.isFinite(value)
     return type(value) == 'number' and value == value and value ~= math.huge and value ~= -math.huge
 end
 
+---Returns the number of items in a table. Useful for non-array tables.
+---@param tbl table
+---@return integer
 function qbx.table.size(tbl)
     local size = 0
     for _ in pairs(tbl) do
@@ -146,6 +164,10 @@ function qbx.table.size(tbl)
     return size
 end
 
+---Maps and returns the values of the given table by the given subfield.
+---@param tble table
+---@param subfield any
+---@return table<any, table[]>
 function qbx.table.mapBySubfield(tble, subfield)
     local map = {}
 
@@ -164,6 +186,11 @@ function qbx.table.mapBySubfield(tble, subfield)
     return map
 end
 
+---Returns true if the given array contains the given value.
+---@generic T
+---@param arr T[]
+---@param val T
+---@return boolean
 function qbx.array.contains(arr, val)
     for i = 1, #arr do
         if arr[i] == val then
@@ -174,18 +201,46 @@ function qbx.array.contains(arr, val)
     return false
 end
 
+---Returns the number plate of the given vehicle.
+---@param vehicle integer
+---@return string?
 function qbx.getVehiclePlate(vehicle)
     local plate = GetVehicleNumberPlateText(vehicle)
     if not plate then return end
     return qbx.string.trim(plate)
 end
 
+---Generates and returns a random number plate with the given pattern.
+---Note that the generated plate may or may not be already used by an existing vehicle.
+---For more info about the pattern see [`lib.string.random`](https://coxdocs.dev/ox_lib/Modules/String/Shared#stringrandom) from ox_lib.
+---@param pattern? string
+---@return string
 function qbx.generateRandomPlate(pattern)
     pattern = pattern or '........'
     return lib.string.random(pattern):upper()
 end
 
+---Returns the cardinal direction that the given entity is staring towards, or nil if the entity doesn't exist.
+---```
+---                 North
+---     45°           0°           315°
+---       \    .- - - - - - -.    /
+---          X                 X
+---        .'   \           /   '.
+---       |        \     /        |
+--- West  |           X           |  East
+---       |        /     \        |
+---        '.   /           \   .'
+---          X                 X
+---       /    '- - - - - - -'    \
+---     135°                      225°
+---                 South
+---```
+---(art inspired by [`SET_PED_TURNING_THRESHOLDS`](https://github.com/citizenfx/fivem/blob/0b61c93a3308360ea70d443398eab17f47453e11/code/components/extra-natives-five/src/PedExtraNatives.cpp#L390-L400))
+---@param entity integer
+---@return 'North' | 'South' | 'East' | 'West'
 function qbx.getCardinalDirection(entity)
+    -- heading is between 0 - 360 (excluding 360)
     local heading = GetEntityHeading(entity) % 360
 
     if heading < 45 or heading >= 315 then
@@ -200,11 +255,34 @@ function qbx.getCardinalDirection(entity)
         return 'South'
     end
 
+    -- heading >= 225 and heading < 315
     return 'East'
 end
 
 if isServer then
+    ---@class LibSpawnVehicleParams
+    ---@field model integer
+    ---@field spawnSource integer | vector3 | vector4 ped id or coords
+    ---@field warp? boolean | integer a ped id to warp inside the vehicle, or additionally a boolean if `spawnSource` is a ped
+    ---@field props? table https://coxdocs.dev/ox_lib/Modules/VehicleProperties/Client#vehicle-properties
+    ---@field bucket? integer routing bucket to move spawned entity to.
 
+    ---Creates a vehicle on the server-side and returns its `netId`.
+    ---
+    ---The `CreateVehicleServerSetter` native uses only the server to create a vehicle instead of using the client as well.
+    ---To get the vehicle on the client first check and wait for it to exist using the `NetworkDoesEntityExistWithNetworkId` native,
+    ---then get the vehicle's id by using `NetToVeh`.
+    --[[
+
+    lib.waitFor(function()
+        if NetworkDoesEntityExistWithNetworkId(netId) then
+            return NetToVeh(netId)
+        end
+    end)
+    ]]
+    ---@param params LibSpawnVehicleParams
+    ---@return integer netId
+    ---@return number veh
     function qbx.spawnVehicle(params)
         local model = params.model
         local source = params.spawnSource
@@ -214,6 +292,7 @@ if isServer then
         local props = params.props
         local bucket = params.bucket or ped and GetEntityRoutingBucket(ped) or nil
 
+        ---@type vector4
         local coords
         if sourceType == 'vector3' then
             coords = vec4(source.x, source.y, source.z, 0)
@@ -257,6 +336,7 @@ if isServer then
                 lib.waitFor(function()
                     local owner = NetworkGetEntityOwner(veh)
                     if ped then
+                        --- the owner should be transferred to the driver
                         if owner == NetworkGetEntityOwner(ped) then return true end
                     else
                         if owner ~= -1 then return true end
@@ -279,6 +359,7 @@ if isServer then
                         if qbx.string.trim(GetVehicleNumberPlateText(veh)) == qbx.string.trim(props.plate) then
                             local currentOwner = NetworkGetEntityOwner(veh)
                             assert(currentOwner == owner, ('Owner changed during vehicle init. expected=%s, actual=%s'):format(owner, currentOwner))
+                            --- check that the plate matches twice, 100ms apart as a bug has been observed in which server side matches but plate is not observed by clients to match
                             if plateMatched then
                                 return true
                             end
@@ -302,12 +383,27 @@ if isServer then
             error('unable to successfully spawn vehicle after 3 attempts')
         end
 
+        --- prevent server from deleting a vehicle without an owner
         SetEntityOrphanMode(veh, 2)
         exports.qbx_core:EnablePersistence(veh)
         return netId, veh
     end
 else
+    ---@class LibDrawTextParams
+    ---@field text string
+    ---@field scale? integer default: `0.35`
+    ---@field font? integer default: `4`
+    ---@field color? vector4 rgba, white by default
+    ---@field enableDropShadow? boolean
+    ---@field enableOutline? boolean
 
+    ---@class LibDrawText2DParams : LibDrawTextParams
+    ---@field coords vector2
+    ---@field width? number default: `1.0`
+    ---@field height? number default: `1.0`
+
+    ---Draws text onto the screen in 2D space for a single frame.
+    ---@param params LibDrawText2DParams
     function qbx.drawText2d(params)
         local text = params.text
         local coords = params.coords
@@ -335,7 +431,14 @@ else
         EndTextCommandDisplayText(coords.x - width / 2, coords.y - height / 2 + 0.005)
     end
 
-    function qbx.drawText3d(params)
+    ---@class LibDrawText3DParams : LibDrawTextParams
+    ---@field coords vector3
+    ---@field disableDrawRect? boolean
+    ---@field scale? integer | vector2 default: `vec2(0.35,0.35)`
+
+    ---Draws text onto the screen in 3D space for a single frame.
+    ---@param params LibDrawText3DParams
+    function qbx.drawText3d(params) -- luacheck: ignore
         local isScaleparamANumber = type(params.scale) == "number"
         local text = params.text
         local coords = params.coords
@@ -369,6 +472,11 @@ else
         ClearDrawOrigin()
     end
 
+    ---Gets and returns an entity handle and network id from a state bag name
+    ---([source](https://github.com/overextended/ox_core/blob/main/client/utils.lua)).
+    ---@async
+    ---@param bagName string
+    ---@return integer entity, integer netId
     function qbx.getEntityAndNetIdFromBagName(bagName)
         local netId = tonumber(bagName:gsub('entity:', ''), 10)
 
@@ -386,6 +494,11 @@ else
         return entity, netId
     end
 
+    ---Returns a state bag handler made for entities
+    ---([source](https://github.com/overextended/ox_core/blob/main/client/utils.lua)).
+    ---@param keyFilter string
+    ---@param cb fun(entity: number, netId: number, value: any, bagName: string)
+    ---@return number
     function qbx.entityStateHandler(keyFilter, cb)
         return AddStateBagChangeHandler(keyFilter, '', function(bagName, _, value)
             local entity, netId = qbx.getEntityAndNetIdFromBagName(bagName)
@@ -395,48 +508,81 @@ else
         end)
     end
 
+    ---Deletes the specified vehicle and returns whether it was successful.
+    ---@param vehicle integer
+    ---@return boolean deleted
     function qbx.deleteVehicle(vehicle)
         SetEntityAsMissionEntity(vehicle, true, true)
         DeleteVehicle(vehicle)
         return not DoesEntityExist(vehicle)
     end
 
+    ---Returns the model name of the given vehicle.
+    ---@param vehicle integer
+    ---@return string
     function qbx.getVehicleDisplayName(vehicle)
         return GetLabelText(GetDisplayNameFromVehicleModel(GetEntityModel(vehicle)))
     end
 
+    ---Returns the brand name of the given vehicle.
+    ---@param vehicle integer
+    ---@return string
     function qbx.getVehicleMakeName(vehicle)
         return GetLabelText(GetMakeNameFromVehicleModel(GetEntityModel(vehicle)))
     end
 
+    ---Returns the mod type name of the given vehicle.
+    ---@param vehicle integer
+    ---@param modType integer
+    ---@param modIndex integer
+    ---@return string
     function qbx.getVehicleModName(vehicle, modType, modIndex)
         return GetLabelText(GetModTextLabel(vehicle, modType, modIndex))
     end
 
+    ---Returns the livery name of the given vehicle.
+    ---@param vehicle integer
+    ---@param liveryIndex integer
+    ---@return string
     function qbx.getVehicleLiveryName(vehicle, liveryIndex)
         return GetLabelText(GetLiveryName(vehicle, liveryIndex))
     end
 
+    ---Returns the street name and cross section name at the given coords.
+    ---@param coords vector3
+    ---@return { main: string, cross: string }
     function qbx.getStreetName(coords)
         local street1, street2 = GetStreetNameAtCoord(coords.x, coords.y, coords.z)
         return { main = GetStreetNameFromHashKey(street1), cross = GetStreetNameFromHashKey(street2) }
     end
 
+    ---Returns the name of the zone at the given coords.
+    ---@param coords vector3
+    ---@return string
     function qbx.getZoneName(coords)
         return GetLabelText(GetNameOfZone(coords.x, coords.y, coords.z))
     end
 
+    ---Set an extra on the given vehicle.
+    ---@param vehicle integer
+    ---@param extra integer
+    ---@param enable boolean
     function qbx.setVehicleExtra(vehicle, extra, enable)
         if not DoesExtraExist(vehicle, extra) then return end
         SetVehicleExtra(vehicle, extra, not enable)
     end
 
+    ---Enables all the extras of the given vehicle.
+    ---@param vehicle integer
     function qbx.resetVehicleExtras(vehicle)
         for i = 1, 20 do
             qbx.setVehicleExtra(vehicle, i, true)
         end
     end
 
+    ---Sets all the extras of the given vehicle.
+    ---@param vehicle integer
+    ---@param extras table<integer, boolean>
     function qbx.setVehicleExtras(vehicle, extras)
         qbx.resetVehicleExtras(vehicle)
 
@@ -445,6 +591,8 @@ else
         end
     end
 
+    ---Returns if the local ped is wearing gloves.
+    ---@return boolean
     function qbx.isWearingGloves()
         local armIndex = GetPedDrawableVariation(cache.ped, 3)
         local model = GetEntityModel(cache.ped)
@@ -452,13 +600,20 @@ else
         return not tble[armIndex]
     end
 
+    --- Returns if the local ped is wearing a duffel bag.
+    --- @return boolean
     function qbx.isWearingDuffelbag()
-        local torsoIndex = GetPedDrawableVariation(cache.ped, 5)
+        local torsoIndex = GetPedDrawableVariation(cache.ped, 5) -- Duffel bags are in component 5
         local model = GetEntityModel(cache.ped)
         local tble = qbx.duffelbagIndexes[model == `mp_m_freemode_01` and 'male' or 'female']
         return tble[torsoIndex] == true
     end
 
+    ---Attempts to load an audio bank and returns whether it was successful.
+    ---Remember to use `ReleaseScriptAudioBank` since you can only load up to 10 banks.
+    ---@param audioBank string
+    ---@param timeout number?
+    ---@return boolean
     function qbx.loadAudioBank(audioBank, timeout)
         return lib.waitFor(function()
             if RequestScriptAudioBank(audioBank, false) then
@@ -467,6 +622,19 @@ else
         end, ('timed out while requesting audio bank! (%s)'):format(audioBank), timeout or 500) or false
     end
 
+    ---@class LibPlayAudioParams
+    ---@field audioName string
+    ---@field audioRef string
+    ---@field returnSoundId? boolean
+    ---@field audioSource? number | vector3 entity handle or vector3 coords
+    ---@field range? number only used if `audioSource` is a vector3 coordinate
+
+    ---@deprecated use mana_audio instead
+    ---Plays a sound with the provided audio name and audio ref.
+    ---If `returnSoundId` is false or not specified the soundId is released,
+    ---otherwise the function returns the soundId without releasing it.
+    ---@param params LibPlayAudioParams
+    ---@return number? soundId
     function qbx.playAudio(params)
         local audioName = params.audioName
         local audioRef = params.audioRef

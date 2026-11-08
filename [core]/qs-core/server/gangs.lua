@@ -1,10 +1,10 @@
-function Gangs.SetPlayer(source, name, grade)
+local function setPlayerGang(source, name, grade)
     local player = QS.GetPlayer(source)
     if not player then return false end
     return player:setGang(name, grade)
 end
 
-function Gangs.GetPlayer(source)
+local function getPlayerGang(source)
     local player = QS.GetPlayer(source)
     if not player then return QS.BuildGang('none', 0) end
     return player:getGang()
@@ -22,8 +22,8 @@ function QS.GetPlayersOnDuty(jobName)
     return sources, count
 end
 
-exports('SetGang', Gangs.SetPlayer)
-exports('GetGangForPlayer', Gangs.GetPlayer)
+exports('SetGang', setPlayerGang)
+exports('GetGangForPlayer', getPlayerGang)
 exports('SetJobDuty', function(source, onDuty)
     local player = QS.GetPlayer(source)
     return player and player:setJobDuty(onDuty) or false

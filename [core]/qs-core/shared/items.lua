@@ -12,14 +12,6 @@ local base = {
     lockpick   = { label = 'Lockpick',   weight = 100,  useable = true,  description = 'For when you lost your keys.' },
     repairkit  = { label = 'Repair Kit', weight = 2500, useable = true,  description = 'Patches up a vehicle.' },
     screwdriver = { label = 'Screwdriver', weight = 200, useable = true, description = 'Handy little tool.' },
-
-    vehiclekeys         = { label = 'Vehicle Keys',      weight = 0,   useable = true, unique = true, description = 'Keys to a vehicle.' },
-    adminvehiclekey     = { label = 'Admin Vehicle Key', weight = 0,   useable = true, unique = true, description = 'Opens any vehicle.' },
-    carlockpick         = { label = 'Car Lockpick',      weight = 500, useable = true, description = 'Breaks into locked vehicles.' },
-    caradvancedlockpick = { label = 'Advanced Lockpick', weight = 500, useable = true, description = 'A sturdier lockpick for vehicles.' },
-    plate               = { label = 'License Plate',     weight = 500, useable = true, description = 'A spare license plate.' },
-    vehiclegps          = { label = 'Vehicle GPS',       weight = 500, useable = true, description = 'Locates tracked vehicles.' },
-    vehicletracker      = { label = 'Vehicle Tracker',   weight = 500, useable = true, description = 'Hidden tracker for a vehicle.' },
 }
 
 function QS.RegisterItem(name, data)
