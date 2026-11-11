@@ -531,6 +531,21 @@ function ESX.GetPlayerFromIdentifier(identifier)
     return nil
 end
 
+-- The users table is keyed by citizenid on qs-core, so a loaded player returns
+-- that; before load it falls back to the stock ESX value (license, no prefix).
+function ESX.GetIdentifier(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
+    if xPlayer then return xPlayer.identifier end
+    local license = GetPlayerIdentifierByType(source, 'license')
+    return license and license:gsub('license:', '') or nil
+end
+
+function ESX.GetPlayerName(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
+    if xPlayer then return xPlayer.getName() end
+    return GetPlayerName(source)
+end
+
 function ESX.GetPlayers()
     local out = {}
     for _, sid in ipairs(GetPlayers()) do
