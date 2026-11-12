@@ -32,6 +32,16 @@ RegisterNetEvent('qs:client:playerLoaded', function(data)
     QS.PlayerData = data
     QS.isLoaded = true
 
+    if data.skipSpawn then
+        if GetResourceState('qs-clothing') == 'started' then
+            exports['qs-clothing']:ApplyAppearance(data.skin, data.charinfo and data.charinfo.sex)
+        end
+        TriggerEvent('qs:client:onPlayerLoaded', data)
+        ShutdownLoadingScreen()
+        Utils.Info(('Character loaded: %s'):format(data.citizenid))
+        return
+    end
+
     DoScreenFadeOut(250)
     Wait(250)
 

@@ -105,7 +105,7 @@ function QS.CreateCharacter(source, charinfo, skin, cid)
     return data
 end
 
-function QS.LoadCharacter(source, citizenid, isNew)
+function QS.LoadCharacter(source, citizenid, isNew, opts)
     local license = getLicense(source)
     if not license then return false, 'no_license' end
 
@@ -150,6 +150,7 @@ function QS.LoadCharacter(source, citizenid, isNew)
         skin = player.PlayerData.skin,
         is_dead = player.PlayerData.is_dead == true,
         isNew = isNew,
+        skipSpawn = type(opts) == 'table' and opts.skipSpawn == true or nil,
     })
 
     Utils.Info(('Loaded character %s (src %s)'):format(citizenid, source))
