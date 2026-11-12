@@ -19,6 +19,7 @@ local escorts = {}
 local searchSessions = {}
 local evidence = {}
 local evidenceSeq = 0
+local evidenceCount = 0
 
 local function jobName(src)
     local player = core:GetPlayer(src)
@@ -227,14 +228,13 @@ RegisterNetEvent('qs-police:server:fine', function(target, amount, reason)
 end)
 
 local function addEvidence(data)
-    local count = 0
-    for _ in pairs(evidence) do count = count + 1 end
-    if count >= Config.Evidence.maxPoints then return end
+    if evidenceCount >= Config.Evidence.maxPoints then return end
 
     evidenceSeq = evidenceSeq + 1
     data.id = evidenceSeq
     data.expires = GetGameTimer() + Config.Evidence.lifetime
     evidence[evidenceSeq] = data
+    evidenceCount = evidenceCount + 1
 end
 
 RegisterNetEvent('qs-police:server:casing', function(coords, weaponLabel)
@@ -290,6 +290,7 @@ RegisterNetEvent('qs-police:server:requestEvidence', function()
     for id, e in pairs(evidence) do
         if e.expires < now then
             evidence[id] = nil
+            evidenceCount = evidenceCount - 1
         elseif #(coords - vector3(e.coords.x, e.coords.y, e.coords.z)) < 80.0 then
             nearby[#nearby + 1] = { id = id, type = e.type, coords = e.coords }
         end
@@ -326,6 +327,7 @@ RegisterNetEvent('qs-police:server:collect', function(id)
     if not player:removeItem('evidence_bag', 1) then return end
     player:addItem('evidence', 1, nil, info)
     evidence[e.id] = nil
+    evidenceCount = evidenceCount - 1
     TriggerClientEvent('qs:client:notify', src, T('collected'), 'success')
     TriggerClientEvent('qs-police:client:evidenceRemoved', -1, e.id)
 end)
