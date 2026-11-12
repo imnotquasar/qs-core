@@ -478,12 +478,10 @@ exports('createQuest', function(...)
     return true
 end)
 
-local lastRequest = 0
+local requested = false
 
 local function requestInventory()
-    local now = GetGameTimer()
-    if now - lastRequest < 1500 then return end
-    lastRequest = now
+    requested = true
     sendTheme()
     TriggerServerEvent('qs-inv:server:request')
 end
@@ -506,7 +504,7 @@ end)
 
 CreateThread(function()
     Wait(500)
-    requestInventory()
+    if not requested then requestInventory() end
 end)
 
 CreateThread(function()
