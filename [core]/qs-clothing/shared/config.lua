@@ -1,5 +1,8 @@
 Config = {}
 
+-- off while one of these is running
+Config.StandDownFor = { 'qs-appearance', 'illenium-appearance', 'fivem-appearance' }
+
 -- edit on new character
 Config.EditOnNewCharacter = true
 

@@ -14,6 +14,11 @@ on the map.
 The skin is **opaque** to the core (the `skin` column in `players`). qs-clothing
 owns its meaning.
 
+**With another appearance script** (`qs-appearance`, `illenium-appearance`,
+`fivem-appearance`, listed in `Config.StandDownFor`), qs-clothing steps aside on
+its own: it applies no skin on spawn or on `SetSkin`, and shows no stores or
+editor. It can stay in the recipe.
+
 ---
 
 ## 1. Configuration (`shared/config.lua`)

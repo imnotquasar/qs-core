@@ -61,7 +61,19 @@ local function applyCategory(cat, drawable, texture)
     end
 end
 
+local function replacedBy()
+    for _, name in ipairs(Config.StandDownFor or {}) do
+        local state = GetResourceState(name)
+        if state == 'started' or state == 'starting' then return name end
+    end
+    return nil
+end
+
+exports('IsReplaced', function() return replacedBy() ~= nil end)
+
 function ApplyAppearance(skin, sex)
+    if replacedBy() then return false end
+
     if type(skin) ~= 'table' or next(skin) == nil then
         skin = Clothing.DefaultSkin(sex)
     end
@@ -213,6 +225,7 @@ local function openEditor(opts)
 end
 
 RegisterNetEvent('qs-clothing:client:open', function(opts)
+    if replacedBy() then return end
     openEditor(opts)
 end)
 
@@ -325,6 +338,7 @@ end)
 
 AddEventHandler('qs:client:onPlayerLoaded', function(data)
     if GetResourceState('qs-coremulticharacter') == 'started' then return end
+    if replacedBy() then return end
     if not (Config.EditOnNewCharacter and data and data.isNew) then return end
 
     local skin = data.skin
@@ -364,10 +378,12 @@ local function helpText(msg)
 end
 
 CreateThread(function()
+    local blips = {}
     for _, store in ipairs(Config.Stores or {}) do
         local t = Config.StoreTypes[store.type]
         if t then
             local blip = AddBlipForCoord(store.coords.x, store.coords.y, store.coords.z)
+            blips[#blips + 1] = blip
             SetBlipSprite(blip, t.blip.sprite or 73)
             SetBlipColour(blip, t.blip.color or 0)
             SetBlipScale(blip, t.blip.size or 0.8)
@@ -379,6 +395,11 @@ CreateThread(function()
     end
 
     while true do
+        if replacedBy() then
+            for i = 1, #blips do RemoveBlip(blips[i]) end
+            return
+        end
+
         local sleep = 800
         if not editing then
             local coords = GetEntityCoords(PlayerPedId())
